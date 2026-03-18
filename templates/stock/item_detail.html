@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}{{ item.name }}{% endblock %}
+{% block page_title %}{{ item.name }}{% endblock %}
+{% block content %}
+
+<!-- Header card -->
+<div class="card" style="margin-bottom:16px;">
+  <div class="flex-between" style="flex-wrap:wrap;gap:12px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:900;color:#1a1200;">{{ item.name }}</h2>
+      <p class="text-sm text-muted">{{ item.category.emoji }} {{ item.category.name }} &nbsp;·&nbsp; {{ item.location.name|default:"No location" }} &nbsp;·&nbsp; SKU: {{ item.sku|default:"—" }}</p>
+    </div>
+    <div class="flex gap-2">
+      <a href="{% url 'stock:item_edit' item.pk %}" class="btn btn-outline btn-sm">Edit Item</a>
+      <a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary">+ Record Movement</a>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;">
+    <div style="text-align:center;">
+      <div style="font-size:28px;font-weight:900;{% if item.stock_status == 'out' %}color:var(--danger);{% elif item.stock_status == 'critical' %}color:#f97316;{% elif item.stock_status == 'low' %}color:#7a5c00;{% else %}color:var(--success);{% endif %}">
+        {{ item.current_stock|floatformat:1 }}
+      </div>
+      <div class="text-xs text-muted">Current Stock ({{ item.get_unit_display }})</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:28px;font-weight:900;color:#1a1200;">{{ item.par_level|floatformat:1 }}</div>
+      <div class="text-xs text-muted">PAR Level</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:28px;font-weight:900;color:#1a1200;">{{ item.calculated_par|floatformat:1 }}</div>
+      <div class="text-xs text-muted">Calculated PAR</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:28px;font-weight:900;color:#1a1200;">{{ item.avg_daily_usage|floatformat:2 }}</div>
+      <div class="text-xs text-muted">Avg Daily Usage</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:28px;font-weight:900;{% if item.order_qty_needed > 0 %}color:var(--danger);{% else %}color:var(--success);{% endif %}">
+        {{ item.order_qty_needed|floatformat:1 }}
+      </div>
+      <div class="text-xs text-muted">Order Needed</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:22px;font-weight:900;color:#1a1200;">${{ item.unit_cost|floatformat:2 }}</div>
+      <div class="text-xs text-muted">Unit Cost</div>
+    </div>
+  </div>
+  <div style="margin-top:14px;">
+    {% if item.par_level > 0 %}
+    {% widthratio item.current_stock item.par_level 100 as pct %}
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+      <span class="text-xs text-muted">Stock vs PAR</span>
+      <span class="text-xs fw-bold">{{ pct }}%</span>
+    </div>
+    <div class="progress" style="height:12px;">
+      <div class="progress-bar {% if item.stock_status == 'ok' %}success{% elif item.stock_status == 'out' or item.stock_status == 'critical' %}danger{% endif %}"
+           style="width:{% if pct > 100 %}100{% else %}{{ pct }}{% endif %}%"></div>
+    </div>
+    {% endif %}
+    <div style="margin-top:10px;">{{ item.stock_status_label }}</div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+<!-- Movements -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Recent Movements</span>
+    <a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">+ Add</a>
+  </div>
+  <div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Type</th><th>Qty</th><th>By</th><th>Date</th><th>Ref</th></tr></thead>
+    <tbody>
+    {% for m in movements %}
+    <tr>
+      <td>
+        <span class="badge {% if m.movement_type == 'delivery' %}badge-success{% elif m.movement_type == 'usage' or m.movement_type == 'wastage' %}badge-danger{% else %}badge-info{% endif %}">
+          {{ m.get_movement_type_display }}
+        </span>
+      </td>
+      <td style="font-weight:700;">{{ m.quantity|floatformat:1 }}</td>
+      <td class="text-sm">{{ m.created_by.display_name }}</td>
+      <td class="text-sm text-muted" style="white-space:nowrap;">{{ m.created_at|date:"d M H:i" }}</td>
+      <td class="text-sm">{{ m.reference|default:"—" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-muted text-sm" style="text-align:center;padding:16px;">No movements recorded.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+<!-- Count history -->
+<div class="card">
+  <div class="card-header"><span class="card-title">Count History</span></div>
+  <div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Date</th><th>Expected</th><th>Counted</th><th>Variance</th></tr></thead>
+    <tbody>
+    {% for line in count_lines %}
+    <tr>
+      <td class="text-sm" style="white-space:nowrap;">{{ line.count.count_date|date:"d M Y" }} {{ line.count.get_shift_display }}</td>
+      <td class="text-sm">{{ line.expected_qty|floatformat:1 }}</td>
+      <td style="font-weight:700;">{{ line.counted_qty|floatformat:1|default:"—" }}</td>
+      <td style="{% if line.variance and line.variance < 0 %}color:var(--danger);{% elif line.variance and line.variance > 0 %}color:var(--success);{% endif %}font-weight:700;">
+        {% if line.variance %}{% if line.variance > 0 %}+{% endif %}{{ line.variance|floatformat:1 }}{% else %}—{% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4" class="text-muted text-sm" style="text-align:center;padding:16px;">No count history.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}PAR Report{% endblock %}
+{% block page_title %}PAR Level Report{% endblock %}
+{% block extra_css %}
+<style>
+  .par-bar { height:12px; background:#e2e8f0; border-radius:99px; overflow:hidden; min-width:80px; }
+  .par-fill { height:12px; border-radius:99px; }
+  .par-ok       { background:#28a745; }
+  .par-low      { background:#f5c800; }
+  .par-critical { background:#f97316; }
+  .par-out      { background:#dc3545; }
+  @media print {
+    .no-print { display:none !important; }
+    body { font-size:10pt; }
+    @page { margin:15mm; size:A4 landscape; }
+    thead { display:table-header-group; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flex-between mb-4">
+  <div>
+    <h2 style="font-size:18px;font-weight:800;color:#1a1200;">PAR Level Report</h2>
+    <p class="text-sm text-muted">PAR = Average Daily Usage × Coverage Days. Items below PAR highlighted.</p>
+  </div>
+  <div class="flex gap-2 no-print">
+    <button onclick="window.print()" class="btn btn-outline btn-sm">🖨️ Print</button>
+    <a href="{% url 'stock:item_create' %}" class="btn btn-primary btn-sm">+ Add Item</a>
+  </div>
+</div>
+
+<!-- Order Summary -->
+{% if order_list %}
+<div class="card" style="margin-bottom:16px;border-left:4px solid var(--danger);">
+  <div class="card-header">
+    <span class="card-title" style="color:#991b1b;">🛒 Order Required — {{ order_list|length }} items</span>
+    <span style="font-weight:800;color:#991b1b;">${{ total_order_value|floatformat:2 }} estimated</span>
+  </div>
+  <div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Item</th><th>Category</th><th>Current</th><th>PAR</th><th>Order Qty</th><th>Est. Cost</th><th class="no-print"></th></tr></thead>
+    <tbody>
+    {% for entry in order_list %}
+    {% with item=entry.item %}
+    <tr>
+      <td><strong>{{ item.name }}</strong></td>
+      <td class="text-sm">{{ item.category.emoji }} {{ item.category.name }}</td>
+      <td style="color:{% if item.stock_status == 'out' %}var(--danger){% else %}#f97316{% endif %};font-weight:700;">
+        {{ item.current_stock|floatformat:1 }} {{ item.get_unit_display }}
+      </td>
+      <td class="text-sm">{{ item.calculated_par|floatformat:1 }} {{ item.get_unit_display }}</td>
+      <td style="font-weight:800;color:var(--danger);">{{ entry.order_qty|floatformat:1 }} {{ item.get_unit_display }}</td>
+      <td class="text-sm">
+        {% if entry.unit_cost > 0 %}
+          ${{ entry.unit_cost|floatformat:2 }} × {{ entry.order_qty|floatformat:1 }} = <strong style="color:#1a1200;">${{ entry.est_cost }}</strong>
+        {% else %}<span class="text-muted">No cost set</span>{% endif %}
+      </td>
+      <td class="no-print"><a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">Receive</a></td>
+    </tr>
+    {% endwith %}
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Filter -->
+<div class="card" style="margin-bottom:16px;" class="no-print">
+  <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+    <div style="flex:1;min-width:160px;">
+      <label class="form-label">Filter by Category</label>
+      <select name="category" class="form-select" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.pk }}" {% if f_category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.emoji }} {{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <a href="{% url 'stock:par_report' %}" class="btn btn-outline btn-sm">Clear</a>
+  </form>
+</div>
+
+<!-- Full PAR Table -->
+<div class="card">
+  <div class="card-header"><span class="card-title">All Items — PAR Status</span></div>
+  <div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Item</th><th>Unit</th><th>Current Stock</th>
+        <th>PAR Level</th><th>Coverage</th><th>Avg Daily Use</th>
+        <th>Reorder At</th><th>Stock %</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% regroup items by category as cat_groups %}
+    {% for group in cat_groups %}
+    <tr>
+      <td colspan="9" style="background:#fffbe6;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#7a5c00;padding:6px 14px;">
+        {{ group.grouper.emoji }} {{ group.grouper.name }}
+      </td>
+    </tr>
+    {% for item in group.list %}
+    {% with par=item.par_level %}
+    <tr>
+      <td>
+        <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:600;color:#1a1200;">{{ item.name }}</a>
+        {% if item.sku %}<span class="text-xs text-muted"> · {{ item.sku }}</span>{% endif %}
+      </td>
+      <td class="text-sm">{{ item.get_unit_display }}</td>
+      <td style="font-weight:700;{% if item.stock_status == 'out' %}color:var(--danger);{% elif item.stock_status == 'critical' %}color:#f97316;{% endif %}">
+        {{ item.current_stock|floatformat:1 }}
+      </td>
+      <td class="text-sm">{{ item.calculated_par|floatformat:1 }}</td>
+      <td class="text-sm">{{ item.par_coverage_days }} days</td>
+      <td class="text-sm">{{ item.avg_daily_usage|floatformat:2 }}/day</td>
+      <td class="text-sm">{{ item.reorder_point|floatformat:1 }}</td>
+      <td style="min-width:100px;">
+        {% if par > 0 %}
+        {% widthratio item.current_stock par 100 as pct %}
+        <div class="par-bar">
+          <div class="par-fill {% if item.stock_status == 'out' %}par-out{% elif item.stock_status == 'critical' %}par-critical{% elif item.stock_status == 'low' %}par-low{% else %}par-ok{% endif %}"
+               style="width:{% if pct > 100 %}100{% else %}{{ pct }}{% endif %}%"></div>
+        </div>
+        <span class="text-xs text-muted">{{ pct }}%</span>
+        {% else %}—{% endif %}
+      </td>
+      <td>
+        {% if item.stock_status == 'out' %}<span class="badge" style="background:#fee2e2;color:#991b1b;">🔴 Out</span>
+        {% elif item.stock_status == 'critical' %}<span class="badge" style="background:#fff7ed;color:#9a3412;">🟠 Critical</span>
+        {% elif item.stock_status == 'low' %}<span class="badge" style="background:#fffbe6;color:#7a5c00;">🟡 Low</span>
+        {% else %}<span class="badge badge-success">🟢 OK</span>{% endif %}
+      </td>
+    </tr>
+    {% endwith %}
+    {% endfor %}
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

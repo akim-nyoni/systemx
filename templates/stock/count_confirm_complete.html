@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Complete Count{% endblock %}
+{% block page_title %}Complete Count{% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:0 auto;">
+<div class="card" style="text-align:center;">
+  <div style="font-size:48px;margin-bottom:12px;">📋</div>
+  <h2 style="font-size:18px;font-weight:800;color:#1a1200;margin-bottom:8px;">Complete this stock count?</h2>
+  <p class="text-sm text-muted">{{ count.location }} · {{ count.count_date|date:"d M Y" }} · {{ count.get_shift_display }}</p>
+  <p class="text-sm" style="margin-top:10px;">This will update current stock levels for all counted items. <strong>This cannot be undone.</strong></p>
+  <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
+    <form method="post">{% csrf_token %}<button type="submit" class="btn btn-success">✓ Complete Count</button></form>
+    <a href="{% url 'stock:count_fill' count.pk %}" class="btn btn-outline">Go Back</a>
+  </div>
+</div>
+</div>
+{% endblock %}

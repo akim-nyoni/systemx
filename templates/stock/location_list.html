@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Locations{% endblock %}
+{% block page_title %}Stock Locations{% endblock %}
+{% block content %}
+<div class="flex-between mb-4">
+  <div>
+    <h2 style="font-size:18px;font-weight:800;color:#1a1200;">Stock Locations</h2>
+    <p class="text-sm text-muted">Physical storage areas — Bar, Kitchen, Cellar, Dry Store, etc.</p>
+  </div>
+  <a href="{% url 'stock:location_create' %}" class="btn btn-primary">+ Add Location</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Location</th><th>Department</th><th>Description</th><th>Items</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for loc in locs %}
+    <tr>
+      <td><strong>📍 {{ loc.name }}</strong></td>
+      <td class="text-sm">{{ loc.department.name|default:"—" }}</td>
+      <td class="text-sm">{{ loc.description|default:"—" }}</td>
+      <td class="text-sm">{{ loc.item_count }}</td>
+      <td>{% if loc.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-draft">Inactive</span>{% endif %}</td>
+      <td>
+        <div class="flex gap-1">
+          <a href="{% url 'stock:location_edit' loc.pk %}" class="btn btn-outline btn-sm">Edit</a>
+          {% if loc.item_count == 0 %}
+          <a href="{% url 'stock:location_delete' loc.pk %}" class="btn btn-danger btn-sm">Delete</a>
+          {% endif %}
+        </div>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6"><div class="empty-state"><p>No locations yet.</p></div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

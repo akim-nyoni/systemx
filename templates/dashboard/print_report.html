@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Ambassador — Report</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 11pt; color: #1a1a1a;
+      background: #fff; padding: 20px;
+    }
+
+    /* ── Report Header ── */
+    .report-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      border-bottom: 3px solid #f5c800; padding-bottom: 14px; margin-bottom: 20px;
+    }
+    .brand-name { font-size: 20pt; font-weight: 900; color: #1a1200; }
+    .brand-sub  { font-size: 10pt; color: #666; margin-top: 2px; }
+    .report-meta { text-align: right; font-size: 9pt; color: #666; line-height: 1.7; }
+    .report-meta strong { color: #1a1a1a; }
+    .report-title {
+      font-size: 14pt; font-weight: 800; color: #1a1200;
+      margin-bottom: 16px;
+    }
+
+    /* ── Summary boxes ── */
+    .summary-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; margin-bottom: 20px;
+    }
+    .summary-box {
+      border: 1.5px solid #e2e8f0; border-radius: 8px;
+      padding: 10px 12px; text-align: center;
+    }
+    .summary-box .num  { font-size: 22pt; font-weight: 900; color: #1a1200; line-height: 1; }
+    .summary-box .lbl  { font-size: 8pt; color: #718096; margin-top: 3px; text-transform: uppercase; letter-spacing: .5px; }
+    .summary-box.green { border-color: #28a745; background: #f0fdf4; }
+    .summary-box.green .num { color: #166534; }
+    .summary-box.red   { border-color: #dc3545; background: #fff5f5; }
+    .summary-box.red   .num { color: #991b1b; }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 24px; }
+    thead tr { background: #1a1200; color: #f5c800; }
+    thead th {
+      padding: 7px 10px; text-align: left;
+      font-size: 8.5pt; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody tr.issue-row { background: #fff5f5 !important; }
+    tbody td { padding: 7px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 20px;
+      font-size: 8pt; font-weight: 700; text-transform: uppercase;
+    }
+    .badge-ok  { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge-bad { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+    /* ── Section heading ── */
+    .section-title {
+      font-size: 11pt; font-weight: 800; color: #1a1200;
+      margin: 20px 0 8px; padding-bottom: 4px;
+      border-bottom: 2px solid #1a1200;
+    }
+
+    /* ── Progress bar (print) ── */
+    .pbar-wrap { background: #e2e8f0; border-radius: 99px; height: 7px; min-width: 60px; display: inline-block; overflow: hidden; }
+    .pbar      { height: 7px; border-radius: 99px; background: #f5c800; }
+    .pbar.ok   { background: #28a745; }
+    .pbar.bad  { background: #dc3545; }
+
+    /* ── Footer ── */
+    .report-footer {
+      margin-top: 28px; padding-top: 12px; border-top: 1px solid #e2e8f0;
+      font-size: 9pt; color: #999; display: flex; justify-content: space-between;
+    }
+
+    /* ── Print controls (screen only) ── */
+    .print-controls {
+      position: fixed; top: 16px; right: 16px;
+      display: flex; gap: 8px; z-index: 999;
+    }
+    .btn-print {
+      background: #1a1200; color: #f5c800; border: none;
+      padding: 9px 18px; border-radius: 8px; font-size: 13px;
+      font-weight: 700; cursor: pointer;
+    }
+    .btn-close {
+      background: #f0f4f8; color: #2d3748; border: none;
+      padding: 9px 18px; border-radius: 8px; font-size: 13px;
+      font-weight: 700; cursor: pointer;
+    }
+
+    /* ── Print media: hide controls, manage page breaks ── */
+    @media print {
+      .print-controls { display: none !important; }
+      body { padding: 10px; font-size: 10pt; }
+      .brand-name { font-size: 16pt; }
+      .summary-box .num { font-size: 18pt; }
+      thead { display: table-header-group; }
+      tr    { page-break-inside: avoid; }
+      .section-title { page-break-after: avoid; }
+      @page { margin: 15mm; size: A4 landscape; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="print-controls">
+  <button class="btn-print" onclick="window.print()">🖨 Print / Save PDF</button>
+  <button class="btn-close" onclick="window.close()">✕ Close</button>
+</div>
+
+<!-- ── Header ───────────────────────────────── -->
+<div class="report-header">
+  <div>
+    <div class="brand-name">The Ambassador</div>
+    <div class="brand-sub">The Ambassador — Management Checklist Report</div>
+  </div>
+  <div class="report-meta">
+    <div><strong>Generated:</strong> {{ generated_at|date:"d F Y, H:i" }}</div>
+    <div><strong>By:</strong> {{ generated_by }}</div>
+    {% if date_from or date_to %}
+    <div><strong>Period:</strong> {{ date_from|default:"Start" }} → {{ date_to|default:"Today" }}</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ── Summary ───────────────────────────────── -->
+<div class="report-title">Summary</div>
+<div class="summary-grid">
+  <div class="summary-box">
+    <div class="num">{{ total }}</div>
+    <div class="lbl">Total Submissions</div>
+  </div>
+  <div class="summary-box green">
+    <div class="num">{{ perfect }}</div>
+    <div class="lbl">Clean / Perfect</div>
+  </div>
+  <div class="summary-box red">
+    <div class="num">{{ flagged }}</div>
+    <div class="lbl">With Issues</div>
+  </div>
+  <div class="summary-box red">
+    <div class="num">{{ flagged_items|length }}</div>
+    <div class="lbl">Individual Flags</div>
+  </div>
+</div>
+
+<!-- ── Submissions Table ─────────────────────── -->
+<div class="section-title">Submissions</div>
+<table>
+  <thead>
+    <tr>
+      <th>Form</th>
+      <th>Submitted By</th>
+      <th>Branch</th>
+      <th>Shift</th>
+      <th>Date &amp; Time</th>
+      <th>Completion</th>
+      <th>Issues</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sub in submissions %}
+    <tr class="{% if sub.no_responses > 0 %}issue-row{% endif %}">
+      <td><strong>{{ sub.form.name }}</strong></td>
+      <td>{{ sub.submitted_by.display_name }}</td>
+      <td>{{ sub.branch }}</td>
+      <td>{{ sub.get_shift_display }}</td>
+      <td style="white-space:nowrap;">{{ sub.submitted_at|date:"d M Y H:i"|default:"—" }}</td>
+      <td>
+        <div class="pbar-wrap">
+          <div class="pbar {% if sub.completion_percentage == 100 %}ok{% elif sub.completion_percentage < 60 %}bad{% endif %}" style="width:{{ sub.completion_percentage }}%"></div>
+        </div>
+        <span style="font-size:9pt;margin-left:5px;">{{ sub.completion_percentage }}%</span>
+      </td>
+      <td>
+        {% if sub.no_responses > 0 %}
+        <span class="badge badge-bad">⚠ {{ sub.no_responses }} issues</span>
+        {% else %}
+        <span class="badge badge-ok">✓ Clean</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7" style="text-align:center;color:#999;padding:20px;">No submissions match the selected filters.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- ── Flagged Items ─────────────────────────── -->
+{% if flagged_items %}
+<div class="section-title">⚠️ Flagged Items — "No" Responses</div>
+<table>
+  <thead>
+    <tr>
+      <th>Checklist Item</th>
+      <th>Section</th>
+      <th>Form</th>
+      <th>Submitted By</th>
+      <th>Date</th>
+      <th>Explanation / Comment</th>
+      <th>Photo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in flagged_items %}
+    <tr>
+      <td><strong>{{ r.item.label }}</strong></td>
+      <td style="color:#666;">{{ r.item.section.title }}</td>
+      <td style="color:#666;">{{ r.submission.form.name }}</td>
+      <td>{{ r.submission.submitted_by.display_name }}</td>
+      <td style="white-space:nowrap;">{{ r.submission.submitted_at|date:"d M Y"|default:"—" }}</td>
+      <td>{{ r.comment|default:"—" }}</td>
+      <td style="text-align:center;">
+        {% if r.image and r.image.name %}
+        <img src="{{ r.image.url }}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #e2e8f0;">
+        {% else %}—{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<!-- ── Footer ───────────────────────────────── -->
+<div class="report-footer">
+  <span>The Ambassador — The Ambassador Checklist Platform</span>
+  <span>Printed: {{ generated_at|date:"d F Y, H:i" }} by {{ generated_by }}</span>
+</div>
+
+<script>
+  // Auto-open print dialog after a short delay so the page renders first
+  // (removed auto-print so user can review before printing)
+</script>
+</body>
+</html>

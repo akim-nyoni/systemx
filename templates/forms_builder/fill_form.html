@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% block title %}{{ tmpl.name }}{% endblock %}
+{% block page_title %}{{ tmpl.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-sticky {
+    position: sticky; top: 56px; z-index: 40;
+    background: #fff; border-bottom: 1px solid var(--border);
+    padding: 10px 16px; margin: -16px -16px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  @media(min-width:769px) {
+    .form-sticky { padding: 10px 28px; margin: -24px -28px 24px; top: 0; }
+  }
+  .sticky-inner { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .sticky-progress { display:flex; align-items:center; gap:8px; flex:1; min-width:140px; }
+  .completion-pct { font-size:15px; font-weight:800; color:var(--brand-blue); white-space:nowrap; }
+  .comment-area {
+    margin-top:10px; padding:12px; background:#fff7ed;
+    border-radius:8px; border:1px solid #fed7aa;
+  }
+  .r-btns { display:flex; gap:8px; flex-shrink:0; }
+  .item-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .item-top .item-label { flex:1; font-size:14px; font-weight:500; padding-top:8px; line-height:1.4; }
+
+  /* ── Photo picker ── */
+  .photo-section { margin-top:10px; }
+  .photo-label { font-size:12px; font-weight:700; color:#7c3aed; margin-bottom:8px; display:block; }
+  .photo-btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .photo-btn {
+    display:inline-flex; align-items:center; gap:7px;
+    padding:10px 16px; border-radius:10px; font-size:13px; font-weight:700;
+    cursor:pointer; border:2px solid; transition:all .15s;
+    touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+    min-height:46px; user-select:none;
+  }
+  .photo-btn-camera { background:#ede9fe; border-color:#7c3aed; color:#5b21b6; }
+  .photo-btn-camera:active { background:#ddd6fe; }
+  .photo-btn-gallery { background:#e0f2fe; border-color:#0284c7; color:#075985; }
+  .photo-btn-gallery:active { background:#bae6fd; }
+  .photo-btn svg { flex-shrink:0; }
+
+  /* ── Preview card ── */
+  .photo-preview-wrap {
+    margin-top:10px; position:relative; display:inline-block;
+  }
+  .photo-preview-img {
+    width:100%; max-width:280px; max-height:200px;
+    border-radius:10px; object-fit:cover;
+    border:2px solid #7c3aed; display:block;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  .photo-remove-btn {
+    position:absolute; top:-8px; right:-8px;
+    width:26px; height:26px; border-radius:50%;
+    background:#dc3545; color:#fff; border:2px solid #fff;
+    font-size:14px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; box-shadow:0 2px 4px rgba(0,0,0,.2);
+    touch-action:manipulation;
+  }
+  .photo-upload-progress {
+    margin-top:8px; display:none;
+  }
+  .photo-upload-progress .pbar-outer {
+    height:6px; background:#e2e8f0; border-radius:99px; overflow:hidden;
+  }
+  .photo-upload-progress .pbar-inner {
+    height:6px; background:#7c3aed; border-radius:99px;
+    width:0%; transition:width .3s;
+  }
+  .photo-status { font-size:11px; color:#7c3aed; font-weight:600; margin-top:4px; }
+  /* hidden file inputs */
+  .hidden-file-input { display:none !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Sticky progress header -->
+<div class="form-sticky">
+  <div class="sticky-inner">
+    <div class="sticky-progress">
+      <div class="progress" style="flex:1;"><div class="progress-bar" id="progressBar" style="width:{{ submission.completion_percentage }}%"></div></div>
+      <span class="completion-pct" id="completionPct">{{ submission.completion_percentage }}%</span>
+    </div>
+    <span class="saving-indicator" id="saveIndicator" style="font-size:11px;">All saved</span>
+    {% if submission.status == 'draft' %}
+    <form method="post" action="{% url 'forms_builder:submit_form' submission.pk %}" style="margin:0;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Submit this checklist? This cannot be undone.')">✓ Submit</button>
+    </form>
+    {% else %}
+    <span class="badge badge-success">Submitted</span>
+    {% endif %}
+  </div>
+  <div style="font-size:11px;color:var(--muted);margin-top:4px;">
+    {{ tmpl.name }} &nbsp;·&nbsp; {{ submission.branch }} &nbsp;·&nbsp; {{ submission.get_shift_display }} shift
+  </div>
+</div>
+
+<!-- Items -->
+<div style="max-width:760px;margin:0 auto;">
+  {% for section in sections %}
+  <div class="section-header">{{ section.title }}</div>
+
+  {% for item in section.items.all %}{% if item.is_active %}
+  <div class="item-card" id="item-card-{{ item.pk }}">
+    <div class="item-top">
+      <div class="item-label">
+        {{ item.label }}{% if item.is_required %}<span style="color:var(--danger);margin-left:3px;">*</span>{% endif %}
+      </div>
+      <div class="r-btns">
+        {% if item.response_type == 'yes_no' %}
+        <button class="r-btn" id="yes-{{ item.pk }}" onclick="setResponse({{ item.pk }}, 'Yes')">✓ Yes</button>
+        <button class="r-btn" id="no-{{ item.pk }}"  onclick="setResponse({{ item.pk }}, 'No')">✗ No</button>
+        {% elif item.response_type == 'text' %}
+        <input type="text" class="form-control" style="max-width:180px;font-size:14px;" id="text-{{ item.pk }}" placeholder="Enter…" onblur="setTextResponse({{ item.pk }}, this.value)">
+        {% elif item.response_type == 'number' %}
+        <input type="number" class="form-control" style="max-width:100px;font-size:14px;" id="num-{{ item.pk }}" placeholder="0" onblur="setTextResponse({{ item.pk }}, this.value)">
+        {% endif %}
+      </div>
+    </div>
+    <div class="comment-area" id="comment-area-{{ item.pk }}" style="display:none;">
+      <label style="font-size:12px;font-weight:700;color:#9a3412;margin-bottom:6px;display:block;">⚠️ Explanation required</label>
+      <textarea class="form-control" id="comment-{{ item.pk }}" rows="2" placeholder="Describe the issue…" style="font-size:14px;" onblur="saveComment({{ item.pk }}, this.value)"></textarea>
+      {% if item.requires_image_on_no %}
+      <div class="photo-section">
+        <span class="photo-label">📷 Photo evidence (optional)</span>
+        <div class="photo-btns">
+          <!-- Camera button — opens camera directly -->
+          <button type="button" class="photo-btn photo-btn-camera" onclick="triggerCamera({{ item.pk }})">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            Camera
+          </button>
+          <!-- Gallery button — opens photo library -->
+          <button type="button" class="photo-btn photo-btn-gallery" onclick="triggerGallery({{ item.pk }})">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            Gallery
+          </button>
+        </div>
+
+        <!-- Hidden inputs: camera uses capture="environment", gallery doesn't -->
+        <input type="file" class="hidden-file-input" id="cam-{{ item.pk }}"
+               accept="image/*" capture="environment"
+               onchange="handlePhotoSelected({{ item.pk }}, this)">
+        <input type="file" class="hidden-file-input" id="gal-{{ item.pk }}"
+               accept="image/*"
+               onchange="handlePhotoSelected({{ item.pk }}, this)">
+
+        <!-- Upload progress -->
+        <div class="photo-upload-progress" id="upload-progress-{{ item.pk }}">
+          <div class="pbar-outer"><div class="pbar-inner" id="pbar-{{ item.pk }}"></div></div>
+          <div class="photo-status" id="upload-status-{{ item.pk }}">Uploading…</div>
+        </div>
+
+        <!-- Preview -->
+        <div id="photo-preview-{{ item.pk }}"></div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}{% endfor %}
+  {% endfor %}
+
+  <div class="card" style="margin-top:16px;">
+    <label class="form-label">Overall Notes (optional)</label>
+    <textarea class="form-control" id="overallNotes" rows="3" placeholder="Any general notes for this shift…" style="font-size:14px;">{{ submission.notes }}</textarea>
+  </div>
+
+  {% if submission.status == 'draft' %}
+  <form method="post" action="{% url 'forms_builder:submit_form' submission.pk %}" style="margin-top:16px;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success btn-block btn-lg" onclick="return confirm('Submit this checklist? This cannot be undone.')">
+      ✓ Submit Checklist
+    </button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const SAVE_URL = "{% url 'forms_builder:save_response' submission.pk %}";
+const CSRF = "{{ csrf_token }}";
+let saveTimeout;
+
+const existing = {
+  {% for item_id, resp in responses_map.items %}
+  "{{ item_id }}": {
+    value: "{{ resp.value|escapejs }}",
+    comment: "{{ resp.comment|escapejs }}",
+    image: "{% if resp.image and resp.image.name %}{{ resp.image.url|escapejs }}{% endif %}"
+  },
+  {% endfor %}
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  for (const [id, r] of Object.entries(existing)) {
+    if (r.value === 'Yes' || r.value === 'No') applyYesNo(id, r.value, false);
+    else if (r.value) {
+      const el = document.getElementById('text-' + id) || document.getElementById('num-' + id);
+      if (el) el.value = r.value;
+      markCard(id, 'other');
+    }
+    if (r.comment) { const c = document.getElementById('comment-' + id); if (c) c.value = r.comment; }
+    // Restore existing saved image preview
+    if (r.image) {
+      const wrap = document.getElementById('photo-preview-' + id);
+      if (wrap) {
+        wrap.innerHTML = `
+          <div class="photo-preview-wrap">
+            <img src="${r.image}" class="photo-preview-img" alt="Saved photo">
+            <a href="${r.image}" target="_blank" style="position:absolute;bottom:-8px;right:-8px;background:#2a7fba;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;text-decoration:none;border:2px solid #fff;" title="View full image">⤢</a>
+            <div style="font-size:11px;color:var(--success);margin-top:6px;font-weight:600;">✓ Photo saved</div>
+          </div>`;
+      }
+    }
+  }
+});
+
+function setResponse(id, value) {
+  applyYesNo(id, value, true);
+  saveItem(id, value, document.getElementById('comment-' + id)?.value || '');
+}
+function applyYesNo(id, value, animate) {
+  const yBtn = document.getElementById('yes-' + id);
+  const nBtn = document.getElementById('no-' + id);
+  const ca   = document.getElementById('comment-area-' + id);
+  if (yBtn) yBtn.className = value === 'Yes' ? 'r-btn selected-yes' : 'r-btn';
+  if (nBtn) nBtn.className = value === 'No'  ? 'r-btn selected-no'  : 'r-btn';
+  markCard(id, value === 'Yes' ? 'yes' : 'no');
+  if (ca) { ca.style.display = value === 'No' ? 'block' : 'none'; if (value === 'No' && animate) document.getElementById('comment-' + id)?.focus(); }
+}
+function markCard(id, type) {
+  const c = document.getElementById('item-card-' + id);
+  if (c) c.className = 'item-card answered-' + type;
+}
+function setTextResponse(id, value) { if (!value) return; markCard(id, 'other'); saveItem(id, value, ''); }
+function saveComment(id, comment) {
+  const y = document.getElementById('yes-' + id);
+  saveItem(id, y?.classList.contains('selected-yes') ? 'Yes' : 'No', comment);
+}
+function saveItem(id, value, comment) {
+  showSaving();
+  const fd = new FormData();
+  fd.append('item_id', id); fd.append('value', value);
+  fd.append('comment', comment); fd.append('csrfmiddlewaretoken', CSRF);
+  fetch(SAVE_URL, { method: 'POST', body: fd })
+    .then(r => r.json()).then(d => { if (d.ok) { updateProgress(d.completion); showSaved(); } })
+    .catch(showError);
+}
+function triggerCamera(id) {
+  // Reset value so same file can be re-selected
+  const el = document.getElementById('cam-' + id);
+  el.value = '';
+  el.click();
+}
+function triggerGallery(id) {
+  const el = document.getElementById('gal-' + id);
+  el.value = '';
+  el.click();
+}
+
+function handlePhotoSelected(id, input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+
+  // Show local preview immediately
+  const reader = new FileReader();
+  reader.onload = e => renderPreview(id, e.target.result, file.name);
+  reader.readAsDataURL(file);
+
+  // Upload
+  const y       = document.getElementById('yes-' + id);
+  const value   = y?.classList.contains('selected-yes') ? 'Yes' : 'No';
+  const comment = document.getElementById('comment-' + id)?.value || '';
+  uploadPhoto(id, file, value, comment);
+}
+
+function renderPreview(id, src, filename) {
+  const wrap = document.getElementById('photo-preview-' + id);
+  if (!wrap) return;
+  wrap.innerHTML = `
+    <div class="photo-preview-wrap" id="preview-wrap-${id}">
+      <img src="${src}" class="photo-preview-img" alt="Photo">
+      <button class="photo-remove-btn" onclick="removePhoto(${id})" title="Remove photo">✕</button>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${filename}</div>
+    </div>`;
+}
+
+function removePhoto(id) {
+  // Clear inputs and preview
+  document.getElementById('cam-' + id).value = '';
+  document.getElementById('gal-' + id).value = '';
+  const wrap = document.getElementById('photo-preview-' + id);
+  if (wrap) wrap.innerHTML = '';
+  // Note: doesn't delete server-side image (would need a separate endpoint)
+  // Just clears local state
+}
+
+function uploadPhoto(id, file, value, comment) {
+  // Show progress bar
+  const prog   = document.getElementById('upload-progress-' + id);
+  const pbar   = document.getElementById('pbar-' + id);
+  const status = document.getElementById('upload-status-' + id);
+  if (prog) { prog.style.display = 'block'; pbar.style.width = '0%'; status.textContent = 'Uploading photo…'; }
+
+  showSaving();
+
+  const fd = new FormData();
+  fd.append('item_id',  id);
+  fd.append('value',    value);
+  fd.append('comment',  comment);
+  fd.append('image',    file);
+  fd.append('csrfmiddlewaretoken', CSRF);
+
+  // Use XHR for progress tracking
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', SAVE_URL);
+
+  xhr.upload.onprogress = e => {
+    if (e.lengthComputable && pbar) {
+      const pct = Math.round((e.loaded / e.total) * 90);
+      pbar.style.width = pct + '%';
+    }
+  };
+
+  xhr.onload = () => {
+    if (xhr.status === 200) {
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (data.ok) {
+          if (pbar)   pbar.style.width = '100%';
+          if (status) { status.textContent = '✓ Photo saved'; status.style.color = 'var(--success)'; }
+          updateProgress(data.completion);
+          showSaved();
+          // Hide progress bar after 3s
+          setTimeout(() => { if (prog) prog.style.display = 'none'; }, 3000);
+        } else {
+          handleUploadError(id, 'Upload failed');
+        }
+      } catch(e) { handleUploadError(id, 'Server error'); }
+    } else {
+      handleUploadError(id, 'Upload failed (' + xhr.status + ')');
+    }
+  };
+
+  xhr.onerror = () => handleUploadError(id, 'Network error');
+  xhr.send(fd);
+}
+
+function handleUploadError(id, msg) {
+  const status = document.getElementById('upload-status-' + id);
+  if (status) { status.textContent = '✗ ' + msg; status.style.color = 'var(--danger)'; }
+  showError();
+}
+function updateProgress(pct) {
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('completionPct').textContent = pct + '%';
+}
+function showSaving() { const el = document.getElementById('saveIndicator'); el.textContent = '⟳'; el.className = 'saving-indicator saving'; }
+function showSaved()  { const el = document.getElementById('saveIndicator'); el.textContent = '✓ Saved'; el.className = 'saving-indicator saved'; clearTimeout(saveTimeout); saveTimeout = setTimeout(() => { el.textContent = 'All saved'; el.className = 'saving-indicator'; }, 2500); }
+function showError()  { const el = document.getElementById('saveIndicator'); el.textContent = '✗ Error'; el.className = 'saving-indicator'; }
+</script>
+{% endblock %}

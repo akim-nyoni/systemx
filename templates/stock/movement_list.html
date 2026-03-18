@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Movements{% endblock %}
+{% block page_title %}Stock Movements{% endblock %}
+{% block content %}
+<div class="flex-between mb-4">
+  <h2 style="font-size:18px;font-weight:800;color:#1a1200;">Stock Movements</h2>
+  <a href="{% url 'stock:movement_create' %}" class="btn btn-primary">+ Record Movement</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Type</th><th>Item</th><th>Quantity</th><th>Value</th><th>Reference</th><th>By</th><th>Date</th></tr></thead>
+    <tbody>
+    {% for m in movements %}
+    <tr>
+      <td>
+        <span class="badge {% if m.movement_type == 'delivery' or m.movement_type == 'transfer_in' %}badge-success{% elif m.movement_type == 'usage' or m.movement_type == 'wastage' %}badge-danger{% else %}badge-info{% endif %}">
+          {% if m.movement_type == 'delivery' %}📥{% elif m.movement_type == 'usage' %}📤{% elif m.movement_type == 'wastage' %}🗑️{% elif m.movement_type == 'transfer_in' %}⬅️{% elif m.movement_type == 'transfer_out' %}➡️{% else %}🔄{% endif %}
+          {{ m.get_movement_type_display }}
+        </span>
+      </td>
+      <td><a href="{% url 'stock:item_detail' m.item.pk %}" style="font-weight:600;color:#1a1200;">{{ m.item.name }}</a></td>
+      <td style="font-weight:700;">{% if not m.is_inbound %}-{% endif %}{{ m.quantity|floatformat:1 }} {{ m.item.get_unit_display }}</td>
+      <td class="text-sm">${{ m.total_value|floatformat:2 }}</td>
+      <td class="text-sm">{{ m.reference|default:"—" }}</td>
+      <td class="text-sm">{{ m.created_by.display_name }}</td>
+      <td class="text-sm text-muted" style="white-space:nowrap;">{{ m.created_at|date:"d M Y H:i" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7"><div class="empty-state"><p>No movements recorded.</p></div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

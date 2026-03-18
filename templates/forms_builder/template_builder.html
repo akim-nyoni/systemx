@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+{% block title %}Form Builder - {{ tmpl.name }}{% endblock %}
+{% block page_title %}Form Builder{% endblock %}
+
+{% block extra_css %}
+<style>
+  .builder-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+  .section-card { background:#fff; border:1.5px solid #e2e8f0; border-radius:10px; margin-bottom:14px; overflow:hidden; }
+  .section-title-bar { background:#1e3a5f; color:#fff; padding:12px 18px; display:flex; align-items:center; justify-content:space-between; }
+  .section-title-bar h3 { font-size:14px; font-weight:700; }
+  .item-row { display:flex; align-items:center; gap:12px; padding:10px 18px; border-bottom:1px solid #f1f5f9; font-size:13px; }
+  .item-row:last-child { border-bottom:none; }
+  .item-type-pill { font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; background:#e8f4fd; color:#1e3a5f; text-transform:uppercase; flex-shrink:0; }
+  .add-item-form { padding:12px 18px; background:#f8fafc; display:none; border-top:1px solid #e2e8f0; }
+  .add-item-form.open { display:block; }
+  .panel-section { margin-bottom:20px; }
+  .panel-section h4 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:#718096; margin-bottom:10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flex-between mb-4">
+  <div>
+    <h2 style="font-size:18px; font-weight:800; color:#1e3a5f;">{{ tmpl.name }}</h2>
+    <p class="text-sm text-muted">{{ tmpl.get_category_display }} · Drag sections to reorder</p>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <a href="{% url 'forms_builder:template_edit' tmpl.pk %}" class="btn btn-outline btn-sm">Edit Info</a>
+    <a href="{% url 'forms_builder:template_list' %}" class="btn btn-outline btn-sm">← All Templates</a>
+  </div>
+</div>
+
+<div class="builder-layout">
+  <!-- Left: Sections -->
+  <div>
+    <div id="sectionsContainer">
+      {% for section in sections %}
+      <div class="section-card" id="section-{{ section.pk }}">
+        <div class="section-title-bar">
+          <h3>{{ section.title }}</h3>
+          <div style="display:flex;gap:8px;">
+            <button onclick="toggleAddItem({{ section.pk }})" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:700;">+ Item</button>
+            <button onclick="deleteSection({{ section.pk }}, this)" style="background:rgba(220,53,69,.6);border:none;color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;">✕</button>
+          </div>
+        </div>
+        <div id="items-{{ section.pk }}">
+          {% for item in section.items.all %}
+          <div class="item-row" id="item-{{ item.pk }}">
+            <span style="flex:1;">{{ item.label }}</span>
+            <span class="item-type-pill">{{ item.get_response_type_display }}</span>
+            {% if item.requires_comment_on_no %}<span title="Comment required on No" style="font-size:16px;">💬</span>{% endif %}
+            {% if item.requires_image_on_no %}<span title="Photo on No" style="font-size:16px;">📷</span>{% endif %}
+            <button onclick="deleteItem({{ item.pk }}, this)" style="background:none;border:none;color:#dc3545;cursor:pointer;font-size:18px;padding:0 4px;" title="Remove item">✕</button>
+          </div>
+          {% empty %}
+          <div class="item-row text-muted" id="empty-{{ section.pk }}">No items yet. Click "+ Item" to add.</div>
+          {% endfor %}
+        </div>
+        <div class="add-item-form" id="add-form-{{ section.pk }}">
+          <div class="form-group">
+            <label class="form-label">Item Label *</label>
+            <input type="text" class="form-control" id="item-label-{{ section.pk }}" placeholder="e.g. Check toilets and check sheets">
+          </div>
+          <div class="grid grid-2" style="gap:10px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Response Type</label>
+              <select class="form-select" id="item-type-{{ section.pk }}">
+                <option value="yes_no">Yes / No</option>
+                <option value="text">Text Input</option>
+                <option value="number">Number</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Options</label>
+              <div style="display:flex; flex-direction:column; gap:4px; padding-top:6px;">
+                <label style="font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="checkbox" id="req-comment-{{ section.pk }}" checked> Require comment on No
+                </label>
+                <label style="font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="checkbox" id="req-image-{{ section.pk }}"> Allow photo on No
+                </label>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button onclick="addItem({{ section.pk }})" class="btn btn-primary btn-sm">Add Item</button>
+            <button onclick="toggleAddItem({{ section.pk }})" class="btn btn-outline btn-sm">Cancel</button>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="card empty-state" id="no-sections">
+        <p>No sections yet. Add your first section →</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Right: Panel -->
+  <div>
+    <div class="card" style="position:sticky; top:80px;">
+      <div class="panel-section">
+        <h4>Add Section</h4>
+        <input type="text" class="form-control" id="newSectionTitle" placeholder="Section name (e.g. Bar, Kitchen)" style="margin-bottom:8px;">
+        <button onclick="addSection()" class="btn btn-primary" style="width:100%;">+ Add Section</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="panel-section">
+        <h4>Form Details</h4>
+        <div style="font-size:13px; display:flex; flex-direction:column; gap:6px;">
+          <div class="flex-between"><span class="text-muted">Category</span><strong>{{ tmpl.get_category_display }}</strong></div>
+          <div class="flex-between"><span class="text-muted">Sections</span><strong>{{ sections|length }}</strong></div>
+          <div class="flex-between"><span class="text-muted">Status</span>{% if tmpl.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-draft">Inactive</span>{% endif %}</div>
+          <div class="flex-between"><span class="text-muted">Access</span>{% if tmpl.all_managers_access %}<span class="badge badge-info">All Managers</span>{% else %}<span class="badge badge-warning">Restricted</span>{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="panel-section">
+        <h4>Quick Add (Bulk)</h4>
+        <p class="text-sm text-muted" style="margin-bottom:8px;">Select a section then paste items (one per line)</p>
+        <select class="form-select" id="bulkSection" style="margin-bottom:8px;">
+          <option value="">Select section...</option>
+          {% for s in sections %}
+          <option value="{{ s.pk }}">{{ s.title }}</option>
+          {% endfor %}
+        </select>
+        <textarea class="form-control" id="bulkItems" rows="5" placeholder="Check toilets&#10;Inspect kitchen&#10;Check staff attendance" style="font-size:12px;"></textarea>
+        <button onclick="bulkAdd()" class="btn btn-primary btn-sm" style="width:100%; margin-top:8px;">Bulk Add Items</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const FORM_PK = {{ tmpl.pk }};
+const CSRF = "{{ csrf_token }}";
+
+function toggleAddItem(sectionId) {
+  const form = document.getElementById('add-form-' + sectionId);
+  form.classList.toggle('open');
+  if (form.classList.contains('open')) {
+    document.getElementById('item-label-' + sectionId).focus();
+  }
+}
+
+async function addSection() {
+  const title = document.getElementById('newSectionTitle').value.trim();
+  if (!title) return alert('Please enter a section name.');
+
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('csrfmiddlewaretoken', CSRF);
+
+  const r = await fetch(`/forms/templates/${FORM_PK}/sections/`, { method: 'POST', body: formData });
+  const data = await r.json();
+
+  if (data.id) {
+    document.getElementById('newSectionTitle').value = '';
+    const container = document.getElementById('sectionsContainer');
+    const noSections = document.getElementById('no-sections');
+    if (noSections) noSections.remove();
+
+    container.insertAdjacentHTML('beforeend', `
+      <div class="section-card" id="section-${data.id}">
+        <div class="section-title-bar">
+          <h3>${data.title}</h3>
+          <div style="display:flex;gap:8px;">
+            <button onclick="toggleAddItem(${data.id})" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:700;">+ Item</button>
+            <button onclick="deleteSection(${data.id}, this)" style="background:rgba(220,53,69,.6);border:none;color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;">✕</button>
+          </div>
+        </div>
+        <div id="items-${data.id}">
+          <div class="item-row text-muted" id="empty-${data.id}">No items yet. Click "+ Item" to add.</div>
+        </div>
+        <div class="add-item-form" id="add-form-${data.id}">
+          <div class="form-group">
+            <label class="form-label">Item Label *</label>
+            <input type="text" class="form-control" id="item-label-${data.id}" placeholder="e.g. Check toilets">
+          </div>
+          <div class="grid grid-2" style="gap:10px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Response Type</label>
+              <select class="form-select" id="item-type-${data.id}">
+                <option value="yes_no">Yes / No</option>
+                <option value="text">Text Input</option>
+                <option value="number">Number</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Options</label>
+              <div style="display:flex; flex-direction:column; gap:4px; padding-top:6px;">
+                <label style="font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="checkbox" id="req-comment-${data.id}" checked> Require comment on No
+                </label>
+                <label style="font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="checkbox" id="req-image-${data.id}"> Allow photo on No
+                </label>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button onclick="addItem(${data.id})" class="btn btn-primary btn-sm">Add Item</button>
+            <button onclick="toggleAddItem(${data.id})" class="btn btn-outline btn-sm">Cancel</button>
+          </div>
+        </div>
+      </div>
+    `);
+
+    // Also update bulk section select
+    const bulkSelect = document.getElementById('bulkSection');
+    const opt = document.createElement('option');
+    opt.value = data.id;
+    opt.textContent = data.title;
+    bulkSelect.appendChild(opt);
+  }
+}
+
+async function addItem(sectionId) {
+  const label = document.getElementById('item-label-' + sectionId).value.trim();
+  if (!label) return alert('Enter an item label.');
+
+  const type = document.getElementById('item-type-' + sectionId).value;
+  const reqComment = document.getElementById('req-comment-' + sectionId)?.checked;
+  const reqImage = document.getElementById('req-image-' + sectionId)?.checked;
+
+  const formData = new FormData();
+  formData.append('label', label);
+  formData.append('response_type', type);
+  formData.append('requires_comment_on_no', reqComment ? 'true' : 'false');
+  formData.append('requires_image_on_no', reqImage ? 'true' : 'false');
+  formData.append('csrfmiddlewaretoken', CSRF);
+
+  const r = await fetch(`/forms/sections/${sectionId}/items/`, { method: 'POST', body: formData });
+  const data = await r.json();
+
+  if (data.id) {
+    document.getElementById('item-label-' + sectionId).value = '';
+    const empty = document.getElementById('empty-' + sectionId);
+    if (empty) empty.remove();
+
+    const container = document.getElementById('items-' + sectionId);
+    container.insertAdjacentHTML('beforeend', `
+      <div class="item-row" id="item-${data.id}">
+        <span style="flex:1;">${data.label}</span>
+        <span class="item-type-pill">${data.response_type_display}</span>
+        ${reqComment ? '<span title="Comment required on No" style="font-size:16px;">💬</span>' : ''}
+        ${reqImage ? '<span title="Photo on No" style="font-size:16px;">📷</span>' : ''}
+        <button onclick="deleteItem(${data.id}, this)" style="background:none;border:none;color:#dc3545;cursor:pointer;font-size:18px;padding:0 4px;">✕</button>
+      </div>
+    `);
+  }
+}
+
+async function deleteSection(sectionId, btn) {
+  if (!confirm('Delete this entire section and all its items?')) return;
+  const r = await fetch(`/forms/sections/${sectionId}/delete/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': CSRF, 'Content-Type': 'application/json' }
+  });
+  const data = await r.json();
+  if (data.ok) document.getElementById('section-' + sectionId)?.remove();
+}
+
+async function deleteItem(itemId, btn) {
+  if (!confirm('Remove this item?')) return;
+  const r = await fetch(`/forms/items/${itemId}/delete/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': CSRF, 'Content-Type': 'application/json' }
+  });
+  const data = await r.json();
+  if (data.ok) document.getElementById('item-' + itemId)?.remove();
+}
+
+async function bulkAdd() {
+  const sectionId = document.getElementById('bulkSection').value;
+  const text = document.getElementById('bulkItems').value.trim();
+  if (!sectionId) return alert('Please select a section.');
+  if (!text) return alert('Please enter items, one per line.');
+
+  const lines = text.split('\n').filter(l => l.trim());
+  for (const line of lines) {
+    const formData = new FormData();
+    formData.append('label', line.trim());
+    formData.append('response_type', 'yes_no');
+    formData.append('requires_comment_on_no', 'true');
+    formData.append('requires_image_on_no', 'false');
+    formData.append('csrfmiddlewaretoken', CSRF);
+
+    const r = await fetch(`/forms/sections/${sectionId}/items/`, { method: 'POST', body: formData });
+    const data = await r.json();
+    if (data.id) {
+      const empty = document.getElementById('empty-' + sectionId);
+      if (empty) empty.remove();
+      const container = document.getElementById('items-' + sectionId);
+      container.insertAdjacentHTML('beforeend', `
+        <div class="item-row" id="item-${data.id}">
+          <span style="flex:1;">${data.label}</span>
+          <span class="item-type-pill">Yes / No</span>
+          <span style="font-size:16px;">💬</span>
+          <button onclick="deleteItem(${data.id}, this)" style="background:none;border:none;color:#dc3545;cursor:pointer;font-size:18px;padding:0 4px;">✕</button>
+        </div>
+      `);
+    }
+  }
+  document.getElementById('bulkItems').value = '';
+  alert(`✓ Added ${lines.length} items.`);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Delete Submission{% endblock %}
+{% block page_title %}Delete Submission{% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:0 auto;">
+<div class="card" style="text-align:center;">
+  <div style="font-size:48px;margin-bottom:12px;">🗑️</div>
+  <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);margin-bottom:8px;">Delete this submission?</h2>
+  <p class="text-sm text-muted">
+    <strong>{{ submission.form.name }}</strong><br>
+    Submitted by {{ submission.submitted_by.display_name }} on {{ submission.submitted_at|date:"d M Y H:i"|default:"draft" }}
+  </p>
+  <p class="text-sm" style="margin-top:10px;color:var(--danger);">This will permanently delete all responses and photos. Cannot be undone.</p>
+  <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Delete Permanently</button>
+    </form>
+    <a href="{% url 'dashboard:reports' %}" class="btn btn-outline">Cancel</a>
+  </div>
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Categories{% endblock %}
+{% block page_title %}Stock Categories{% endblock %}
+{% block content %}
+<div class="flex-between mb-4">
+  <div>
+    <h2 style="font-size:18px;font-weight:800;color:#1a1200;">Stock Categories</h2>
+    <p class="text-sm text-muted">Organise your stock items into categories.</p>
+  </div>
+  <a href="{% url 'stock:category_create' %}" class="btn btn-primary">+ Add Category</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Category</th><th>Code</th><th>Description</th><th>Items</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for cat in cats %}
+    <tr>
+      <td><strong>{{ cat.emoji }} {{ cat.name }}</strong></td>
+      <td class="text-sm text-muted">{{ cat.code }}</td>
+      <td class="text-sm">{{ cat.description|default:"—" }}</td>
+      <td class="text-sm">{{ cat.item_count }}</td>
+      <td>{% if cat.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-draft">Inactive</span>{% endif %}</td>
+      <td>
+        <div class="flex gap-1">
+          <a href="{% url 'stock:category_edit' cat.pk %}" class="btn btn-outline btn-sm">Edit</a>
+          {% if cat.item_count == 0 %}
+          <a href="{% url 'stock:category_delete' cat.pk %}" class="btn btn-danger btn-sm">Delete</a>
+          {% endif %}
+        </div>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6"><div class="empty-state"><p>No categories yet.</p></div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

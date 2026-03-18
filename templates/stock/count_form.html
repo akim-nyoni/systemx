@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+<div style="max-width:560px;margin:0 auto;">
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Start Stock Count</span>
+    <a href="{% url 'stock:count_list' %}" class="btn btn-outline btn-sm">← Back</a>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="form-group">
+      <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+      {% for e in field.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
+    </div>
+    {% endfor %}
+    <div class="alert alert-info" style="font-size:13px;">All items for the selected location will be pre-loaded for counting.</div>
+    <div style="display:flex;gap:10px;">
+      <button type="submit" class="btn btn-primary">Start Count →</button>
+      <a href="{% url 'stock:count_list' %}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+</div>
+{% endblock %}

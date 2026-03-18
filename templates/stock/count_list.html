@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Stock Counts{% endblock %}
+{% block page_title %}Stock Counts{% endblock %}
+{% block content %}
+<div class="flex-between mb-4">
+  <h2 style="font-size:18px;font-weight:800;color:#1a1200;">Stock Counts</h2>
+  <a href="{% url 'stock:count_create' %}" class="btn btn-primary">📋 Start New Count</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Location</th><th>Date</th><th>Shift</th><th>By</th><th>Items</th><th>Below PAR</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for count in counts %}
+    <tr>
+      <td><strong>{{ count.location.name }}</strong></td>
+      <td class="text-sm" style="white-space:nowrap;">{{ count.count_date|date:"d M Y" }}</td>
+      <td class="text-sm">{{ count.get_shift_display }}</td>
+      <td class="text-sm">{{ count.conducted_by.display_name }}</td>
+      <td class="text-sm">{{ count.total_items }}</td>
+      <td>{% if count.items_below_par > 0 %}<span class="badge badge-warning">{{ count.items_below_par }}</span>{% else %}—{% endif %}</td>
+      <td>
+        {% if count.status == 'completed' %}<span class="badge badge-success">✓ Complete</span>
+        {% else %}<span class="badge badge-warning">Draft {{ count.completion_pct }}%</span>{% endif %}
+      </td>
+      <td>
+        {% if count.status == 'draft' %}
+        <a href="{% url 'stock:count_fill' count.pk %}" class="btn btn-primary btn-sm">Continue</a>
+        {% else %}
+        <a href="{% url 'stock:count_detail' count.pk %}" class="btn btn-outline btn-sm">View</a>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="8"><div class="empty-state"><p>No stock counts yet.</p></div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+{% endblock %}

@@ -28,7 +28,8 @@
       <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">{{ submission.form.name }}</h2>
       <p class="text-sm text-muted" style="margin-top:4px;line-height:1.6;">
         <strong>{{ submission.submitted_by.display_name }}</strong>
-        &nbsp;·&nbsp; {{ submission.branch }}
+        &nbsp;·&nbsp; {{ submission.outlet.name|default:"—" }}
+        {% if submission.department %}&nbsp;·&nbsp; {{ submission.department.emoji }} {{ submission.department.name }}{% endif %}
         &nbsp;·&nbsp; {{ submission.get_shift_display }} shift
         &nbsp;·&nbsp; {{ submission.submitted_at|date:"d M Y, H:i"|default:"Draft" }}
       </p>

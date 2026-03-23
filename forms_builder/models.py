@@ -19,6 +19,11 @@ class FormTemplate(models.Model):
     name        = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     category    = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default='other')
+    outlet      = models.ForeignKey(
+        'accounts.Outlet', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='form_templates', verbose_name='Outlet',
+        help_text='Which restaurant this form belongs to (blank = all outlets)'
+    )
     department  = models.ForeignKey(
         'accounts.Department', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='forms', verbose_name='Department',
@@ -111,7 +116,14 @@ class FormSubmission(models.Model):
 
     form = models.ForeignKey(FormTemplate, on_delete=models.PROTECT, related_name='submissions')
     submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='submissions')
-    branch = models.CharField(max_length=100)
+    outlet = models.ForeignKey(
+        'accounts.Outlet', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='submissions'
+    )
+    department = models.ForeignKey(
+        'accounts.Department', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='submissions'
+    )
     shift = models.CharField(max_length=20, choices=[('day', 'Day'), ('night', 'Night'), ('full', 'Full Day')], default='day')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_DRAFT)
     submitted_at = models.DateTimeField(null=True, blank=True)

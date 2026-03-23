@@ -386,7 +386,8 @@ class Command(BaseCommand):
             self.stdout.write('Clearing existing templates...')
             FormTemplate.objects.all().delete()
 
-        self._create_departments()
+        outlet_map = self._create_outlets()
+        self._create_departments(outlet_map)
         roles = self._create_roles()
 
         if not options['no_user']:
@@ -407,25 +408,57 @@ class Command(BaseCommand):
         except Exception as e:
             self.stdout.write(self.style.WARNING(f'Stock seed skipped: {e}'))
 
-    def _create_departments(self):
-        from accounts.models import Department
-        self.stdout.write('\nCreating departments...')
-        # First pass — create all without parents
-        dept_map = {}
-        for name, code, parent_code, order in DEPARTMENTS:
-            dept, created = Department.objects.update_or_create(
-                code=code,
-                defaults={'name': name, 'order': order, 'is_active': True}
+    def _create_outlets(self):
+        from accounts.models import Outlet
+        self.stdout.write('\nCreating outlets...')
+        outlets_data = [
+            ("Rhapsody's Sibili",       'sibili',       1),
+            ("Rhapsody's Phakalane",    'phakalane',    2),
+            ("Rhapsody's Seventy Nine", 'seventy_nine', 3),
+        ]
+        outlet_map = {}
+        for name, code, order in outlets_data:
+            outlet, created = Outlet.objects.update_or_create(
+                code=code, defaults={'name': name, 'order': order, 'is_active': True}
             )
-            dept_map[code] = dept
+            outlet_map[code] = outlet
             action = 'Created' if created else 'Updated'
             self.stdout.write(f'  ✓ {action}: {name}')
-        # Second pass — link parents
-        for name, code, parent_code, order in DEPARTMENTS:
-            if parent_code and parent_code in dept_map:
-                dept = dept_map[code]
-                dept.parent = dept_map[parent_code]
-                dept.save(update_fields=['parent'])
+        return outlet_map
+
+    def _create_departments(self, outlet_map=None):
+        from accounts.models import Department, Outlet
+        self.stdout.write('\nCreating departments...')
+        # Create departments for each outlet
+        outlets = list(Outlet.objects.all()) if not outlet_map else list(outlet_map.values())
+        if not outlets:
+            outlets = [None]  # fallback if no outlets
+
+        all_dept_maps = {}
+        for outlet in outlets:
+            dept_map = {}
+            for name, code, parent_code, order in DEPARTMENTS:
+                if outlet:
+                    dept, created = Department.objects.update_or_create(
+                        outlet=outlet, name=name,
+                        defaults={'code': code, 'order': order, 'is_active': True}
+                    )
+                else:
+                    dept, created = Department.objects.update_or_create(
+                        name=name, defaults={'code': code, 'order': order, 'is_active': True}
+                    )
+                dept_map[code] = dept
+                if created:
+                    self.stdout.write(f'  ✓ Created: {name} ({outlet.name if outlet else "global"})')
+            # Link parents within this outlet
+            for name, code, parent_code, order in DEPARTMENTS:
+                if parent_code and parent_code in dept_map:
+                    dept = dept_map[code]
+                    dept.parent = dept_map[parent_code]
+                    dept.save(update_fields=['parent'])
+            if outlet:
+                all_dept_maps[outlet.code] = dept_map
+        return all_dept_maps
 
     def _create_roles(self):
         self.stdout.write('\nCreating roles...')
@@ -496,7 +529,6 @@ class Command(BaseCommand):
                     username=username, email=email, password=password,
                     first_name=first, last_name=last,
                     custom_role=roles.get(role_name),
-                    branch='Phakalane',
                     is_superuser=is_super, is_staff=is_super,
                 )
                 self.stdout.write(f'  ✓ Created: {username} ({role_name})')
@@ -552,27 +584,34 @@ def seed_stock():
         obj, created = StockCategory.objects.get_or_create(code=code, defaults={'name': name})
         print(f"  {'✓ Created' if created else '↳ Exists'}: {name}")
 
-    print('\nSeeding stock locations...')
-    def get_dept(code):
-        try:
-            return Department.objects.get(code=code)
-        except Department.DoesNotExist:
-            return None
-
-    locations = [
-        ('Main Bar',          get_dept('bar')),
-        ('Cellar / Wine Room',get_dept('bar')),
-        ('Kitchen — Hot',     get_dept('back_of_house')),
-        ('Kitchen — Cold',    get_dept('back_of_house')),
-        ('Sushi Bar',         get_dept('sushi_bar')),
-        ('Dry Store',         get_dept('back_of_house')),
-        ('Walk-in Fridge',    get_dept('back_of_house')),
-        ('Cleaning Store',    get_dept('cleaning')),
-        ('General Store',     None),
+    print('\nSeeding stock locations per outlet...')
+    from accounts.models import Outlet
+    outlets = Outlet.objects.all()
+    location_defs = [
+        ('Main Bar',           'bar'),
+        ('Cellar / Wine Room', 'bar'),
+        ('Kitchen — Hot',      'back_of_house'),
+        ('Kitchen — Cold',     'back_of_house'),
+        ('Sushi Bar',          'sushi_bar'),
+        ('Dry Store',          'back_of_house'),
+        ('Walk-in Fridge',     'back_of_house'),
+        ('Cleaning Store',     'cleaning'),
+        ('General Store',      None),
     ]
-    for name, dept in locations:
-        obj, created = StockLocation.objects.get_or_create(name=name, defaults={'department': dept})
-        print(f"  {'✓ Created' if created else '↳ Exists'}: {name}")
+    for outlet in outlets:
+        for loc_name, dept_code in location_defs:
+            dept = None
+            if dept_code:
+                try:
+                    dept = Department.objects.get(code=dept_code, outlet=outlet)
+                except Department.DoesNotExist:
+                    pass
+            obj, created = StockLocation.objects.get_or_create(
+                name=loc_name, outlet=outlet,
+                defaults={'department': dept, 'is_active': True}
+            )
+            if created:
+                print(f"  ✓ Created: {loc_name} ({outlet.short_name})")
 
 
 # Run stock seeding when called directly

@@ -207,7 +207,7 @@ def dept_list_view(request):
     from django.db.models import Count
     depts = Department.objects.annotate(
         user_count=Count('users')
-    ).select_related('parent').prefetch_related('children').order_by('order', 'name')
+    ).select_related('parent', 'outlet').prefetch_related('children').order_by('outlet__order', 'order', 'name')
     return render(request, 'accounts/dept_list.html', {'depts': depts})
 
 
@@ -262,3 +262,52 @@ def dept_delete_view(request, pk):
         messages.success(request, f'Department "{dept.name}" deleted.')
         return redirect('accounts:dept_list')
     return render(request, 'accounts/dept_confirm_delete.html', {'dept': dept})
+
+
+# ── Outlet Management (admin only) ───────────────────────────────
+
+@login_required
+def outlet_list_view(request):
+    if not request.user.is_admin:
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard:home')
+    from .models import Outlet
+    from django.db.models import Count
+    outlets = Outlet.objects.annotate(user_count=Count('users')).order_by('order')
+    return render(request, 'accounts/outlet_list.html', {'outlets': outlets})
+
+
+@login_required
+def outlet_create_view(request):
+    if not request.user.is_admin:
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard:home')
+    from .forms import OutletForm
+    if request.method == 'POST':
+        form = OutletForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Outlet created.')
+            return redirect('accounts:outlet_list')
+    else:
+        form = OutletForm()
+    return render(request, 'accounts/outlet_form.html', {'form': form, 'title': 'Add Outlet'})
+
+
+@login_required
+def outlet_edit_view(request, pk):
+    if not request.user.is_admin:
+        messages.error(request, 'Access denied.')
+        return redirect('dashboard:home')
+    from .models import Outlet
+    from .forms import OutletForm
+    outlet = get_object_or_404(Outlet, pk=pk)
+    if request.method == 'POST':
+        form = OutletForm(request.POST, instance=outlet)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Outlet "{outlet.name}" updated.')
+            return redirect('accounts:outlet_list')
+    else:
+        form = OutletForm(instance=outlet)
+    return render(request, 'accounts/outlet_form.html', {'form': form, 'title': f'Edit: {outlet.name}', 'outlet': outlet})

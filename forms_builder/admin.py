@@ -14,8 +14,8 @@ class ChecklistItemInline(admin.TabularInline):
 
 @admin.register(FormTemplate)
 class FormTemplateAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'is_active', 'all_managers_access', 'created_at']
-    list_filter = ['category', 'is_active']
+    list_display = ['name', 'outlet', 'department', 'category', 'is_active', 'created_at']
+    list_filter  = ['outlet', 'department', 'category', 'is_active']
     inlines = [FormSectionInline]
 
 
@@ -27,8 +27,8 @@ class FormSectionAdmin(admin.ModelAdmin):
 
 @admin.register(FormSubmission)
 class FormSubmissionAdmin(admin.ModelAdmin):
-    list_display = ['form', 'submitted_by', 'branch', 'shift', 'status', 'completion_percentage', 'created_at']
-    list_filter = ['status', 'form', 'branch', 'shift']
+    list_display = ['form', 'submitted_by', 'outlet', 'department', 'shift', 'status', 'completion_percentage', 'created_at']
+    list_filter  = ['status', 'outlet', 'department', 'form', 'shift']
     date_hierarchy = 'created_at'
 
 

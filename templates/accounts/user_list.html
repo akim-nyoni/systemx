@@ -14,7 +14,7 @@
 <div class="card d-none" style="display:block;" id="desktopTable">
   <div class="table-wrap">
   <table class="table">
-    <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Department</th><th>Branch</th><th>Status</th><th></th></tr></thead>
+    <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Department</th><th>Outlet</th><th>Status</th><th></th></tr></thead>
     <tbody>
       {% for u in users %}
       <tr>
@@ -31,7 +31,7 @@
           {% if u.department %}<span class="badge badge-success">{{ u.department.name }}</span>
           {% else %}<span class="text-muted text-sm">—</span>{% endif %}
         </td>
-        <td class="text-sm">{{ u.branch|default:"—" }}</td>
+        <td class="text-sm">{{ u.outlet_name }}</td>
         <td>
           {% if u.is_active %}<span class="badge badge-success">Active</span>
           {% else %}<span class="badge badge-draft">Inactive</span>{% endif %}

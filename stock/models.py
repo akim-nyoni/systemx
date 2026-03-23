@@ -51,7 +51,12 @@ class StockCategory(models.Model):
 
 
 class StockLocation(models.Model):
-    name        = models.CharField(max_length=100, unique=True)
+    name        = models.CharField(max_length=100)
+    outlet      = models.ForeignKey(
+        'accounts.Outlet', on_delete=models.CASCADE,
+        null=True, blank=True, related_name='stock_locations',
+        help_text='Which restaurant this storage location belongs to'
+    )
     department  = models.ForeignKey(
         'accounts.Department', on_delete=models.SET_NULL,
         null=True, blank=True, related_name='stock_locations'
@@ -60,9 +65,12 @@ class StockLocation(models.Model):
     is_active   = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['name']
+        ordering = ['outlet__order', 'name']
+        unique_together = [['outlet', 'name']]
 
     def __str__(self):
+        if self.outlet:
+            return f"{self.name} ({self.outlet.short_name})"
         return self.name
 
 
@@ -83,7 +91,17 @@ class StockItem(models.Model):
     ]
 
     name            = models.CharField(max_length=200)
-    sku             = models.CharField(max_length=50, unique=True, blank=True)
+    sku             = models.CharField(max_length=50, blank=True)
+    outlet          = models.ForeignKey(
+        'accounts.Outlet', on_delete=models.CASCADE,
+        null=True, blank=True, related_name='stock_items',
+        help_text='Which restaurant this item belongs to'
+    )
+    department      = models.ForeignKey(
+        'accounts.Department', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='stock_items',
+        help_text='Which department manages this item'
+    )
     category        = models.ForeignKey(StockCategory, on_delete=models.PROTECT, related_name='items')
     location        = models.ForeignKey(StockLocation, on_delete=models.SET_NULL, null=True, blank=True, related_name='items')
     unit            = models.CharField(max_length=20, choices=UNIT_CHOICES, default='each')
@@ -189,6 +207,14 @@ class StockCount(models.Model):
     ]
 
     location    = models.ForeignKey(StockLocation, on_delete=models.PROTECT, related_name='counts')
+    outlet      = models.ForeignKey(
+        'accounts.Outlet', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='stock_counts'
+    )
+    department  = models.ForeignKey(
+        'accounts.Department', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='stock_counts'
+    )
     count_date  = models.DateField(default=timezone.now)
     shift       = models.CharField(max_length=10, choices=[('opening','Opening'),('closing','Closing'),('mid','Mid-shift')], default='closing')
     status      = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_DRAFT)
@@ -302,6 +328,14 @@ class StockMovement(models.Model):
     ]
 
     item            = models.ForeignKey(StockItem, on_delete=models.PROTECT, related_name='movements')
+    outlet          = models.ForeignKey(
+        'accounts.Outlet', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='stock_movements'
+    )
+    department      = models.ForeignKey(
+        'accounts.Department', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='stock_movements'
+    )
     movement_type   = models.CharField(max_length=20, choices=MOVEMENT_TYPES)
     quantity        = models.DecimalField(max_digits=10, decimal_places=2)
     unit_cost       = models.DecimalField(max_digits=10, decimal_places=2, default=0)

@@ -6,10 +6,45 @@
   <h2 style="font-size:18px;font-weight:800;color:#1a1200;">Stock Movements</h2>
   <a href="{% url 'stock:movement_create' %}" class="btn btn-primary">+ Record Movement</a>
 </div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom:16px;">
+  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+    {% if outlets_list %}
+    <div style="flex:1;min-width:150px;">
+      <label class="form-label">Outlet</label>
+      <select name="outlet_pk" class="form-select">
+        <option value="">All Outlets</option>
+        {% for o in outlets_list %}
+        <option value="{{ o.pk }}" {% if f_outlet == o.pk|stringformat:"s" %}selected{% endif %}>{{ o.emoji }} {{ o.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    {% if depts_list %}
+    <div style="flex:1;min-width:150px;">
+      <label class="form-label">Department</label>
+      <select name="dept" class="form-select">
+        <option value="">All Departments</option>
+        {% for d in depts_list %}
+        <option value="{{ d.pk }}" {% if f_dept == d.pk|stringformat:"s" %}selected{% endif %}>{% if d.parent %}↳ {% endif %}{{ d.emoji }} {{ d.name }}{% if d.outlet %} · {{ d.outlet.short_name }}{% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    <div style="display:flex;gap:6px;align-items:flex-end;">
+      <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+      <a href="{% url 'stock:movement_list' %}" class="btn btn-outline btn-sm">Clear</a>
+    </div>
+  </form>
+</div>
+
 <div class="card">
   <div class="table-wrap">
   <table class="table">
-    <thead><tr><th>Type</th><th>Item</th><th>Quantity</th><th>Value</th><th>Reference</th><th>By</th><th>Date</th></tr></thead>
+    <thead>
+      <tr><th>Type</th><th>Item</th><th>Outlet</th><th>Department</th><th>Quantity</th><th>Value</th><th>Reference</th><th>By</th><th>Date</th></tr>
+    </thead>
     <tbody>
     {% for m in movements %}
     <tr>
@@ -20,6 +55,8 @@
         </span>
       </td>
       <td><a href="{% url 'stock:item_detail' m.item.pk %}" style="font-weight:600;color:#1a1200;">{{ m.item.name }}</a></td>
+      <td class="text-sm">{% if m.item.outlet %}{{ m.item.outlet.emoji }} {{ m.item.outlet.short_name }}{% else %}—{% endif %}</td>
+      <td class="text-sm">{% if m.item.department %}{{ m.item.department.emoji }} {{ m.item.department.name }}{% else %}—{% endif %}</td>
       <td style="font-weight:700;">{% if not m.is_inbound %}-{% endif %}{{ m.quantity|floatformat:1 }} {{ m.item.get_unit_display }}</td>
       <td class="text-sm">${{ m.total_value|floatformat:2 }}</td>
       <td class="text-sm">{{ m.reference|default:"—" }}</td>
@@ -27,7 +64,7 @@
       <td class="text-sm text-muted" style="white-space:nowrap;">{{ m.created_at|date:"d M Y H:i" }}</td>
     </tr>
     {% empty %}
-    <tr><td colspan="7"><div class="empty-state"><p>No movements recorded.</p></div></td></tr>
+    <tr><td colspan="9"><div class="empty-state"><p>No movements recorded.</p></div></td></tr>
     {% endfor %}
     </tbody>
   </table>

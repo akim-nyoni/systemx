@@ -81,7 +81,7 @@
       <tbody>
         {% for sub in recent_submissions %}
         <tr>
-          <td><strong>{{ sub.form.name }}</strong><br><small class="text-muted">{{ sub.branch }} · {{ sub.get_shift_display }}</small></td>
+          <td><strong>{{ sub.form.name }}</strong><br><small class="text-muted">{{ sub.outlet.name|default:"—" }} · {{ sub.get_shift_display }}</small></td>
           {% if user.is_admin %}<td>{{ sub.submitted_by.display_name }}</td>{% endif %}
           <td class="text-sm text-muted">{{ sub.created_at|date:"d M Y H:i" }}</td>
           <td style="min-width: 120px;">

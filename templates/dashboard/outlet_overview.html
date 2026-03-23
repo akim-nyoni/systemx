@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block extra_css %}
+<style>
+  .outlet-card {
+    background: var(--card-bg); border-radius: 16px;
+    border: 2px solid var(--border); padding: 0;
+    overflow: hidden; text-decoration: none; color: inherit;
+    transition: border-color .2s, box-shadow .2s; display: block;
+  }
+  .outlet-card:hover {
+    border-color: var(--brand-accent);
+    box-shadow: 0 8px 24px rgba(245,200,0,.2);
+    color: inherit;
+  }
+  .outlet-card-header {
+    background: #1a1200; color: #f5c800;
+    padding: 20px 24px; display: flex; align-items: center; gap: 14px;
+  }
+  .outlet-icon { font-size: 32px; }
+  .outlet-card-header h3 { font-size: 18px; font-weight: 900; margin: 0; }
+  .outlet-card-header p { font-size: 12px; opacity: .6; margin: 3px 0 0; }
+  .outlet-card-body { padding: 20px 24px; }
+  .outlet-stat { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .outlet-stat:last-child { border-bottom: none; }
+  .outlet-stat-label { font-size: 13px; color: var(--muted); }
+  .outlet-stat-value { font-size: 16px; font-weight: 800; color: #1a1200; }
+  .outlet-stat-value.danger { color: var(--danger); }
+  .outlet-stat-value.success { color: var(--success); }
+  .outlet-footer { padding: 14px 24px; background: #fffbe6; border-top: 1px solid var(--border); font-size: 13px; font-weight: 700; color: #7a5c00; display: flex; align-items: center; justify-content: space-between; }
+  .summary-bar { background: #1a1200; border-radius: 12px; padding: 20px 24px; color: #fff; margin-bottom: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
+  .summary-stat { text-align: center; }
+  .summary-stat .num { font-size: 28px; font-weight: 900; color: #f5c800; line-height: 1; }
+  .summary-stat .lbl { font-size: 12px; opacity: .6; margin-top: 4px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Overall summary bar -->
+<div class="summary-bar">
+  <div class="summary-stat">
+    <div class="num">{{ overall_total }}</div>
+    <div class="lbl">Total Submissions</div>
+  </div>
+  <div class="summary-stat">
+    <div class="num">{{ overall_today }}</div>
+    <div class="lbl">Submitted Today</div>
+  </div>
+  <div class="summary-stat">
+    <div class="num" style="color:{% if overall_flagged > 0 %}#ff6b6b{% else %}#f5c800{% endif %}">{{ overall_flagged }}</div>
+    <div class="lbl">Flagged This Week</div>
+  </div>
+  <div class="summary-stat">
+    <div class="num">{{ total_staff }}</div>
+    <div class="lbl">Active Staff</div>
+  </div>
+</div>
+
+<!-- Outlet cards -->
+<h2 style="font-size:16px;font-weight:800;color:#1a1200;margin-bottom:16px;">Select an Outlet to View Details</h2>
+<div class="grid grid-3" style="margin-bottom:28px;">
+  {% for od in outlet_data %}
+  <a href="{% url 'dashboard:outlet_detail' od.outlet.pk %}" class="outlet-card">
+    <div class="outlet-card-header">
+      <div class="outlet-icon">{{ od.outlet.emoji }}</div>
+      <div>
+        <h3>{{ od.outlet.name }}</h3>
+        <p>Click to view departments & reports</p>
+      </div>
+    </div>
+    <div class="outlet-card-body">
+      <div class="outlet-stat">
+        <span class="outlet-stat-label">📋 Total Submissions</span>
+        <span class="outlet-stat-value">{{ od.total }}</span>
+      </div>
+      <div class="outlet-stat">
+        <span class="outlet-stat-label">📅 Today</span>
+        <span class="outlet-stat-value {% if od.today > 0 %}success{% endif %}">{{ od.today }}</span>
+      </div>
+      <div class="outlet-stat">
+        <span class="outlet-stat-label">⚠️ Flagged This Week</span>
+        <span class="outlet-stat-value {% if od.flagged > 0 %}danger{% endif %}">{{ od.flagged }}</span>
+      </div>
+      <div class="outlet-stat">
+        <span class="outlet-stat-label">👥 Active Staff</span>
+        <span class="outlet-stat-value">{{ od.staff_count }}</span>
+      </div>
+    </div>
+    <div class="outlet-footer">
+      View Departments & Reports →
+    </div>
+  </a>
+  {% empty %}
+  <div class="card empty-state" style="grid-column:1/-1;">
+    <p>No outlets configured yet. Add outlets in Admin settings.</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Quick links -->
+<div class="grid grid-2">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Quick Actions</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <a href="{% url 'dashboard:reports' %}" class="btn btn-primary">📊 All Reports</a>
+      <a href="{% url 'forms_builder:my_forms' %}" class="btn btn-outline">📋 My Forms</a>
+      {% if user.can_manage_users %}
+      <a href="{% url 'accounts:user_list' %}" class="btn btn-outline">👥 Manage Users</a>
+      {% endif %}
+      {% if user.can_access_stock %}
+      <a href="{% url 'stock:dashboard' %}" class="btn btn-outline">📦 Stock</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Recent Activity</span></div>
+    {% with recent=outlet_data %}
+    {% for od in outlet_data %}
+    {% if od.today > 0 %}
+    <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <span>{{ od.outlet.emoji }} {{ od.outlet.name }}</span>
+      <span class="badge badge-success">{{ od.today }} today</span>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endwith %}
+  </div>
+</div>
+{% endblock %}

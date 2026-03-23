@@ -175,7 +175,8 @@ def fill_form(request, pk):
         draft = FormSubmission.objects.create(
             form=tmpl,
             submitted_by=request.user,
-            branch=request.user.branch or 'Phakalane',
+            outlet=request.user.outlet,
+            department=request.user.department,
             shift=shift,
             status=FormSubmission.STATUS_DRAFT
         )

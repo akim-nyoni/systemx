@@ -22,7 +22,10 @@
 <div class="flex-between mb-4">
   <div>
     <h2 style="font-size:18px;font-weight:800;color:#1a1200;">PAR Level Report</h2>
-    <p class="text-sm text-muted">PAR = Average Daily Usage × Coverage Days. Items below PAR highlighted.</p>
+    <p class="text-sm text-muted">
+      PAR = Average Daily Usage × Coverage Days.
+      {% if current_outlet %}Showing: {{ current_outlet.emoji }} {{ current_outlet.name }}{% endif %}
+    </p>
   </div>
   <div class="flex gap-2 no-print">
     <button onclick="window.print()" class="btn btn-outline btn-sm">🖨️ Print</button>
@@ -39,12 +42,16 @@
   </div>
   <div class="table-wrap">
   <table class="table">
-    <thead><tr><th>Item</th><th>Category</th><th>Current</th><th>PAR</th><th>Order Qty</th><th>Est. Cost</th><th class="no-print"></th></tr></thead>
+    <thead>
+      <tr><th>Item</th><th>Outlet</th><th>Department</th><th>Category</th><th>Current</th><th>PAR</th><th>Order Qty</th><th>Est. Cost</th><th class="no-print"></th></tr>
+    </thead>
     <tbody>
     {% for entry in order_list %}
     {% with item=entry.item %}
     <tr>
       <td><strong>{{ item.name }}</strong></td>
+      <td class="text-sm">{% if item.outlet %}{{ item.outlet.emoji }} {{ item.outlet.short_name }}{% else %}—{% endif %}</td>
+      <td class="text-sm">{% if item.department %}{{ item.department.emoji }} {{ item.department.name }}{% else %}—{% endif %}</td>
       <td class="text-sm">{{ item.category.emoji }} {{ item.category.name }}</td>
       <td style="color:{% if item.stock_status == 'out' %}var(--danger){% else %}#f97316{% endif %};font-weight:700;">
         {{ item.current_stock|floatformat:1 }} {{ item.get_unit_display }}
@@ -66,19 +73,44 @@
 </div>
 {% endif %}
 
-<!-- Filter -->
-<div class="card" style="margin-bottom:16px;" class="no-print">
-  <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-    <div style="flex:1;min-width:160px;">
-      <label class="form-label">Filter by Category</label>
-      <select name="category" class="form-select" onchange="this.form.submit()">
+<!-- Filters -->
+<div class="card no-print" style="margin-bottom:16px;">
+  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+    {% if outlets_list %}
+    <div style="flex:1;min-width:150px;">
+      <label class="form-label">Outlet</label>
+      <select name="outlet_pk" class="form-select">
+        <option value="">All Outlets</option>
+        {% for o in outlets_list %}
+        <option value="{{ o.pk }}" {% if f_outlet == o.pk|stringformat:"s" %}selected{% endif %}>{{ o.emoji }} {{ o.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    {% if depts_list %}
+    <div style="flex:1;min-width:150px;">
+      <label class="form-label">Department</label>
+      <select name="dept" class="form-select">
+        <option value="">All Departments</option>
+        {% for d in depts_list %}
+        <option value="{{ d.pk }}" {% if f_dept == d.pk|stringformat:"s" %}selected{% endif %}>{% if d.parent %}↳ {% endif %}{{ d.emoji }} {{ d.name }}{% if d.outlet %} · {{ d.outlet.short_name }}{% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    <div style="flex:1;min-width:150px;">
+      <label class="form-label">Category</label>
+      <select name="category" class="form-select">
         <option value="">All Categories</option>
         {% for cat in categories %}
         <option value="{{ cat.pk }}" {% if f_category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.emoji }} {{ cat.name }}</option>
         {% endfor %}
       </select>
     </div>
-    <a href="{% url 'stock:par_report' %}" class="btn btn-outline btn-sm">Clear</a>
+    <div style="display:flex;gap:6px;align-items:flex-end;">
+      <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+      <a href="{% url 'stock:par_report' %}" class="btn btn-outline btn-sm">Clear</a>
+    </div>
   </form>
 </div>
 
@@ -89,26 +121,27 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Item</th><th>Unit</th><th>Current Stock</th>
-        <th>PAR Level</th><th>Coverage</th><th>Avg Daily Use</th>
-        <th>Reorder At</th><th>Stock %</th><th>Status</th>
+        <th>Item</th><th>Outlet</th><th>Dept</th><th>Unit</th>
+        <th>Current Stock</th><th>PAR Level</th><th>Coverage</th>
+        <th>Avg Daily</th><th>Reorder At</th><th>Stock %</th><th>Status</th>
       </tr>
     </thead>
     <tbody>
     {% regroup items by category as cat_groups %}
     {% for group in cat_groups %}
     <tr>
-      <td colspan="9" style="background:#fffbe6;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#7a5c00;padding:6px 14px;">
+      <td colspan="11" style="background:#fffbe6;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#7a5c00;padding:6px 14px;">
         {{ group.grouper.emoji }} {{ group.grouper.name }}
       </td>
     </tr>
     {% for item in group.list %}
-    {% with par=item.par_level %}
     <tr>
       <td>
         <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:600;color:#1a1200;">{{ item.name }}</a>
         {% if item.sku %}<span class="text-xs text-muted"> · {{ item.sku }}</span>{% endif %}
       </td>
+      <td class="text-sm">{% if item.outlet %}{{ item.outlet.emoji }} {{ item.outlet.short_name }}{% else %}—{% endif %}</td>
+      <td class="text-sm">{% if item.department %}{{ item.department.emoji }} {{ item.department.name }}{% else %}—{% endif %}</td>
       <td class="text-sm">{{ item.get_unit_display }}</td>
       <td style="font-weight:700;{% if item.stock_status == 'out' %}color:var(--danger);{% elif item.stock_status == 'critical' %}color:#f97316;{% endif %}">
         {{ item.current_stock|floatformat:1 }}
@@ -118,8 +151,8 @@
       <td class="text-sm">{{ item.avg_daily_usage|floatformat:2 }}/day</td>
       <td class="text-sm">{{ item.reorder_point|floatformat:1 }}</td>
       <td style="min-width:100px;">
-        {% if par > 0 %}
-        {% widthratio item.current_stock par 100 as pct %}
+        {% if item.par_level > 0 %}
+        {% widthratio item.current_stock item.par_level 100 as pct %}
         <div class="par-bar">
           <div class="par-fill {% if item.stock_status == 'out' %}par-out{% elif item.stock_status == 'critical' %}par-critical{% elif item.stock_status == 'low' %}par-low{% else %}par-ok{% endif %}"
                style="width:{% if pct > 100 %}100{% else %}{{ pct }}{% endif %}%"></div>
@@ -134,7 +167,6 @@
         {% else %}<span class="badge badge-success">🟢 OK</span>{% endif %}
       </td>
     </tr>
-    {% endwith %}
     {% endfor %}
     {% endfor %}
     </tbody>

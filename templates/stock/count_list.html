@@ -6,14 +6,51 @@
   <h2 style="font-size:18px;font-weight:800;color:#1a1200;">Stock Counts</h2>
   <a href="{% url 'stock:count_create' %}" class="btn btn-primary">📋 Start New Count</a>
 </div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom:16px;">
+  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+    {% if outlets_list %}
+    <div style="flex:1;min-width:150px;">
+      <label class="form-label">Outlet</label>
+      <select name="outlet_pk" class="form-select">
+        <option value="">All Outlets</option>
+        {% for o in outlets_list %}
+        <option value="{{ o.pk }}" {% if f_outlet == o.pk|stringformat:"s" %}selected{% endif %}>{{ o.emoji }} {{ o.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    {% if depts_list %}
+    <div style="flex:1;min-width:150px;">
+      <label class="form-label">Department</label>
+      <select name="dept" class="form-select">
+        <option value="">All Departments</option>
+        {% for d in depts_list %}
+        <option value="{{ d.pk }}" {% if f_dept == d.pk|stringformat:"s" %}selected{% endif %}>{% if d.parent %}↳ {% endif %}{{ d.emoji }} {{ d.name }}{% if d.outlet %} · {{ d.outlet.short_name }}{% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    <div style="display:flex;gap:6px;align-items:flex-end;">
+      <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+      <a href="{% url 'stock:count_list' %}" class="btn btn-outline btn-sm">Clear</a>
+    </div>
+  </form>
+</div>
+
 <div class="card">
   <div class="table-wrap">
   <table class="table">
-    <thead><tr><th>Location</th><th>Date</th><th>Shift</th><th>By</th><th>Items</th><th>Below PAR</th><th>Status</th><th></th></tr></thead>
+    <thead>
+      <tr><th>Location</th><th>Outlet</th><th>Department</th><th>Date</th><th>Shift</th><th>By</th><th>Items</th><th>Below PAR</th><th>Status</th><th></th></tr>
+    </thead>
     <tbody>
     {% for count in counts %}
     <tr>
       <td><strong>{{ count.location.name }}</strong></td>
+      <td class="text-sm">{% if count.location.outlet %}{{ count.location.outlet.emoji }} {{ count.location.outlet.short_name }}{% else %}—{% endif %}</td>
+      <td class="text-sm">{% if count.location.department %}{{ count.location.department.emoji }} {{ count.location.department.name }}{% else %}—{% endif %}</td>
       <td class="text-sm" style="white-space:nowrap;">{{ count.count_date|date:"d M Y" }}</td>
       <td class="text-sm">{{ count.get_shift_display }}</td>
       <td class="text-sm">{{ count.conducted_by.display_name }}</td>
@@ -32,7 +69,7 @@
       </td>
     </tr>
     {% empty %}
-    <tr><td colspan="8"><div class="empty-state"><p>No stock counts yet.</p></div></td></tr>
+    <tr><td colspan="10"><div class="empty-state"><p>No stock counts yet.</p></div></td></tr>
     {% endfor %}
     </tbody>
   </table>

@@ -170,7 +170,7 @@
     <tr class="{% if sub.no_responses > 0 %}issue-row{% endif %}">
       <td><strong>{{ sub.form.name }}</strong></td>
       <td>{{ sub.submitted_by.display_name }}</td>
-      <td>{{ sub.branch }}</td>
+      <td>{{ sub.outlet.name|default:"—" }}</td>
       <td>{{ sub.get_shift_display }}</td>
       <td style="white-space:nowrap;">{{ sub.submitted_at|date:"d M Y H:i"|default:"—" }}</td>
       <td>

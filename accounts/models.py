@@ -2,8 +2,38 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+class Outlet(models.Model):
+    """A physical restaurant location / branch."""
+    name        = models.CharField(max_length=100, unique=True)
+    code        = models.CharField(max_length=20, unique=True)
+    address     = models.TextField(blank=True)
+    phone       = models.CharField(max_length=30, blank=True)
+    email       = models.EmailField(blank=True)
+    is_active   = models.BooleanField(default=True)
+    order       = models.PositiveIntegerField(default=0)
+
+    OUTLET_ICONS = {
+        'sibili':      '🏠',
+        'phakalane':   '🌿',
+        'seventy_nine':'🔢',
+    }
+
+    class Meta:
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def emoji(self):
+        return self.OUTLET_ICONS.get(self.code, '🏢')
+
+    @property
+    def short_name(self):
+        return self.name.replace("Rhapsody's ", "").replace("Rhapsodys ", "")
+
+
 class Department(models.Model):
-    # These are just reference icons — no longer restrict the code field
     DEPT_ICONS = {
         'director':        '👔',
         'general_manager': '🏢',
@@ -32,11 +62,13 @@ class Department(models.Model):
         'finance':         '💰',
     }
 
-    name        = models.CharField(max_length=100, unique=True)
-    code        = models.CharField(
-        max_length=50, unique=True,
-        help_text='Short identifier, auto-filled from name. Letters, numbers and underscores only.'
+    outlet      = models.ForeignKey(
+        Outlet, on_delete=models.CASCADE, null=True, blank=True,
+        related_name='departments', verbose_name='Outlet',
+        help_text='Which outlet this department belongs to'
     )
+    name        = models.CharField(max_length=100)
+    code        = models.CharField(max_length=50)
     parent      = models.ForeignKey(
         'self', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='children', verbose_name='Parent Department'
@@ -47,8 +79,12 @@ class Department(models.Model):
 
     class Meta:
         ordering = ['order', 'name']
+        # name+outlet must be unique together (same dept name can exist in different outlets)
+        unique_together = [['outlet', 'name']]
 
     def __str__(self):
+        if self.outlet:
+            return f"{self.name} ({self.outlet.short_name})"
         return self.name
 
     @property
@@ -63,7 +99,6 @@ class Department(models.Model):
 
 
 class Role(models.Model):
-    """Flexible role — defines what a user can do."""
     name        = models.CharField(max_length=60, unique=True)
     description = models.TextField(blank=True)
 
@@ -74,8 +109,8 @@ class Role(models.Model):
     can_manage_users       = models.BooleanField(default=False, help_text='Can create/edit users')
     can_delete_submissions = models.BooleanField(default=False, help_text='Can delete submissions')
     can_access_stock       = models.BooleanField(default=False, help_text='Can view and manage stock')
-    can_manage_stock       = models.BooleanField(default=False, help_text='Can add/edit stock items, categories and locations')
-    is_system_admin        = models.BooleanField(default=False, help_text='Full system access')
+    can_manage_stock       = models.BooleanField(default=False, help_text='Can add/edit stock items')
+    is_system_admin        = models.BooleanField(default=False, help_text='Full system access — sees all outlets')
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -91,11 +126,15 @@ class User(AbstractUser):
         Role, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='users', verbose_name='Role'
     )
+    outlet = models.ForeignKey(
+        Outlet, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='users', verbose_name='Outlet',
+        help_text='Which restaurant this user belongs to'
+    )
     department = models.ForeignKey(
         Department, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='users', verbose_name='Department'
     )
-    branch = models.CharField(max_length=100, blank=True, default='Harare')
     phone  = models.CharField(max_length=20, blank=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
 
@@ -113,6 +152,14 @@ class User(AbstractUser):
         return self.custom_role.name if self.custom_role else 'No Role'
 
     @property
+    def outlet_name(self):
+        return self.outlet.name if self.outlet else '—'
+
+    @property
+    def outlet_short(self):
+        return self.outlet.short_name if self.outlet else '—'
+
+    @property
     def dept_name(self):
         return self.department.name if self.department else '—'
 
@@ -122,11 +169,9 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        if self.is_superuser:
-            return True
+        if self.is_superuser: return True
         return self.custom_role.is_system_admin if self.custom_role else False
 
-    # ── Permission shortcuts ──────────────────────────────
     @property
     def can_fill_forms(self):
         if self.is_admin: return True
@@ -175,13 +220,20 @@ class User(AbstractUser):
     def display_name(self):
         return self.get_full_name() or self.username
 
+    def get_visible_outlets(self):
+        """Admin sees all outlets. Staff sees only their own."""
+        if self.is_admin:
+            return Outlet.objects.filter(is_active=True)
+        if self.outlet:
+            return Outlet.objects.filter(pk=self.outlet.pk, is_active=True)
+        return Outlet.objects.none()
+
     def get_visible_departments(self):
-        """Returns department IDs this user is allowed to see in reports."""
+        """Returns dept IDs this user is allowed to see."""
         if self.is_admin:
             return None  # None means all
         if not self.department:
             return []
-        # Collect own dept + all children
         dept_ids = [self.department.pk]
         dept_ids += list(self.department.children.values_list('pk', flat=True))
         return dept_ids

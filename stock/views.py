@@ -37,12 +37,82 @@ def stock_manage_required(fn):
     return wrapper
 
 
+
+# ── Stock Outlet Views ─────────────────────────────────────────────
+
+@login_required
+@stock_required
+def stock_outlet_overview(request):
+    """Admin: shows all outlets with stock alerts."""
+    from accounts.models import Outlet
+    outlets = Outlet.objects.filter(is_active=True).order_by('order')
+    outlet_data = []
+    for outlet in outlets:
+        items = StockItem.objects.filter(is_active=True, outlet=outlet)
+        items_list = list(items.select_related('category', 'location'))
+        out_of_stock = [i for i in items_list if i.stock_status == 'out']
+        critical     = [i for i in items_list if i.stock_status == 'critical']
+        below_par    = [i for i in items_list if i.stock_status == 'low']
+        needs_order  = [i for i in items_list if i.order_qty_needed > 0]
+        total_value  = sum(i.current_stock * i.unit_cost for i in items_list)
+        outlet_data.append({
+            'outlet':       outlet,
+            'total_items':  len(items_list),
+            'out_of_stock': len(out_of_stock),
+            'critical':     len(critical),
+            'below_par':    len(below_par),
+            'needs_order':  len(needs_order),
+            'total_value':  total_value,
+        })
+    return render(request, 'stock/outlet_overview.html', {'outlet_data': outlet_data})
+
+
+@login_required
+@stock_required
+def stock_outlet_detail(request, outlet_pk):
+    """Admin: drill into one outlet's stock dashboard."""
+    from accounts.models import Outlet
+    outlet = get_object_or_404(Outlet, pk=outlet_pk, is_active=True)
+    items = StockItem.objects.filter(is_active=True, outlet=outlet).select_related('category', 'location')
+    items_list     = list(items)
+    out_of_stock   = [i for i in items_list if i.stock_status == 'out']
+    critical       = [i for i in items_list if i.stock_status == 'critical']
+    below_par      = [i for i in items_list if i.stock_status == 'low']
+    needs_order    = [i for i in items_list if i.order_qty_needed > 0]
+    total_value    = sum(i.current_stock * i.unit_cost for i in items_list)
+    recent_movements = StockMovement.objects.filter(item__outlet=outlet).select_related('item', 'created_by').order_by('-created_at')[:10]
+    recent_counts    = StockCount.objects.filter(location__outlet=outlet).select_related('location', 'conducted_by').order_by('-count_date')[:5]
+    categories       = StockCategory.objects.filter(is_active=True)
+    return render(request, 'stock/dashboard.html', {
+        'outlet':           outlet,
+        'total_items':      len(items_list),
+        'out_of_stock':     out_of_stock,
+        'critical':         critical,
+        'below_par':        below_par,
+        'ok_items':         [i for i in items_list if i.stock_status == 'ok'],
+        'total_value':      total_value,
+        'needs_order':      needs_order,
+        'recent_movements': recent_movements,
+        'recent_counts':    recent_counts,
+        'categories':       categories,
+        'is_outlet_view':   True,
+    })
+
+
+
+
+
+
 # ── Dashboard ──────────────────────────────────────────────────────
 
 @login_required
 @stock_required
 def stock_dashboard(request):
-    items = StockItem.objects.filter(is_active=True).select_related('category', 'location')
+    if request.user.is_admin:
+        return stock_outlet_overview(request)
+    # Scope to user's outlet
+    outlet = request.user.outlet
+    items = StockItem.objects.filter(is_active=True, outlet=outlet).select_related('category', 'location') if outlet else StockItem.objects.none()
 
     total_items     = items.count()
     out_of_stock    = [i for i in items if i.stock_status == 'out']
@@ -89,14 +159,26 @@ def item_list(request):
     location_filter = request.GET.get('location', '')
     search          = request.GET.get('q', '').strip()
 
-    items = StockItem.objects.filter(is_active=True).select_related('category', 'location')
+    outlet = request.user.outlet if not request.user.is_admin else None
+    outlet_pk = request.GET.get('outlet_pk')
+    if outlet_pk and request.user.is_admin:
+        from accounts.models import Outlet
+        outlet = get_object_or_404(Outlet, pk=outlet_pk)
+    qs_filter = {'is_active': True}
+    if outlet:
+        qs_filter['outlet'] = outlet
+    items = StockItem.objects.filter(**qs_filter).select_related('category', 'location')
 
+    dept_filter = request.GET.get('department', '')
     if search:
         items = items.filter(Q(name__icontains=search) | Q(sku__icontains=search))
     if category_filter:
         items = items.filter(category_id=category_filter)
     if location_filter:
         items = items.filter(location_id=location_filter)
+    if dept_filter:
+        try: items = items.filter(department_id=int(dept_filter))
+        except (ValueError, TypeError): pass
 
     items = list(items)
     if status_filter == 'out':
@@ -109,12 +191,30 @@ def item_list(request):
         items = [i for i in items if i.order_qty_needed > 0]
 
     categories = StockCategory.objects.filter(is_active=True)
-    locations  = StockLocation.objects.filter(is_active=True)
+    if outlet:
+        locations  = StockLocation.objects.filter(is_active=True, outlet=outlet)
+    else:
+        locations  = StockLocation.objects.filter(is_active=True).select_related('outlet')
+
+    # department filter
+    dept_filter = request.GET.get('department', '')
+    if dept_filter:
+        try: items = [i for i in items if i.department_id == int(dept_filter)]
+        except (ValueError, TypeError): pass
+
+    from accounts.models import Outlet as OutletModel, Department as DeptModel
+    outlets_list = OutletModel.objects.filter(is_active=True) if request.user.is_admin else None
+    depts_list   = DeptModel.objects.filter(outlet=outlet).order_by('order','name') if outlet else (
+        DeptModel.objects.all().select_related('outlet').order_by('outlet__order','order','name') if request.user.is_admin else None
+    )
 
     return render(request, 'stock/item_list.html', {
         'items': items, 'categories': categories, 'locations': locations,
+        'outlets_list': outlets_list, 'depts_list': depts_list,
+        'current_outlet': outlet,
         'f_status': status_filter, 'f_category': category_filter,
         'f_location': location_filter, 'f_q': search,
+        'f_outlet': request.GET.get('outlet_pk',''), 'f_dept': dept_filter,
     })
 
 
@@ -165,35 +265,108 @@ def item_edit(request, pk):
 @login_required
 @stock_required
 def count_list(request):
-    counts = StockCount.objects.select_related('location', 'conducted_by').order_by('-count_date', '-created_at')
-    return render(request, 'stock/count_list.html', {'counts': counts})
+    from accounts.models import Outlet as OutletModel, Department as DeptModel
+
+    outlet = request.user.outlet if not request.user.is_admin else None
+    outlet_pk = request.GET.get('outlet_pk')
+    dept_pk   = request.GET.get('dept')
+
+    if outlet_pk and request.user.is_admin:
+        try:
+            outlet = OutletModel.objects.get(pk=int(outlet_pk))
+        except (OutletModel.DoesNotExist, ValueError):
+            pass
+
+    qs = StockCount.objects.select_related(
+        'location__outlet', 'location__department', 'conducted_by'
+    ).order_by('-count_date', '-created_at')
+
+    if outlet:
+        qs = qs.filter(location__outlet=outlet)
+    if dept_pk:
+        try:
+            dept = DeptModel.objects.get(pk=int(dept_pk))
+            dept_ids = [dept.pk] + list(dept.children.values_list('pk', flat=True))
+            qs = qs.filter(location__department_id__in=dept_ids)
+        except (DeptModel.DoesNotExist, ValueError):
+            pass
+
+    counts = qs
+
+    outlets_list = OutletModel.objects.filter(is_active=True) if request.user.is_admin else None
+    depts_list = (
+        DeptModel.objects.filter(outlet=outlet).select_related('parent').order_by('order', 'name')
+        if outlet else
+        DeptModel.objects.all().select_related('outlet', 'parent').order_by('outlet__order', 'order', 'name')
+        if request.user.is_admin else None
+    )
+
+    return render(request, 'stock/count_list.html', {
+        'counts':       counts,
+        'outlets_list': outlets_list,
+        'depts_list':   depts_list,
+        'f_outlet':     outlet_pk or '',
+        'f_dept':       dept_pk or '',
+        'current_outlet': outlet,
+    })
 
 
 @login_required
 @stock_required
 def count_create(request):
     from .forms import StockCountForm
+    user_outlet = request.user.outlet if not request.user.is_admin else None
     if request.method == 'POST':
-        form = StockCountForm(request.POST)
+        form = StockCountForm(request.POST, user_outlet=user_outlet)
         if form.is_valid():
             count = form.save(commit=False)
             count.conducted_by = request.user
+            # Stamp outlet/dept from location if not set
+            if not count.outlet and count.location and count.location.outlet:
+                count.outlet = count.location.outlet
+            if not count.department and count.location and count.location.department:
+                count.department = count.location.department
             count.save()
-            # Pre-populate lines with all items for this location
+            # Pre-populate lines with all active items for this outlet/location
             location = count.location
-            items = StockItem.objects.filter(is_active=True)
+            count_outlet = count.outlet or (location.outlet if location else None)
+
+            items = StockItem.objects.filter(is_active=True).select_related('category', 'location')
+
+            # Filter by outlet if known
+            if count_outlet:
+                items = items.filter(outlet=count_outlet)
+
+            # Filter by location — include items at this location OR items with no location set
             if location:
                 items = items.filter(Q(location=location) | Q(location__isnull=True))
+
+            if not items.exists():
+                # Fallback: load all active items for the outlet regardless of location
+                if count_outlet:
+                    items = StockItem.objects.filter(is_active=True, outlet=count_outlet).select_related('category', 'location')
+                else:
+                    items = StockItem.objects.filter(is_active=True).select_related('category', 'location')
+
+            created_count = 0
             for item in items:
-                StockCountLine.objects.create(
+                _, created = StockCountLine.objects.get_or_create(
                     count=count,
                     item=item,
-                    expected_qty=item.current_stock,
+                    defaults={'expected_qty': item.current_stock}
                 )
-            messages.success(request, f'Stock count started for {location}.')
+                if created:
+                    created_count += 1
+
+            messages.success(request, f'Stock count started — {created_count} items loaded for {location or "all locations"}.')
             return redirect('stock:count_fill', pk=count.pk)
     else:
-        form = StockCountForm()
+        initial = {}
+        if user_outlet:
+            initial['outlet'] = user_outlet
+        if request.user.department:
+            initial['department'] = request.user.department
+        form = StockCountForm(initial=initial, user_outlet=user_outlet)
     return render(request, 'stock/count_form.html', {'form': form, 'title': 'Start Stock Count'})
 
 
@@ -281,28 +454,83 @@ def count_detail(request, pk):
 @login_required
 @stock_required
 def movement_list(request):
-    movements = StockMovement.objects.select_related('item', 'created_by').order_by('-created_at')[:100]
-    return render(request, 'stock/movement_list.html', {'movements': movements})
+    from accounts.models import Outlet as OutletModel, Department as DeptModel
+
+    outlet = request.user.outlet if not request.user.is_admin else None
+    outlet_pk = request.GET.get('outlet_pk')
+    dept_pk   = request.GET.get('dept')
+    if outlet_pk and request.user.is_admin:
+        try:
+            outlet = OutletModel.objects.get(pk=int(outlet_pk))
+        except (OutletModel.DoesNotExist, ValueError):
+            pass
+
+    qs = StockMovement.objects.select_related(
+        'item__outlet', 'item__department', 'item__category', 'created_by'
+    ).order_by('-created_at')
+
+    if outlet:
+        qs = qs.filter(item__outlet=outlet)
+    if dept_pk:
+        try:
+            dept = DeptModel.objects.get(pk=int(dept_pk))
+            dept_ids = [dept.pk] + list(dept.children.values_list('pk', flat=True))
+            qs = qs.filter(item__department_id__in=dept_ids)
+        except (DeptModel.DoesNotExist, ValueError):
+            pass
+
+    movements = qs[:100]
+
+    outlets_list = OutletModel.objects.filter(is_active=True) if request.user.is_admin else None
+    depts_list = (
+        DeptModel.objects.filter(outlet=outlet).select_related('parent').order_by('order', 'name')
+        if outlet else
+        DeptModel.objects.all().select_related('outlet', 'parent').order_by('outlet__order', 'order', 'name')
+        if request.user.is_admin else None
+    )
+
+    return render(request, 'stock/movement_list.html', {
+        'movements':    movements,
+        'outlets_list': outlets_list,
+        'depts_list':   depts_list,
+        'f_outlet':     outlet_pk or '',
+        'f_dept':       dept_pk or '',
+        'current_outlet': outlet,
+    })
 
 
 @login_required
 @stock_required
 def movement_create(request, item_pk=None):
     from .forms import StockMovementForm
+    user_outlet = request.user.outlet if not request.user.is_admin else None
     initial = {}
     if item_pk:
         item = get_object_or_404(StockItem, pk=item_pk)
         initial['item'] = item
+        if item.outlet:
+            initial['outlet'] = item.outlet
+        if item.department:
+            initial['department'] = item.department
+    elif user_outlet:
+        initial['outlet'] = user_outlet
+        if request.user.department:
+            initial['department'] = request.user.department
     if request.method == 'POST':
-        form = StockMovementForm(request.POST)
+        form = StockMovementForm(request.POST, user_outlet=user_outlet)
         if form.is_valid():
             movement = form.save(commit=False)
             movement.created_by = request.user
+            # Stamp outlet/dept from item if not set
+            if not movement.outlet and movement.item.outlet:
+                movement.outlet = movement.item.outlet
+            if not movement.department and movement.item.department:
+                movement.department = movement.item.department
             movement.save()
             messages.success(request, f'Movement recorded: {movement}')
             return redirect('stock:item_detail', pk=movement.item.pk)
     else:
-        form = StockMovementForm(initial=initial)
+        form = StockMovementForm(initial=initial, user_outlet=user_outlet)
     return render(request, 'stock/movement_form.html', {'form': form, 'title': 'Record Stock Movement'})
 
 
@@ -311,16 +539,46 @@ def movement_create(request, item_pk=None):
 @login_required
 @stock_required
 def par_report(request):
-    items = StockItem.objects.filter(is_active=True).select_related('category', 'location').order_by(
-        'category__name', 'name'
-    )
+    from accounts.models import Outlet as OutletModel, Department as DeptModel
+
+    # Outlet scoping
+    outlet = request.user.outlet if not request.user.is_admin else None
+    outlet_pk = request.GET.get('outlet_pk')
+    if outlet_pk and request.user.is_admin:
+        outlet = get_object_or_404(OutletModel, pk=outlet_pk)
+
+    # Department filter
+    dept_pk = request.GET.get('dept')
+    department = None
+    if dept_pk:
+        try:
+            department = DeptModel.objects.get(pk=int(dept_pk))
+        except (DeptModel.DoesNotExist, ValueError):
+            pass
+
+    qs_filter = {'is_active': True}
+    if outlet:
+        qs_filter['outlet'] = outlet
+    if department:
+        dept_ids = [department.pk] + list(department.children.values_list('pk', flat=True))
+        qs_filter['department__in'] = dept_ids
+
     category_filter = request.GET.get('category', '')
+    items = StockItem.objects.filter(**qs_filter).select_related(
+        'category', 'location', 'outlet', 'department'
+    ).order_by('category__name', 'name')
     if category_filter:
         items = items.filter(category_id=category_filter)
 
     categories = StockCategory.objects.filter(is_active=True)
+    outlets_list = OutletModel.objects.filter(is_active=True) if request.user.is_admin else None
+    depts_list = (
+        DeptModel.objects.filter(outlet=outlet).select_related('parent').order_by('order', 'name')
+        if outlet else
+        DeptModel.objects.all().select_related('outlet', 'parent').order_by('outlet__order', 'order', 'name')
+        if request.user.is_admin else None
+    )
 
-    # Build order list with pre-calculated cost
     order_list = []
     for i in items:
         if i.order_qty_needed > 0:
@@ -338,7 +596,13 @@ def par_report(request):
         'order_list': order_list,
         'total_order_value': total_order_value,
         'categories': categories,
+        'outlets_list': outlets_list,
+        'depts_list': depts_list,
+        'current_outlet': outlet,
+        'current_dept': department,
         'f_category': category_filter,
+        'f_outlet': outlet_pk or '',
+        'f_dept': dept_pk or '',
     })
 
 

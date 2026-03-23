@@ -24,11 +24,33 @@
 <!-- Filters -->
 <div class="card" style="margin-bottom:16px;">
   <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
-    <div style="flex:2;min-width:160px;">
+    {% if outlets_list %}
+    <div style="flex:1;min-width:140px;">
+      <label class="form-label">Outlet</label>
+      <select name="outlet_pk" class="form-select">
+        <option value="">All Outlets</option>
+        {% for o in outlets_list %}
+        <option value="{{ o.pk }}" {% if f_outlet == o.pk|stringformat:"s" %}selected{% endif %}>{{ o.emoji }} {{ o.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    {% if depts_list %}
+    <div style="flex:1;min-width:140px;">
+      <label class="form-label">Department</label>
+      <select name="department" class="form-select">
+        <option value="">All Departments</option>
+        {% for d in depts_list %}
+        <option value="{{ d.pk }}" {% if f_dept == d.pk|stringformat:"s" %}selected{% endif %}>{% if d.parent %}↳ {% endif %}{{ d.emoji }} {{ d.name }}{% if d.outlet %} · {{ d.outlet.short_name }}{% endif %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    <div style="flex:2;min-width:140px;">
       <label class="form-label">Search</label>
       <input type="text" name="q" class="form-control" placeholder="Name or SKU…" value="{{ f_q }}">
     </div>
-    <div style="flex:1;min-width:130px;">
+    <div style="flex:1;min-width:120px;">
       <label class="form-label">Category</label>
       <select name="category" class="form-select">
         <option value="">All Categories</option>
@@ -37,16 +59,16 @@
         {% endfor %}
       </select>
     </div>
-    <div style="flex:1;min-width:130px;">
+    <div style="flex:1;min-width:120px;">
       <label class="form-label">Location</label>
       <select name="location" class="form-select">
         <option value="">All Locations</option>
         {% for loc in locations %}
-        <option value="{{ loc.pk }}" {% if f_location == loc.pk|stringformat:"s" %}selected{% endif %}>{{ loc.name }}</option>
+        <option value="{{ loc.pk }}" {% if f_location == loc.pk|stringformat:"s" %}selected{% endif %}>{{ loc.name }}{% if loc.outlet %} · {{ loc.outlet.short_name }}{% endif %}</option>
         {% endfor %}
       </select>
     </div>
-    <div style="flex:1;min-width:130px;">
+    <div style="flex:1;min-width:120px;">
       <label class="form-label">Status</label>
       <select name="status" class="form-select">
         <option value="">All</option>
@@ -56,7 +78,7 @@
         <option value="order"    {% if f_status == 'order' %}selected{% endif %}>🛒 Needs Order</option>
       </select>
     </div>
-    <div style="display:flex;gap:6px;">
+    <div style="display:flex;gap:6px;align-items:flex-end;">
       <button type="submit" class="btn btn-primary btn-sm">Apply</button>
       <a href="{% url 'stock:item_list' %}" class="btn btn-outline btn-sm">Clear</a>
     </div>
@@ -68,7 +90,7 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Item</th><th>Category</th><th>Location</th>
+        <th>Item</th><th>Outlet</th><th>Department</th><th>Category</th><th>Location</th>
         <th>Current Stock</th><th>PAR Level</th><th>Reorder At</th>
         <th>Avg Daily</th><th>Order Needed</th><th>Status</th><th></th>
       </tr>
@@ -81,6 +103,8 @@
         <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:700;color:#1a1200;">{{ item.name }}</a>
         {% if item.sku %}<br><span class="text-xs text-muted">{{ item.sku }}</span>{% endif %}
       </td>
+      <td class="text-sm">{% if item.outlet %}{{ item.outlet.emoji }} {{ item.outlet.short_name }}{% else %}—{% endif %}</td>
+      <td class="text-sm">{% if item.department %}{{ item.department.emoji }} {{ item.department.name }}{% else %}—{% endif %}</td>
       <td class="text-sm">{{ item.category.emoji }} {{ item.category.name }}</td>
       <td class="text-sm">{{ item.location.name|default:"—" }}</td>
       <td>

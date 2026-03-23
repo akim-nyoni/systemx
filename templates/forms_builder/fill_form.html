@@ -95,7 +95,7 @@
     {% endif %}
   </div>
   <div style="font-size:11px;color:var(--muted);margin-top:4px;">
-    {{ tmpl.name }} &nbsp;·&nbsp; {{ submission.branch }} &nbsp;·&nbsp; {{ submission.get_shift_display }} shift
+    {{ tmpl.name }} &nbsp;·&nbsp; {{ submission.outlet.name|default:"—" }} &nbsp;·&nbsp; {{ submission.get_shift_display }} shift
   </div>
 </div>
 

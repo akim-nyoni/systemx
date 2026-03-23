@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Role, Department
+from .models import User, Role, Department, Outlet
 
 
 class LoginForm(forms.Form):
@@ -15,7 +15,7 @@ class LoginForm(forms.Form):
 class UserCreateForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'custom_role', 'department', 'branch', 'phone', 'password1', 'password2']
+        fields = ['username', 'first_name', 'last_name', 'email', 'custom_role', 'outlet', 'department', 'phone', 'password1', 'password2']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -27,13 +27,16 @@ class UserCreateForm(UserCreationForm):
         self.fields['department'].widget.attrs['class'] = 'form-select'
         self.fields['department'].label = 'Department'
         self.fields['department'].required = False
+        self.fields['outlet'].widget.attrs['class'] = 'form-select'
+        self.fields['outlet'].label = 'Outlet (Restaurant)'
+        self.fields['outlet'].required = False
 
 
 class UserEditForm(forms.ModelForm):
     """Admin edits any user — includes role and department."""
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'custom_role', 'department', 'branch', 'phone', 'is_active']
+        fields = ['first_name', 'last_name', 'email', 'custom_role', 'outlet', 'department', 'phone', 'is_active']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,13 +49,29 @@ class UserEditForm(forms.ModelForm):
         self.fields['custom_role'].label = 'Role'
         self.fields['department'].widget.attrs['class'] = 'form-select'
         self.fields['department'].label = 'Department'
+        self.fields['outlet'].widget.attrs['class'] = 'form-select'
+        self.fields['outlet'].label = 'Outlet (Restaurant)'
 
+
+
+    def clean(self):
+        cleaned = super().clean()
+        outlet = cleaned.get('outlet')
+        department = cleaned.get('department')
+        if outlet and department:
+            if department.outlet and department.outlet != outlet:
+                raise forms.ValidationError(
+                    f'⚠️ Mismatch: "{department.name}" belongs to '
+                    f'"{department.outlet.name}", not "{outlet.name}". '
+                    f'Please select a department under the chosen outlet.'
+                )
+        return cleaned
 
 class ProfileEditForm(forms.ModelForm):
     """User edits own profile — NO role, username, or department fields."""
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'branch', 'phone', 'avatar']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'avatar']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -118,3 +137,34 @@ class DepartmentForm(forms.ModelForm):
         if commit:
             dept.save()
         return dept
+
+
+    def clean(self):
+        cleaned = super().clean()
+        outlet = cleaned.get('outlet')
+        parent = cleaned.get('parent')
+        if outlet and parent:
+            if parent.outlet and parent.outlet != outlet:
+                raise forms.ValidationError(
+                    f'⚠️ Mismatch: Parent department "{parent.name}" belongs to '
+                    f'"{parent.outlet.name}", not "{outlet.name}". '
+                    f'Parent and child departments must be in the same outlet.'
+                )
+        return cleaned
+
+class OutletForm(forms.ModelForm):
+    class Meta:
+        model = Outlet
+        fields = ['name', 'code', 'address', 'phone', 'email', 'order', 'is_active']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs['class'] = 'form-check-input'
+            elif isinstance(field.widget, forms.Textarea):
+                field.widget.attrs.update({'class': 'form-control', 'rows': 2})
+            else:
+                field.widget.attrs['class'] = 'form-control'
+        self.fields['code'].help_text = 'Short unique code, e.g. sibili, phakalane, seventy_nine'
+        self.fields['order'].help_text = 'Display order (1 = first)'

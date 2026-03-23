@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Stock — All Outlets{% endblock %}
+{% block page_title %}Stock Management{% endblock %}
+{% block extra_css %}
+<style>
+  .outlet-stock-card {
+    background: var(--card-bg); border-radius: 16px;
+    border: 2px solid var(--border); overflow: hidden;
+    text-decoration: none; color: inherit; display: block;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .outlet-stock-card:hover { border-color: var(--brand-accent); box-shadow: 0 6px 20px rgba(245,200,0,.2); }
+  .osc-header { background: #1a1200; color: #f5c800; padding: 18px 22px; display: flex; align-items: center; gap: 12px; }
+  .osc-header h3 { font-size: 17px; font-weight: 900; margin: 0; }
+  .osc-header p  { font-size: 11px; opacity: .55; margin: 3px 0 0; }
+  .osc-icon { font-size: 28px; }
+  .osc-body { padding: 16px 22px; }
+  .osc-stat { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); }
+  .osc-stat:last-child { border-bottom: none; }
+  .osc-stat-label { font-size: 13px; color: var(--muted); }
+  .osc-stat-value { font-size: 15px; font-weight: 800; color: #1a1200; }
+  .osc-stat-value.danger  { color: var(--danger); }
+  .osc-stat-value.warning { color: #f97316; }
+  .osc-footer { padding: 12px 22px; background: #fffbe6; border-top: 1px solid var(--border); font-size: 13px; font-weight: 700; color: #7a5c00; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flex-between mb-4">
+  <div>
+    <h2 style="font-size:18px;font-weight:800;color:#1a1200;">Stock — All Outlets</h2>
+    <p class="text-sm text-muted">Select an outlet to view its stock dashboard, PAR report and counts.</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="{% url 'stock:category_list' %}" class="btn btn-outline btn-sm">🏷️ Categories</a>
+    <a href="{% url 'stock:location_list' %}" class="btn btn-outline btn-sm">📍 Locations</a>
+  </div>
+</div>
+
+<div class="grid grid-3">
+  {% for od in outlet_data %}
+  <a href="{% url 'stock:outlet_detail' od.outlet.pk %}" class="outlet-stock-card">
+    <div class="osc-header">
+      <div class="osc-icon">{{ od.outlet.emoji }}</div>
+      <div>
+        <h3>{{ od.outlet.name }}</h3>
+        <p>Click to manage stock</p>
+      </div>
+    </div>
+    <div class="osc-body">
+      <div class="osc-stat">
+        <span class="osc-stat-label">📦 Total Items</span>
+        <span class="osc-stat-value">{{ od.total_items }}</span>
+      </div>
+      <div class="osc-stat">
+        <span class="osc-stat-label">🔴 Out of Stock</span>
+        <span class="osc-stat-value {% if od.out_of_stock > 0 %}danger{% endif %}">{{ od.out_of_stock }}</span>
+      </div>
+      <div class="osc-stat">
+        <span class="osc-stat-label">🟠 Critical</span>
+        <span class="osc-stat-value {% if od.critical > 0 %}warning{% endif %}">{{ od.critical }}</span>
+      </div>
+      <div class="osc-stat">
+        <span class="osc-stat-label">🛒 Needs Ordering</span>
+        <span class="osc-stat-value {% if od.needs_order > 0 %}warning{% endif %}">{{ od.needs_order }}</span>
+      </div>
+      <div class="osc-stat">
+        <span class="osc-stat-label">💰 Stock Value</span>
+        <span class="osc-stat-value">${{ od.total_value|floatformat:2 }}</span>
+      </div>
+    </div>
+    <div class="osc-footer">View Stock Dashboard →</div>
+  </a>
+  {% empty %}
+  <div class="card empty-state" style="grid-column:1/-1;"><p>No outlets configured.</p></div>
+  {% endfor %}
+</div>
+{% endblock %}

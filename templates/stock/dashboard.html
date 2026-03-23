@@ -17,6 +17,21 @@
 {% endblock %}
 
 {% block content %}
+{% if outlet %}
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--muted);">
+  <a href="{% url 'stock:dashboard' %}" style="color:var(--muted);text-decoration:none;">📦 Stock</a>
+  <span>›</span>
+  <span style="color:#1a1200;font-weight:700;">{{ outlet.emoji }} {{ outlet.name }}</span>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+  <h2 style="font-size:18px;font-weight:800;color:#1a1200;">{{ outlet.name }} — Stock Dashboard</h2>
+  <div class="flex gap-2">
+    <a href="{% url 'stock:par_report' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm">📊 PAR Report</a>
+    <a href="{% url 'stock:count_list' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm">📋 Counts</a>
+    <a href="{% url 'stock:item_list' %}?outlet_pk={{ outlet.pk }}" class="btn btn-primary btn-sm">📦 All Items</a>
+  </div>
+</div>
+{% endif %}
 <!-- Stats -->
 <div class="stats-grid" style="margin-bottom:20px;">
   <div class="stat-card">
@@ -42,10 +57,10 @@
   <div class="card">
     <div class="card-header"><span class="card-title">Quick Actions</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <a href="{% url 'stock:count_create' %}" class="btn btn-primary">📋 New Count</a>
+      <a href="{% url 'stock:count_create' %}{% if outlet %}?outlet_pk={{ outlet.pk }}{% endif %}" class="btn btn-primary">📋 New Count</a>
       <a href="{% url 'stock:movement_create' %}" class="btn btn-outline">📦 Record Movement</a>
-      <a href="{% url 'stock:par_report' %}" class="btn btn-outline">📊 PAR Report</a>
-      <a href="{% url 'stock:item_create' %}" class="btn btn-outline">+ Add Item</a>
+      <a href="{% url 'stock:par_report' %}{% if outlet %}?outlet_pk={{ outlet.pk }}{% endif %}" class="btn btn-outline">📊 PAR Report</a>
+      <a href="{% url 'stock:item_create' %}{% if outlet %}?outlet_pk={{ outlet.pk }}{% endif %}" class="btn btn-outline">+ Add Item</a>
     </div>
   </div>
   <!-- Items needing order -->

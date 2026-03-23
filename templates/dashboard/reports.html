@@ -57,6 +57,31 @@
 <div class="filter-bar">
   <form method="get" id="filterForm">
     <div class="filter-row">
+
+      {% if outlets %}
+      <div class="filter-group">
+        <label>Outlet</label>
+        <select name="outlet" class="form-select">
+          <option value="">All Outlets</option>
+          {% for o in outlets %}
+          <option value="{{ o.pk }}" {% if f_outlet == o.pk|stringformat:"s" %}selected{% endif %}>{{ o.emoji }} {{ o.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
+      {% if departments %}
+      <div class="filter-group">
+        <label>Department</label>
+        <select name="dept" class="form-select">
+          <option value="">All Departments</option>
+          {% for d in departments %}
+          <option value="{{ d.pk }}" {% if f_dept == d.pk|stringformat:"s" %}selected{% endif %}>{% if d.parent %}↳ {% endif %}{{ d.emoji }} {{ d.name }}{% if d.outlet %} · {{ d.outlet.short_name }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+
       {% if staff_list %}
       <div class="filter-group">
         <label>Staff Member</label>
@@ -64,19 +89,6 @@
           <option value="">All Staff</option>
           {% for s in staff_list %}
           <option value="{{ s.pk }}" {% if f_staff == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.display_name }}{% if s.department %} ({{ s.dept_name }}){% endif %}</option>
-          {% endfor %}
-        </select>
-      </div>
-      {% endif %}
-      {% if departments %}
-      <div class="filter-group">
-        <label>Department</label>
-        <select name="dept" class="form-select">
-          <option value="">All Departments</option>
-          {% for d in departments %}
-          <option value="{{ d.pk }}" {% if f_dept == d.pk|stringformat:"s" %}selected{% endif %}>
-            {% if d.parent %}↳ {% endif %}{{ d.emoji }} {{ d.name }}
-          </option>
           {% endfor %}
         </select>
       </div>
@@ -128,7 +140,7 @@
         <th>Checklist</th>
         <th>Staff Member</th>
         <th>Department</th>
-        <th>Branch</th>
+        <th>Outlet</th>
         <th>Shift</th>
         <th>Date &amp; Time</th>
         <th>Completion</th>
@@ -142,7 +154,7 @@
         <td><strong>{{ sub.form.name }}</strong></td>
         <td>{{ sub.submitted_by.display_name }}</td>
         <td><span class="badge badge-info">{{ sub.submitted_by.dept_emoji }} {{ sub.submitted_by.dept_name }}</span></td>
-        <td>{{ sub.branch }}</td>
+        <td>{{ sub.outlet.name|default:"—" }}</td>
         <td>{{ sub.get_shift_display }}</td>
         <td class="text-sm text-muted" style="white-space:nowrap;">{{ sub.submitted_at|date:"d M Y H:i"|default:"—" }}</td>
         <td style="min-width:90px;">

@@ -3,38 +3,38 @@
 {% block page_title %}My Profile{% endblock %}
 {% block content %}
 <div style="max-width:600px;margin:0 auto;">
-  <div class="card" style="margin-bottom:16px;background:var(--brand-blue);color:#fff;">
-    <div style="display:flex;align-items:center;gap:16px;">
-      <div style="width:60px;height:60px;border-radius:50%;background:var(--brand-accent);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;">
-        {{ user.display_name|first|upper }}
-      </div>
-      <div>
-        <div style="font-size:18px;font-weight:800;">{{ user.display_name }}</div>
-        <div style="opacity:.7;font-size:13px;margin-top:2px;">@{{ user.username }} &nbsp;·&nbsp; {{ user.role_name }}</div>
-        <div style="opacity:.6;font-size:12px;margin-top:2px;">{{ user.outlet_name }}</div>
-      </div>
-    </div>
-  </div>
+ <div class="card" style="margin-bottom:16px;background:var(--brand-blue);color:#fff;">
+ <div style="display:flex;align-items:center;gap:16px;">
+ <div style="width:60px;height:60px;border-radius:50%;background:var(--brand-accent);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;">
+ {{ user.display_name|first|upper }}
+ </div>
+ <div>
+ <div style="font-size:18px;font-weight:800;">{{ user.display_name }}</div>
+ <div style="opacity:.7;font-size:13px;margin-top:2px;">@{{ user.username }} &nbsp;·&nbsp; {{ user.role_name }}</div>
+ <div style="opacity:.6;font-size:12px;margin-top:2px;">{{ user.outlet_name }}</div>
+ </div>
+ </div>
+ </div>
 
-  <div class="card" style="margin-bottom:16px;">
-    <div class="card-header">
-      <span class="card-title">Edit Profile</span>
-      <a href="{% url 'accounts:change_password' %}" class="btn btn-outline btn-sm">Change Password</a>
-    </div>
-    <div class="alert alert-info" style="font-size:13px;margin-bottom:16px;">
-      🔒 Your username and role are managed by administrators and cannot be changed here.
-    </div>
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      {% for field in form %}
-      <div class="form-group">
-        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {{ field }}
-        {% for e in field.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
-      </div>
-      {% endfor %}
-      <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
-    </form>
-  </div>
+ <div class="card" style="margin-bottom:16px;">
+ <div class="card-header">
+ <span class="card-title">Edit Profile</span>
+ <a href="{% url 'accounts:change_password' %}" class="btn btn-outline btn-sm">Change Password</a>
+ </div>
+ <div class="alert alert-info" style="font-size:13px;margin-bottom:16px;">
+ Your username and role are managed by administrators and cannot be changed here.
+ </div>
+ <form method="post" enctype="multipart/form-data">
+ {% csrf_token %}
+ {% for field in form %}
+ <div class="form-group">
+ <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+ {{ field }}
+ {% for e in field.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
+ </div>
+ {% endfor %}
+ <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+ </form>
+ </div>
 </div>
 {% endblock %}

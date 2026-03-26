@@ -3,148 +3,148 @@
 {% block page_title %}Stock Items{% endblock %}
 {% block extra_css %}
 <style>
-  .status-badge-out      { background:#fee2e2;color:#991b1b; }
-  .status-badge-critical { background:#fff7ed;color:#9a3412; }
-  .status-badge-low      { background:#fffbe6;color:#7a5c00; }
-  .status-badge-ok       { background:#dcfce7;color:#166534; }
-  .stock-mini { height:6px;background:var(--border);border-radius:99px;overflow:hidden;width:80px;display:inline-block;vertical-align:middle;margin-left:6px; }
-  .stock-mini-fill { height:6px;border-radius:99px; }
+ .status-badge-out { background:rgba(239,68,68,.12);color:#991b1b; }
+ .status-badge-critical { background:#1a1000;color:#9a3412; }
+ .status-badge-low { background:#1e1e00;color:#aaaaaa; }
+ .status-badge-ok { background:rgba(34,197,94,.12);color:#166534; }
+ .stock-mini { height:6px;background:var(--border);border-radius:99px;overflow:hidden;width:80px;display:inline-block;vertical-align:middle;margin-left:6px; }
+ .stock-mini-fill { height:6px;border-radius:99px; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="flex-between mb-4">
-  <h2 style="font-size:18px;font-weight:800;color:#1a1200;">Stock Items</h2>
-  <div class="flex gap-2">
-    <a href="{% url 'stock:par_report' %}" class="btn btn-outline btn-sm">📊 PAR Report</a>
-    <a href="{% url 'stock:item_create' %}" class="btn btn-primary">+ Add Item</a>
-  </div>
+ <h2 style="font-size:18px;font-weight:800;color:#f5c800;">Stock Items</h2>
+ <div class="flex gap-2">
+ <a href="{% url 'stock:par_report' %}" class="btn btn-outline btn-sm"> PAR Report</a>
+ <a href="{% url 'stock:item_create' %}" class="btn btn-primary">+ Add Item</a>
+ </div>
 </div>
 
 <!-- Filters -->
 <div class="card" style="margin-bottom:16px;">
-  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
-    {% if outlets_list %}
-    <div style="flex:1;min-width:140px;">
-      <label class="form-label">Outlet</label>
-      <select name="outlet_pk" class="form-select">
-        <option value="">All Outlets</option>
-        {% for o in outlets_list %}
-        <option value="{{ o.pk }}" {% if f_outlet == o.pk|stringformat:"s" %}selected{% endif %}>{{ o.emoji }} {{ o.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    {% endif %}
-    {% if depts_list %}
-    <div style="flex:1;min-width:140px;">
-      <label class="form-label">Department</label>
-      <select name="department" class="form-select">
-        <option value="">All Departments</option>
-        {% for d in depts_list %}
-        <option value="{{ d.pk }}" {% if f_dept == d.pk|stringformat:"s" %}selected{% endif %}>{% if d.parent %}↳ {% endif %}{{ d.emoji }} {{ d.name }}{% if d.outlet %} · {{ d.outlet.short_name }}{% endif %}</option>
-        {% endfor %}
-      </select>
-    </div>
-    {% endif %}
-    <div style="flex:2;min-width:140px;">
-      <label class="form-label">Search</label>
-      <input type="text" name="q" class="form-control" placeholder="Name or SKU…" value="{{ f_q }}">
-    </div>
-    <div style="flex:1;min-width:120px;">
-      <label class="form-label">Category</label>
-      <select name="category" class="form-select">
-        <option value="">All Categories</option>
-        {% for cat in categories %}
-        <option value="{{ cat.pk }}" {% if f_category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.emoji }} {{ cat.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div style="flex:1;min-width:120px;">
-      <label class="form-label">Location</label>
-      <select name="location" class="form-select">
-        <option value="">All Locations</option>
-        {% for loc in locations %}
-        <option value="{{ loc.pk }}" {% if f_location == loc.pk|stringformat:"s" %}selected{% endif %}>{{ loc.name }}{% if loc.outlet %} · {{ loc.outlet.short_name }}{% endif %}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div style="flex:1;min-width:120px;">
-      <label class="form-label">Status</label>
-      <select name="status" class="form-select">
-        <option value="">All</option>
-        <option value="out"      {% if f_status == 'out' %}selected{% endif %}>🔴 Out of Stock</option>
-        <option value="critical" {% if f_status == 'critical' %}selected{% endif %}>🟠 Critical</option>
-        <option value="low"      {% if f_status == 'low' %}selected{% endif %}>🟡 Below PAR</option>
-        <option value="order"    {% if f_status == 'order' %}selected{% endif %}>🛒 Needs Order</option>
-      </select>
-    </div>
-    <div style="display:flex;gap:6px;align-items:flex-end;">
-      <button type="submit" class="btn btn-primary btn-sm">Apply</button>
-      <a href="{% url 'stock:item_list' %}" class="btn btn-outline btn-sm">Clear</a>
-    </div>
-  </form>
+ <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+ {% if outlets_list %}
+ <div style="flex:1;min-width:140px;">
+ <label class="form-label">Outlet</label>
+ <select name="outlet_pk" class="form-select">
+ <option value="">All Outlets</option>
+ {% for o in outlets_list %}
+ <option value="{{ o.pk }}" {% if f_outlet == o.pk|stringformat:"s" %}selected{% endif %}>{{ o.name }}</option>
+ {% endfor %}
+ </select>
+ </div>
+ {% endif %}
+ {% if depts_list %}
+ <div style="flex:1;min-width:140px;">
+ <label class="form-label">Department</label>
+ <select name="department" class="form-select">
+ <option value="">All Departments</option>
+ {% for d in depts_list %}
+ <option value="{{ d.pk }}" {% if f_dept == d.pk|stringformat:"s" %}selected{% endif %}>{% if d.parent %}↳ {% endif %}{{ d.name }}{% if d.outlet %} · {{ d.outlet.short_name }}{% endif %}</option>
+ {% endfor %}
+ </select>
+ </div>
+ {% endif %}
+ <div style="flex:2;min-width:140px;">
+ <label class="form-label">Search</label>
+ <input type="text" name="q" class="form-control" placeholder="Name or SKU…" value="{{ f_q }}">
+ </div>
+ <div style="flex:1;min-width:120px;">
+ <label class="form-label">Category</label>
+ <select name="category" class="form-select">
+ <option value="">All Categories</option>
+ {% for cat in categories %}
+ <option value="{{ cat.pk }}" {% if f_category == cat.pk|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+ {% endfor %}
+ </select>
+ </div>
+ <div style="flex:1;min-width:120px;">
+ <label class="form-label">Location</label>
+ <select name="location" class="form-select">
+ <option value="">All Locations</option>
+ {% for loc in locations %}
+ <option value="{{ loc.pk }}" {% if f_location == loc.pk|stringformat:"s" %}selected{% endif %}>{{ loc.name }}{% if loc.outlet %} · {{ loc.outlet.short_name }}{% endif %}</option>
+ {% endfor %}
+ </select>
+ </div>
+ <div style="flex:1;min-width:120px;">
+ <label class="form-label">Status</label>
+ <select name="status" class="form-select">
+ <option value="">All</option>
+ <option value="out" {% if f_status == 'out' %}selected{% endif %}> Out of Stock</option>
+ <option value="critical" {% if f_status == 'critical' %}selected{% endif %}> Critical</option>
+ <option value="low" {% if f_status == 'low' %}selected{% endif %}> Below PAR</option>
+ <option value="order" {% if f_status == 'order' %}selected{% endif %}> Needs Order</option>
+ </select>
+ </div>
+ <div style="display:flex;gap:6px;align-items:flex-end;">
+ <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+ <a href="{% url 'stock:item_list' %}" class="btn btn-outline btn-sm">Clear</a>
+ </div>
+ </form>
 </div>
 
 <div class="card">
-  <div class="table-wrap">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Item</th><th>Outlet</th><th>Department</th><th>Category</th><th>Location</th>
-        <th>Current Stock</th><th>PAR Level</th><th>Reorder At</th>
-        <th>Avg Daily</th><th>Order Needed</th><th>Status</th><th></th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for item in items %}
-    {% with pct=item.current_stock|default:0 par=item.par_level|default:1 %}
-    <tr>
-      <td>
-        <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:700;color:#1a1200;">{{ item.name }}</a>
-        {% if item.sku %}<br><span class="text-xs text-muted">{{ item.sku }}</span>{% endif %}
-      </td>
-      <td class="text-sm">{% if item.outlet %}{{ item.outlet.emoji }} {{ item.outlet.short_name }}{% else %}—{% endif %}</td>
-      <td class="text-sm">{% if item.department %}{{ item.department.emoji }} {{ item.department.name }}{% else %}—{% endif %}</td>
-      <td class="text-sm">{{ item.category.emoji }} {{ item.category.name }}</td>
-      <td class="text-sm">{{ item.location.name|default:"—" }}</td>
-      <td>
-        <span style="font-weight:800;{% if item.stock_status == 'out' %}color:var(--danger);{% elif item.stock_status == 'critical' %}color:#f97316;{% endif %}">
-          {{ item.current_stock|floatformat:1 }}
-        </span>
-        <span class="text-xs text-muted"> {{ item.get_unit_display }}</span>
-      </td>
-      <td class="text-sm">{{ item.par_level|floatformat:1 }}</td>
-      <td class="text-sm">{{ item.reorder_point|floatformat:1 }}</td>
-      <td class="text-sm">{{ item.avg_daily_usage|floatformat:2 }}</td>
-      <td>
-        {% if item.order_qty_needed > 0 %}
-        <span style="color:var(--danger);font-weight:700;">{{ item.order_qty_needed|floatformat:1 }}</span>
-        {% else %}—{% endif %}
-      </td>
-      <td>
-        {% if item.stock_status == 'out' %}
-          <span class="badge status-badge-out">Out of Stock</span>
-        {% elif item.stock_status == 'critical' %}
-          <span class="badge status-badge-critical">Critical</span>
-        {% elif item.stock_status == 'low' %}
-          <span class="badge status-badge-low">Below PAR</span>
-        {% else %}
-          <span class="badge status-badge-ok">OK</span>
-        {% endif %}
-      </td>
-      <td>
-        <div class="flex gap-1">
-          <a href="{% url 'stock:item_edit' item.pk %}" class="btn btn-outline btn-sm">Edit</a>
-          <a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">+</a>
-        </div>
-      </td>
-    </tr>
-    {% endwith %}
-    {% empty %}
-    <tr><td colspan="10"><div class="empty-state"><p>No items found.</p></div></td></tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </div>
+ <div class="table-wrap">
+ <table class="table">
+ <thead>
+ <tr>
+ <th>Item</th><th>Outlet</th><th>Department</th><th>Category</th><th>Location</th>
+ <th>Current Stock</th><th>PAR Level</th><th>Reorder At</th>
+ <th>Avg Daily</th><th>Order Needed</th><th>Status</th><th></th>
+ </tr>
+ </thead>
+ <tbody>
+ {% for item in items %}
+ {% with pct=item.current_stock|default:0 par=item.par_level|default:1 %}
+ <tr>
+ <td>
+ <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:700;color:#f0f0f0;">{{ item.name }}</a>
+ {% if item.sku %}<br><span class="text-xs text-muted">{{ item.sku }}</span>{% endif %}
+ </td>
+ <td class="text-sm">{% if item.outlet %}{{ item.outlet.emoji }} {{ item.outlet.short_name }}{% else %}—{% endif %}</td>
+ <td class="text-sm">{% if item.department %}{{ item.department.emoji }} {{ item.department.name }}{% else %}—{% endif %}</td>
+ <td class="text-sm">{{ item.category.emoji }} {{ item.category.name }}</td>
+ <td class="text-sm">{{ item.location.name|default:"—" }}</td>
+ <td>
+ <span style="font-weight:800;{% if item.stock_status == 'out' %}color:var(--danger);{% elif item.stock_status == 'critical' %}color:#f97316;{% endif %}">
+ {{ item.current_stock|floatformat:1 }}
+ </span>
+ <span class="text-xs text-muted"> {{ item.get_unit_display }}</span>
+ </td>
+ <td class="text-sm">{{ item.par_level|floatformat:1 }}</td>
+ <td class="text-sm">{{ item.reorder_point|floatformat:1 }}</td>
+ <td class="text-sm">{{ item.avg_daily_usage|floatformat:2 }}</td>
+ <td>
+ {% if item.order_qty_needed > 0 %}
+ <span style="color:var(--danger);font-weight:700;">{{ item.order_qty_needed|floatformat:1 }}</span>
+ {% else %}—{% endif %}
+ </td>
+ <td>
+ {% if item.stock_status == 'out' %}
+ <span class="badge status-badge-out">Out of Stock</span>
+ {% elif item.stock_status == 'critical' %}
+ <span class="badge status-badge-critical">Critical</span>
+ {% elif item.stock_status == 'low' %}
+ <span class="badge status-badge-low">Below PAR</span>
+ {% else %}
+ <span class="badge status-badge-ok">OK</span>
+ {% endif %}
+ </td>
+ <td>
+ <div class="flex gap-1">
+ <a href="{% url 'stock:item_edit' item.pk %}" class="btn btn-outline btn-sm">Edit</a>
+ <a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">+</a>
+ </div>
+ </td>
+ </tr>
+ {% endwith %}
+ {% empty %}
+ <tr><td colspan="10"><div class="empty-state"><p>No items found.</p></div></td></tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
 </div>
 {% endblock %}

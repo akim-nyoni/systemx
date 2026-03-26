@@ -16,23 +16,6 @@ from decimal import Decimal
 
 
 class StockCategory(models.Model):
-    CATEGORY_ICONS = {
-        'beer':       '🍺',
-        'spirits':    '🥃',
-        'wine':       '🍷',
-        'soft_drink': '🥤',
-        'juice':      '🧃',
-        'dairy':      '🥛',
-        'meat':       '🥩',
-        'seafood':    '🦐',
-        'produce':    '🥦',
-        'dry_goods':  '🌾',
-        'sauces':     '🫙',
-        'cleaning':   '🧹',
-        'packaging':  '📦',
-        'other':      '📋',
-    }
-
     name        = models.CharField(max_length=100, unique=True)
     code        = models.CharField(max_length=20, unique=True)
     description = models.TextField(blank=True)
@@ -44,10 +27,6 @@ class StockCategory(models.Model):
 
     def __str__(self):
         return self.name
-
-    @property
-    def emoji(self):
-        return self.CATEGORY_ICONS.get(self.code, '📋')
 
 
 class StockLocation(models.Model):
@@ -155,10 +134,10 @@ class StockItem(models.Model):
     @property
     def stock_status_label(self):
         return {
-            'out':      '🔴 Out of Stock',
-            'critical': '🟠 Critical — Order Now',
-            'low':      '🟡 Below PAR',
-            'ok':       '🟢 OK',
+            'out':      ' Out of Stock',
+            'critical': ' Critical — Order Now',
+            'low':      ' Below PAR',
+            'ok':       ' OK',
         }.get(self.stock_status, '—')
 
     @property

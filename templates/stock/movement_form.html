@@ -4,79 +4,79 @@
 
 {% block extra_css %}
 <style>
-  .mismatch-warning { background:#fff3cd; border-left:4px solid #f5c800; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:14px; display:none; }
-  .mismatch-warning.visible { display:block; }
+ .mismatch-warning { background:#1e1a00; border-left:4px solid #f5c800; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:14px; display:none; }
+ .mismatch-warning.visible { display:block; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div style="max-width:580px;margin:0 auto;">
 <div class="card">
-  <div class="card-header">
-    <span class="card-title">{{ title }}</span>
-    <a href="{% url 'stock:movement_list' %}" class="btn btn-outline btn-sm">← Back</a>
-  </div>
+ <div class="card-header">
+ <span class="card-title">{{ title }}</span>
+ <a href="{% url 'stock:movement_list' %}" class="btn btn-outline btn-sm">← Back</a>
+ </div>
 
-  <div class="alert alert-info" style="font-size:13px;margin-bottom:16px;">
-    Select the <strong>Outlet</strong> first — the Department and Item dropdowns will filter automatically.
-  </div>
+ <div class="alert alert-info" style="font-size:13px;margin-bottom:16px;">
+ Select the <strong>Outlet</strong> first — the Department and Item dropdowns will filter automatically.
+ </div>
 
-  <div class="mismatch-warning" id="mismatchWarn">
-    ⚠️ <span id="mismatchMsg"></span>
-  </div>
+ <div class="mismatch-warning" id="mismatchWarn">
+ <span id="mismatchMsg"></span>
+ </div>
 
-  <form method="post">
-    {% csrf_token %}
+ <form method="post">
+ {% csrf_token %}
 
-    {% if form.non_field_errors %}
-    {% for error in form.non_field_errors %}
-    <div class="alert alert-error" style="margin-bottom:14px;">{{ error }}</div>
-    {% endfor %}
-    {% endif %}
+ {% if form.non_field_errors %}
+ {% for error in form.non_field_errors %}
+ <div class="alert alert-error" style="margin-bottom:14px;">{{ error }}</div>
+ {% endfor %}
+ {% endif %}
 
-    <!-- Outlet first -->
-    <div class="form-group">
-      <label class="form-label">Outlet (Restaurant) *</label>
-      {{ form.outlet }}
-      {% for e in form.outlet.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
-    </div>
+ <!-- Outlet first -->
+ <div class="form-group">
+ <label class="form-label">Outlet (Restaurant) *</label>
+ {{ form.outlet }}
+ {% for e in form.outlet.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
+ </div>
 
-    <!-- Department -->
-    <div class="form-group">
-      <label class="form-label">Department</label>
-      {{ form.department }}
-      <div class="form-text">Only departments belonging to the selected outlet</div>
-      {% for e in form.department.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
-    </div>
+ <!-- Department -->
+ <div class="form-group">
+ <label class="form-label">Department</label>
+ {{ form.department }}
+ <div class="form-text">Only departments belonging to the selected outlet</div>
+ {% for e in form.department.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
+ </div>
 
-    <!-- Item -->
-    <div class="form-group">
-      <label class="form-label">Stock Item *</label>
-      {{ form.item }}
-      {% for e in form.item.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
-    </div>
+ <!-- Item -->
+ <div class="form-group">
+ <label class="form-label">Stock Item *</label>
+ {{ form.item }}
+ {% for e in form.item.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
+ </div>
 
-    <!-- Movement type, quantity, cost, ref, notes -->
-    {% for field in form %}
-    {% if field.name not in 'outlet,department,item' %}
-    <div class="form-group">
-      <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
-      {{ field }}
-      {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
-      {% for e in field.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
-    </div>
-    {% endif %}
-    {% endfor %}
+ <!-- Movement type, quantity, cost, ref, notes -->
+ {% for field in form %}
+ {% if field.name not in 'outlet,department,item' %}
+ <div class="form-group">
+ <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+ {{ field }}
+ {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+ {% for e in field.errors %}<div class="text-sm" style="color:var(--danger);">{{ e }}</div>{% endfor %}
+ </div>
+ {% endif %}
+ {% endfor %}
 
-    <div class="alert alert-info" style="font-size:13px;">
-      <strong>Deliveries &amp; Transfer In</strong> add to stock. <strong>Usage, Wastage &amp; Transfer Out</strong> reduce stock.
-    </div>
+ <div class="alert alert-info" style="font-size:13px;">
+ <strong>Deliveries &amp; Transfer In</strong> add to stock. <strong>Usage, Wastage &amp; Transfer Out</strong> reduce stock.
+ </div>
 
-    <div style="display:flex;gap:10px;">
-      <button type="submit" class="btn btn-primary">Save Movement</button>
-      <a href="{% url 'stock:movement_list' %}" class="btn btn-outline">Cancel</a>
-    </div>
-  </form>
+ <div style="display:flex;gap:10px;">
+ <button type="submit" class="btn btn-primary">Save Movement</button>
+ <a href="{% url 'stock:movement_list' %}" class="btn btn-outline">Cancel</a>
+ </div>
+ </form>
 </div>
 </div>
 {% endblock %}
@@ -87,26 +87,26 @@
 const deptOutletMap = {};
 {% for field in form %}{% if field.name == 'department' %}
 document.querySelectorAll('#id_department option').forEach(opt => {
-  if (opt.dataset.outlet) deptOutletMap[opt.value] = opt.dataset.outlet;
+ if (opt.dataset.outlet) deptOutletMap[opt.value] = opt.dataset.outlet;
 });
 {% endif %}{% endfor %}
 
 function filterDeptByOutlet(outletPk) {
-  const deptSelect = document.getElementById('id_department');
-  const itemSelect = document.getElementById('id_item');
-  if (!deptSelect) return;
-  Array.from(deptSelect.options).forEach(opt => {
-    if (!opt.value) return; // keep blank option
-    const outletAttr = opt.getAttribute('data-outlet');
-    opt.style.display = (!outletPk || !outletAttr || outletAttr === outletPk) ? '' : 'none';
-    if (opt.style.display === 'none' && opt.selected) { opt.selected = false; deptSelect.value = ''; }
-  });
+ const deptSelect = document.getElementById('id_department');
+ const itemSelect = document.getElementById('id_item');
+ if (!deptSelect) return;
+ Array.from(deptSelect.options).forEach(opt => {
+ if (!opt.value) return; // keep blank option
+ const outletAttr = opt.getAttribute('data-outlet');
+ opt.style.display = (!outletPk || !outletAttr || outletAttr === outletPk) ? '' : 'none';
+ if (opt.style.display === 'none' && opt.selected) { opt.selected = false; deptSelect.value = ''; }
+ });
 }
 
 // Run on page load with current outlet value
 document.addEventListener('DOMContentLoaded', () => {
-  const outletSel = document.getElementById('id_outlet');
-  if (outletSel && outletSel.value) filterDeptByOutlet(outletSel.value);
+ const outletSel = document.getElementById('id_outlet');
+ if (outletSel && outletSel.value) filterDeptByOutlet(outletSel.value);
 });
 </script>
 {% endblock %}

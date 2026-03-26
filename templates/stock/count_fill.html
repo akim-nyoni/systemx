@@ -3,143 +3,143 @@
 {% block page_title %}Stock Count{% endblock %}
 {% block extra_css %}
 <style>
-  .count-sticky {
-    position:sticky; top:56px; z-index:40;
-    background:#fff; border-bottom:1px solid var(--border);
-    padding:10px 16px; margin:-16px -16px 16px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
-  }
-  @media(min-width:769px){ .count-sticky { top:0; padding:10px 28px; margin:-24px -28px 24px; } }
-  .count-item {
-    display:flex; align-items:center; gap:12px;
-    padding:14px 0; border-bottom:1px solid var(--border);
-  }
-  .count-item:last-child { border-bottom:none; }
-  .count-item-info { flex:1; min-width:0; }
-  .count-item-name { font-size:14px; font-weight:600; color:#1a1200; }
-  .count-item-meta { font-size:12px; color:var(--muted); margin-top:3px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-  .count-input {
-    width:100px; padding:10px 12px; border:2px solid var(--border);
-    border-radius:10px; font-size:18px; font-weight:800; text-align:center;
-    -webkit-appearance:none; background:#fff; touch-action:manipulation;
-    flex-shrink:0;
-  }
-  .count-input:focus { outline:none; border-color:var(--brand-accent); box-shadow:0 0 0 3px rgba(245,200,0,.25); }
-  .count-input.shortage { border-color:var(--danger); background:#fff5f5; color:var(--danger); }
-  .count-input.surplus  { border-color:var(--success); background:#f0fdf4; color:var(--success); }
-  .count-input.entered  { border-color:var(--brand-accent); }
-  .variance-col { font-size:13px; font-weight:700; min-width:60px; text-align:right; flex-shrink:0; }
-  .below-par-flag { font-size:11px; color:#7a5c00; background:#fffbe6; padding:2px 8px; border-radius:20px; font-weight:600; }
-  .col-header { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); padding:6px 0; display:flex; gap:12px; border-bottom:2px solid var(--border); margin-bottom:4px; }
-  .col-header .ch-name { flex:1; }
-  .col-header .ch-input { width:100px; text-align:center; flex-shrink:0; }
-  .col-header .ch-var { min-width:60px; text-align:right; flex-shrink:0; }
+ .count-sticky {
+ position:sticky; top:56px; z-index:40;
+ background:#1a1a1a; border-bottom:1px solid #555555;
+ padding:10px 16px; margin:-16px -16px 16px;
+ box-shadow:0 2px 8px rgba(0,0,0,.06);
+ }
+ @media(min-width:769px){ .count-sticky { top:0; padding:10px 28px; margin:-24px -28px 24px; } }
+ .count-item {
+ display:flex; align-items:center; gap:12px;
+ padding:14px 0; border-bottom:1px solid #555555;
+ }
+ .count-item:last-child { border-bottom:none; }
+ .count-item-info { flex:1; min-width:0; }
+ .count-item-name { font-size:14px; font-weight:600; color:#f5c800; }
+ .count-item-meta { font-size:12px; color:var(--muted); margin-top:3px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+ .count-input {
+ width:100px; padding:10px 12px; border:2px solid #555555;
+ border-radius:10px; font-size:18px; font-weight:800; text-align:center;
+ -webkit-appearance:none; background:#1a1a1a; touch-action:manipulation;
+ flex-shrink:0;
+ }
+ .count-input:focus { outline:none; border-color:var(--brand-accent); box-shadow:0 0 0 3px rgba(245,200,0,.25); }
+ .count-input.shortage { border-color:var(--danger); background:#1a0000; color:var(--danger); }
+ .count-input.surplus { border-color:var(--success); background:#f0fdf4; color:var(--success); }
+ .count-input.entered { border-color:var(--brand-accent); }
+ .variance-col { font-size:13px; font-weight:700; min-width:60px; text-align:right; flex-shrink:0; }
+ .below-par-flag { font-size:11px; color:#aaaaaa; background:#1e1e00; padding:2px 8px; border-radius:20px; font-weight:600; }
+ .col-header { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); padding:6px 0; display:flex; gap:12px; border-bottom:2px solid var(--border); margin-bottom:4px; }
+ .col-header .ch-name { flex:1; }
+ .col-header .ch-input { width:100px; text-align:center; flex-shrink:0; }
+ .col-header .ch-var { min-width:60px; text-align:right; flex-shrink:0; }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Sticky progress header -->
 <div class="count-sticky">
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-    <div style="flex:1;min-width:150px;">
-      <div class="progress" style="height:8px;">
-        <div class="progress-bar" id="progressBar" style="width:{{ count.completion_pct }}%"></div>
-      </div>
-      <div class="text-xs text-muted" style="margin-top:3px;">
-        <span id="completionPct">{{ count.completion_pct }}</span>% complete
-        &nbsp;·&nbsp; <span id="countedNum">{{ count.counted_items }}</span> / {{ count.total_items }} items
-        &nbsp;·&nbsp; {{ count.location }}
-      </div>
-    </div>
-    <span style="font-size:11px;" id="saveStatus">—</span>
-    <form method="post" action="{% url 'stock:count_complete' count.pk %}" style="margin:0;">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-success btn-sm"
-              onclick="return confirm('Complete this stock count? Stock levels will be updated.')">
-        ✓ Complete Count
-      </button>
-    </form>
-  </div>
-  <div class="text-xs text-muted" style="margin-top:4px;">
-    {{ count.count_date|date:"d M Y" }} &nbsp;·&nbsp;
-    {{ count.get_shift_display }} shift &nbsp;·&nbsp;
-    {{ count.conducted_by.display_name }}
-    {% if count.outlet %}&nbsp;·&nbsp; {{ count.outlet.emoji }} {{ count.outlet.name }}{% endif %}
-    {% if count.department %}&nbsp;·&nbsp; {{ count.department.name }}{% endif %}
-  </div>
+ <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+ <div style="flex:1;min-width:150px;">
+ <div class="progress" style="height:8px;">
+ <div class="progress-bar" id="progressBar" style="width:{{ count.completion_pct }}%"></div>
+ </div>
+ <div class="text-xs text-muted" style="margin-top:3px;">
+ <span id="completionPct">{{ count.completion_pct }}</span>% complete
+ &nbsp;·&nbsp; <span id="countedNum">{{ count.counted_items }}</span> / {{ count.total_items }} items
+ &nbsp;·&nbsp; {{ count.location }}
+ </div>
+ </div>
+ <span style="font-size:11px;" id="saveStatus">—</span>
+ <form method="post" action="{% url 'stock:count_complete' count.pk %}" style="margin:0;">
+ {% csrf_token %}
+ <button type="submit" class="btn btn-success btn-sm"
+ onclick="return confirm('Complete this stock count? Stock levels will be updated.')">
+ Complete Count
+ </button>
+ </form>
+ </div>
+ <div class="text-xs text-muted" style="margin-top:4px;">
+ {{ count.count_date|date:"d M Y" }} &nbsp;·&nbsp;
+ {{ count.get_shift_display }} shift &nbsp;·&nbsp;
+ {{ count.conducted_by.display_name }}
+ {% if count.outlet %}&nbsp;·&nbsp; {{ count.outlet.emoji }} {{ count.outlet.name }}{% endif %}
+ {% if count.department %}&nbsp;·&nbsp; {{ count.department.name }}{% endif %}
+ </div>
 </div>
 
 {% if not grouped %}
 <!-- No items loaded -->
 <div class="card" style="text-align:center;padding:40px;">
-  <div style="font-size:48px;margin-bottom:12px;">📋</div>
-  <h3 style="font-size:16px;font-weight:800;color:#1a1200;margin-bottom:8px;">No Items Found for This Count</h3>
-  <p class="text-sm text-muted" style="margin-bottom:16px;">
-    No stock items are linked to location <strong>{{ count.location }}</strong>.
-    Make sure items have this location assigned before starting a count.
-  </p>
-  <div style="display:flex;gap:10px;justify-content:center;">
-    <a href="{% url 'stock:item_list' %}" class="btn btn-primary">📦 View Stock Items</a>
-    <a href="{% url 'stock:count_list' %}" class="btn btn-outline">← Back to Counts</a>
-  </div>
+ <div style="font-size:48px;margin-bottom:12px;"></div>
+ <h3 style="font-size:16px;font-weight:800;color:#f5c800;margin-bottom:8px;">No Items Found for This Count</h3>
+ <p class="text-sm text-muted" style="margin-bottom:16px;">
+ No stock items are linked to location <strong>{{ count.location }}</strong>.
+ Make sure items have this location assigned before starting a count.
+ </p>
+ <div style="display:flex;gap:10px;justify-content:center;">
+ <a href="{% url 'stock:item_list' %}" class="btn btn-primary"> View Stock Items</a>
+ <a href="{% url 'stock:count_list' %}" class="btn btn-outline">← Back to Counts</a>
+ </div>
 </div>
 {% else %}
 
 {% for cat, lines in grouped.items %}
 <div style="margin-bottom:4px;">
-  <div class="section-header">{{ lines.0.item.category.emoji }} {{ cat }} <span style="font-size:11px;font-weight:400;opacity:.7;">({{ lines|length }} items)</span></div>
-  <div class="card" style="margin-bottom:12px;">
-    <!-- Column headers -->
-    <div class="col-header">
-      <div class="ch-name">Item</div>
-      <div class="ch-input">Count Qty</div>
-      <div class="ch-var">Variance</div>
-    </div>
+ <div class="section-header">{{ lines.0.item.category.emoji }} {{ cat }} <span style="font-size:11px;font-weight:400;opacity:.7;">({{ lines|length }} items)</span></div>
+ <div class="card" style="margin-bottom:12px;">
+ <!-- Column headers -->
+ <div class="col-header">
+ <div class="ch-name">Item</div>
+ <div class="ch-input">Count Qty</div>
+ <div class="ch-var">Variance</div>
+ </div>
 
-    {% for line in lines %}
-    <div class="count-item" id="row-{{ line.pk }}">
-      <div class="count-item-info">
-        <div class="count-item-name">{{ line.item.name }}</div>
-        <div class="count-item-meta">
-          <span>📦 Expected: <strong>{{ line.expected_qty|floatformat:1 }}</strong> {{ line.item.get_unit_display }}</span>
-          <span>📊 PAR: <strong>{{ line.item.par_level|floatformat:1 }}</strong></span>
-          {% if line.item.location %}<span>📍 {{ line.item.location.name }}</span>{% endif %}
-          {% if line.item.stock_status == 'out' %}
-          <span class="below-par-flag">🔴 Out of Stock</span>
-          {% elif line.item.stock_status == 'critical' %}
-          <span class="below-par-flag">🟠 Critical</span>
-          {% elif line.below_par %}
-          <span class="below-par-flag">🟡 Below PAR</span>
-          {% endif %}
-        </div>
-      </div>
-      <input
-        type="number"
-        step="0.1"
-        min="0"
-        class="count-input{% if line.counted_qty is not None %} entered{% endif %}"
-        id="input-{{ line.pk }}"
-        value="{{ line.counted_qty|default:'' }}"
-        placeholder="0"
-        data-line="{{ line.pk }}"
-        onchange="saveLine({{ line.pk }}, this.value)"
-      >
-      <div class="variance-col" id="var-{{ line.pk }}">
-        {% if line.variance is not None %}
-          {% if line.variance < 0 %}
-            <span style="color:var(--danger);">{{ line.variance|floatformat:1 }}</span>
-          {% elif line.variance > 0 %}
-            <span style="color:var(--success);">+{{ line.variance|floatformat:1 }}</span>
-          {% else %}
-            <span style="color:var(--muted);">±0</span>
-          {% endif %}
-        {% else %}
-          <span style="color:var(--muted);">—</span>
-        {% endif %}
-      </div>
-    </div>
-    {% endfor %}
-  </div>
+ {% for line in lines %}
+ <div class="count-item" id="row-{{ line.pk }}">
+ <div class="count-item-info">
+ <div class="count-item-name">{{ line.item.name }}</div>
+ <div class="count-item-meta">
+ <span> Expected: <strong>{{ line.expected_qty|floatformat:1 }}</strong> {{ line.item.get_unit_display }}</span>
+ <span> PAR: <strong>{{ line.item.par_level|floatformat:1 }}</strong></span>
+ {% if line.item.location %}<span> {{ line.item.location.name }}</span>{% endif %}
+ {% if line.item.stock_status == 'out' %}
+ <span class="below-par-flag"> Out of Stock</span>
+ {% elif line.item.stock_status == 'critical' %}
+ <span class="below-par-flag"> Critical</span>
+ {% elif line.below_par %}
+ <span class="below-par-flag"> Below PAR</span>
+ {% endif %}
+ </div>
+ </div>
+ <input
+ type="number"
+ step="0.1"
+ min="0"
+ class="count-input{% if line.counted_qty is not None %} entered{% endif %}"
+ id="input-{{ line.pk }}"
+ value="{{ line.counted_qty|default:'' }}"
+ placeholder="0"
+ data-line="{{ line.pk }}"
+ onchange="saveLine({{ line.pk }}, this.value)"
+ >
+ <div class="variance-col" id="var-{{ line.pk }}">
+ {% if line.variance is not None %}
+ {% if line.variance < 0 %}
+ <span style="color:var(--danger);">{{ line.variance|floatformat:1 }}</span>
+ {% elif line.variance > 0 %}
+ <span style="color:var(--success);">+{{ line.variance|floatformat:1 }}</span>
+ {% else %}
+ <span style="color:#aaaaaa;">±0</span>
+ {% endif %}
+ {% else %}
+ <span style="color:#aaaaaa;">—</span>
+ {% endif %}
+ </div>
+ </div>
+ {% endfor %}
+ </div>
 </div>
 {% endfor %}
 
@@ -153,71 +153,71 @@ const CSRF = "{{ csrf_token }}";
 let debounceTimers = {};
 
 function saveLine(lineId, value) {
-  clearTimeout(debounceTimers[lineId]);
-  debounceTimers[lineId] = setTimeout(() => {
-    setSaveStatus('⟳ Saving…', '#f97316');
-    const fd = new FormData();
-    fd.append('line_id', lineId);
-    fd.append('qty', value);
-    fd.append('csrfmiddlewaretoken', CSRF);
-    fetch(SAVE_URL, { method: 'POST', body: fd })
-      .then(r => r.json())
-      .then(d => {
-        if (d.ok) {
-          updateVariance(lineId, d.variance, d.variance_status, d.below_par);
-          document.getElementById('progressBar').style.width = d.completion + '%';
-          document.getElementById('completionPct').textContent = d.completion;
-          if (document.getElementById('countedNum')) {
-            // Recalculate counted count
-            const inputs = document.querySelectorAll('.count-input');
-            let counted = 0;
-            inputs.forEach(i => { if (i.value !== '') counted++; });
-            document.getElementById('countedNum').textContent = counted;
-          }
-          setSaveStatus('✓ Saved', '#28a745');
-          setTimeout(() => setSaveStatus('—', 'var(--muted)'), 2000);
-          // Mark input as entered
-          const inp = document.getElementById('input-' + lineId);
-          if (inp && value !== '') inp.classList.add('entered');
-        } else {
-          setSaveStatus('✗ ' + (d.error || 'Error'), 'var(--danger)');
-        }
-      })
-      .catch(err => setSaveStatus('✗ Network error', 'var(--danger)'));
-  }, 500);
+ clearTimeout(debounceTimers[lineId]);
+ debounceTimers[lineId] = setTimeout(() => {
+ setSaveStatus(' Saving…', '#f97316');
+ const fd = new FormData();
+ fd.append('line_id', lineId);
+ fd.append('qty', value);
+ fd.append('csrfmiddlewaretoken', CSRF);
+ fetch(SAVE_URL, { method: 'POST', body: fd })
+ .then(r => r.json())
+ .then(d => {
+ if (d.ok) {
+ updateVariance(lineId, d.variance, d.variance_status, d.below_par);
+ document.getElementById('progressBar').style.width = d.completion + '%';
+ document.getElementById('completionPct').textContent = d.completion;
+ if (document.getElementById('countedNum')) {
+ // Recalculate counted count
+ const inputs = document.querySelectorAll('.count-input');
+ let counted = 0;
+ inputs.forEach(i => { if (i.value !== '') counted++; });
+ document.getElementById('countedNum').textContent = counted;
+ }
+ setSaveStatus(' Saved', '#28a745');
+ setTimeout(() => setSaveStatus('—', 'var(--muted)'), 2000);
+ // Mark input as entered
+ const inp = document.getElementById('input-' + lineId);
+ if (inp && value !== '') inp.classList.add('entered');
+ } else {
+ setSaveStatus(' ' + (d.error || 'Error'), 'var(--danger)');
+ }
+ })
+ .catch(err => setSaveStatus(' Network error', 'var(--danger)'));
+ }, 500);
 }
 
 function updateVariance(lineId, variance, status, belowPar) {
-  const el = document.getElementById('var-' + lineId);
-  const inp = document.getElementById('input-' + lineId);
-  if (!el) return;
-  if (variance === null) {
-    el.innerHTML = '<span style="color:var(--muted);">—</span>';
-    if (inp) inp.className = 'count-input';
-    return;
-  }
-  const sign   = variance > 0 ? '+' : '';
-  const colour = variance < 0 ? 'var(--danger)' : variance > 0 ? 'var(--success)' : 'var(--muted)';
-  el.innerHTML = `<span style="color:${colour};">${sign}${parseFloat(variance).toFixed(1)}</span>`;
-  if (inp) {
-    inp.className = 'count-input entered ' +
-      (variance < -0.5 ? 'shortage' : variance > 0.5 ? 'surplus' : '');
-  }
+ const el = document.getElementById('var-' + lineId);
+ const inp = document.getElementById('input-' + lineId);
+ if (!el) return;
+ if (variance === null) {
+ el.innerHTML = '<span style="color:#aaaaaa;">—</span>';
+ if (inp) inp.className = 'count-input';
+ return;
+ }
+ const sign = variance > 0 ? '+' : '';
+ const colour = variance < 0 ? 'var(--danger)' : variance > 0 ? 'var(--success)' : 'var(--muted)';
+ el.innerHTML = `<span style="color:${colour};">${sign}${parseFloat(variance).toFixed(1)}</span>`;
+ if (inp) {
+ inp.className = 'count-input entered ' +
+ (variance < -0.5 ? 'shortage' : variance > 0.5 ? 'surplus' : '');
+ }
 }
 
 function setSaveStatus(text, colour) {
-  const el = document.getElementById('saveStatus');
-  if (el) { el.textContent = text; el.style.color = colour; }
+ const el = document.getElementById('saveStatus');
+ if (el) { el.textContent = text; el.style.color = colour; }
 }
 
 // Mobile: move to next input on Enter
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.target.classList.contains('count-input')) {
-    e.preventDefault();
-    const inputs = Array.from(document.querySelectorAll('.count-input'));
-    const idx = inputs.indexOf(e.target);
-    if (idx < inputs.length - 1) inputs[idx + 1].focus();
-  }
+ if (e.key === 'Enter' && e.target.classList.contains('count-input')) {
+ e.preventDefault();
+ const inputs = Array.from(document.querySelectorAll('.count-input'));
+ const idx = inputs.indexOf(e.target);
+ if (idx < inputs.length - 1) inputs[idx + 1].focus();
+ }
 });
 </script>
 {% endblock %}

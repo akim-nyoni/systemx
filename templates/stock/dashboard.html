@@ -3,171 +3,167 @@
 {% block page_title %}Stock Management{% endblock %}
 {% block extra_css %}
 <style>
-  .status-out      { background:#fee2e2; color:#991b1b; }
-  .status-critical { background:#fff7ed; color:#9a3412; }
-  .status-low      { background:#fffbe6; color:#7a5c00; }
-  .status-ok       { background:#dcfce7; color:#166534; }
-  .stock-bar { height:10px; background:var(--border); border-radius:99px; overflow:hidden; margin-top:4px; }
-  .stock-bar-fill { height:10px; border-radius:99px; transition:width .4s; }
-  .mvt-delivery    { color:#166534; }
-  .mvt-usage       { color:#991b1b; }
-  .mvt-wastage     { color:#9a3412; }
-  .mvt-adjustment  { color:#1a1200; }
+ .status-out { background:rgba(239,68,68,.12); color:#991b1b; }
+ .status-critical { background:#1a1000; color:#9a3412; }
+ .status-low { background:#1e1e00; color:#aaaaaa; }
+ .status-ok { background:rgba(34,197,94,.12); color:#166534; }
+ .stock-bar { height:10px; background:var(--border); border-radius:99px; overflow:hidden; margin-top:4px; }
+ .stock-bar-fill { height:10px; border-radius:99px; transition:width .4s; }
+ .mvt-delivery { color:#166534; }
+ .mvt-usage { color:#991b1b; }
+ .mvt-wastage { color:#9a3412; }
+ .mvt-adjustment { color:#f5c800; }
 </style>
 {% endblock %}
 
 {% block content %}
 {% if outlet %}
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--muted);">
-  <a href="{% url 'stock:dashboard' %}" style="color:var(--muted);text-decoration:none;">📦 Stock</a>
-  <span>›</span>
-  <span style="color:#1a1200;font-weight:700;">{{ outlet.emoji }} {{ outlet.name }}</span>
+ <a href="{% url 'stock:dashboard' %}" style="color:#aaaaaa;text-decoration:none;"> Stock</a>
+ <span>›</span>
+ <span style="color:#f5c800;font-weight:700;">{{ outlet.name }}</span>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-  <h2 style="font-size:18px;font-weight:800;color:#1a1200;">{{ outlet.name }} — Stock Dashboard</h2>
-  <div class="flex gap-2">
-    <a href="{% url 'stock:par_report' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm">📊 PAR Report</a>
-    <a href="{% url 'stock:count_list' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm">📋 Counts</a>
-    <a href="{% url 'stock:item_list' %}?outlet_pk={{ outlet.pk }}" class="btn btn-primary btn-sm">📦 All Items</a>
-  </div>
+ <h2 style="font-size:18px;font-weight:800;color:#f5c800;">{{ outlet.name }} — Stock Dashboard</h2>
+ <div class="flex gap-2">
+ <a href="{% url 'stock:par_report' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm"> PAR Report</a>
+ <a href="{% url 'stock:count_list' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm"> Counts</a>
+ <a href="{% url 'stock:item_list' %}?outlet_pk={{ outlet.pk }}" class="btn btn-primary btn-sm"> All Items</a>
+ </div>
 </div>
 {% endif %}
 <!-- Stats -->
 <div class="stats-grid" style="margin-bottom:20px;">
-  <div class="stat-card">
-    <div class="stat-icon blue"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
-    <div><div class="stat-value">{{ total_items }}</div><div class="stat-label">Total Items</div></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon red"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-    <div><div class="stat-value">{{ out_of_stock|length }}</div><div class="stat-label">Out of Stock</div></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon orange"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div>
-    <div><div class="stat-value">{{ critical|length }}</div><div class="stat-label">Critical</div></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon green"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-    <div><div class="stat-value" style="font-size:18px;">${{ total_value|floatformat:2 }}</div><div class="stat-label">Stock Value</div></div>
-  </div>
+ <div class="stat-card">
+ <div><div class="stat-value">{{ total_items }}</div><div class="stat-label">Total Items</div></div>
+ </div>
+ <div class="stat-card">
+ <div><div class="stat-value">{{ out_of_stock|length }}</div><div class="stat-label">Out of Stock</div></div>
+ </div>
+ <div class="stat-card">
+ <div><div class="stat-value">{{ critical|length }}</div><div class="stat-label">Critical</div></div>
+ </div>
+ <div class="stat-card">
+ <div><div class="stat-value" style="font-size:18px;">${{ total_value|floatformat:2 }}</div><div class="stat-label">Stock Value</div></div>
+ </div>
 </div>
 
 <div class="grid grid-2" style="margin-bottom:20px;">
-  <!-- Quick links -->
-  <div class="card">
-    <div class="card-header"><span class="card-title">Quick Actions</span></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <a href="{% url 'stock:count_create' %}{% if outlet %}?outlet_pk={{ outlet.pk }}{% endif %}" class="btn btn-primary">📋 New Count</a>
-      <a href="{% url 'stock:movement_create' %}" class="btn btn-outline">📦 Record Movement</a>
-      <a href="{% url 'stock:par_report' %}{% if outlet %}?outlet_pk={{ outlet.pk }}{% endif %}" class="btn btn-outline">📊 PAR Report</a>
-      <a href="{% url 'stock:item_create' %}{% if outlet %}?outlet_pk={{ outlet.pk }}{% endif %}" class="btn btn-outline">+ Add Item</a>
-    </div>
-  </div>
-  <!-- Items needing order -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">🛒 Needs Ordering</span>
-      <span class="badge badge-warning">{{ needs_order|length }} items</span>
-    </div>
-    {% for item in needs_order|slice:":6" %}
-    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">
-      <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:600;color:#1a1200;">{{ item.name }}</a>
-      <span style="color:var(--danger);font-weight:700;">Order {{ item.order_qty_needed|floatformat:1 }} {{ item.get_unit_display }}</span>
-    </div>
-    {% empty %}
-    <p class="text-sm text-muted" style="padding-top:8px;">All items at or above PAR ✓</p>
-    {% endfor %}
-    {% if needs_order|length > 6 %}
-    <a href="{% url 'stock:par_report' %}" class="text-sm" style="display:block;margin-top:8px;color:var(--brand-accent);font-weight:600;">View all {{ needs_order|length }} →</a>
-    {% endif %}
-  </div>
+ <!-- Quick links -->
+ <div class="card">
+ <div class="card-header"><span class="card-title">Quick Actions</span></div>
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+ <a href="{% url 'stock:count_create' %}{% if outlet %}?outlet_pk={{ outlet.pk }}{% endif %}" class="btn btn-primary"> New Count</a>
+ <a href="{% url 'stock:movement_create' %}" class="btn btn-outline"> Record Movement</a>
+ <a href="{% url 'stock:par_report' %}{% if outlet %}?outlet_pk={{ outlet.pk }}{% endif %}" class="btn btn-outline"> PAR Report</a>
+ <a href="{% url 'stock:item_create' %}{% if outlet %}?outlet_pk={{ outlet.pk }}{% endif %}" class="btn btn-outline">+ Add Item</a>
+ </div>
+ </div>
+ <!-- Items needing order -->
+ <div class="card">
+ <div class="card-header">
+ <span class="card-title"> Needs Ordering</span>
+ <span class="badge badge-warning">{{ needs_order|length }} items</span>
+ </div>
+ {% for item in needs_order|slice:":6" %}
+ <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #555555;font-size:13px;">
+ <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:600;color:#f0f0f0;">{{ item.name }}</a>
+ <span style="color:var(--danger);font-weight:700;">Order {{ item.order_qty_needed|floatformat:1 }} {{ item.get_unit_display }}</span>
+ </div>
+ {% empty %}
+ <p class="text-sm text-muted" style="padding-top:8px;">All items at or above PAR </p>
+ {% endfor %}
+ {% if needs_order|length > 6 %}
+ <a href="{% url 'stock:par_report' %}" class="text-sm" style="display:block;margin-top:8px;color:var(--brand-accent);font-weight:600;">View all {{ needs_order|length }} →</a>
+ {% endif %}
+ </div>
 </div>
 
 <!-- Alert: out of stock + critical -->
 {% if out_of_stock or critical %}
 <div class="card" style="margin-bottom:20px;border-left:4px solid var(--danger);">
-  <div class="card-header"><span class="card-title" style="color:#991b1b;">🔴 Immediate Attention Required</span></div>
-  <div class="table-wrap">
-  <table class="table">
-    <thead><tr><th>Item</th><th>Category</th><th>Location</th><th>Current</th><th>PAR</th><th>Status</th><th></th></tr></thead>
-    <tbody>
-    {% for item in out_of_stock %}
-    <tr>
-      <td><strong>{{ item.name }}</strong></td>
-      <td class="text-sm">{{ item.category.emoji }} {{ item.category.name }}</td>
-      <td class="text-sm">{{ item.location.name|default:"—" }}</td>
-      <td style="color:var(--danger);font-weight:800;">0</td>
-      <td class="text-sm">{{ item.par_level }} {{ item.get_unit_display }}</td>
-      <td><span class="badge status-out">Out of Stock</span></td>
-      <td><a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">+ Receive</a></td>
-    </tr>
-    {% endfor %}
-    {% for item in critical %}
-    <tr>
-      <td><strong>{{ item.name }}</strong></td>
-      <td class="text-sm">{{ item.category.emoji }} {{ item.category.name }}</td>
-      <td class="text-sm">{{ item.location.name|default:"—" }}</td>
-      <td style="color:#f97316;font-weight:800;">{{ item.current_stock }}</td>
-      <td class="text-sm">{{ item.par_level }} {{ item.get_unit_display }}</td>
-      <td><span class="badge status-critical">Critical</span></td>
-      <td><a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">+ Receive</a></td>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </div>
+ <div class="card-header"><span class="card-title" style="color:#991b1b;"> Immediate Attention Required</span></div>
+ <div class="table-wrap">
+ <table class="table">
+ <thead><tr><th>Item</th><th>Category</th><th>Location</th><th>Current</th><th>PAR</th><th>Status</th><th></th></tr></thead>
+ <tbody>
+ {% for item in out_of_stock %}
+ <tr>
+ <td><strong>{{ item.name }}</strong></td>
+ <td class="text-sm">{{ item.category.emoji }} {{ item.category.name }}</td>
+ <td class="text-sm">{{ item.location.name|default:"—" }}</td>
+ <td style="color:var(--danger);font-weight:800;">0</td>
+ <td class="text-sm">{{ item.par_level }} {{ item.get_unit_display }}</td>
+ <td><span class="badge status-out">Out of Stock</span></td>
+ <td><a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">+ Receive</a></td>
+ </tr>
+ {% endfor %}
+ {% for item in critical %}
+ <tr>
+ <td><strong>{{ item.name }}</strong></td>
+ <td class="text-sm">{{ item.category.emoji }} {{ item.category.name }}</td>
+ <td class="text-sm">{{ item.location.name|default:"—" }}</td>
+ <td style="color:#f97316;font-weight:800;">{{ item.current_stock }}</td>
+ <td class="text-sm">{{ item.par_level }} {{ item.get_unit_display }}</td>
+ <td><span class="badge status-critical">Critical</span></td>
+ <td><a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">+ Receive</a></td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
 </div>
 {% endif %}
 
 <!-- Recent movements + counts -->
 <div class="grid grid-2">
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Recent Movements</span>
-      <a href="{% url 'stock:movement_list' %}" class="btn btn-outline btn-sm">View All</a>
-    </div>
-    {% for m in recent_movements %}
-    <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
-      <div style="font-size:18px;flex-shrink:0;">
-        {% if m.movement_type == 'delivery' %}📥
-        {% elif m.movement_type == 'usage' %}📤
-        {% elif m.movement_type == 'wastage' %}🗑️
-        {% else %}🔄{% endif %}
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div class="text-sm fw-bold" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.item.name }}</div>
-        <div class="text-xs text-muted">{{ m.get_movement_type_display }} · {{ m.quantity }} {{ m.item.get_unit_display }}</div>
-        <div class="text-xs text-muted">{{ m.created_at|date:"d M H:i" }} · {{ m.created_by.display_name }}</div>
-      </div>
-    </div>
-    {% empty %}
-    <p class="text-sm text-muted">No movements yet.</p>
-    {% endfor %}
-  </div>
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Recent Stock Counts</span>
-      <a href="{% url 'stock:count_list' %}" class="btn btn-outline btn-sm">View All</a>
-    </div>
-    {% for count in recent_counts %}
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
-      <div>
-        <div class="text-sm fw-bold">{{ count.location.name }}</div>
-        <div class="text-xs text-muted">{{ count.count_date|date:"d M Y" }} · {{ count.get_shift_display }} · {{ count.conducted_by.display_name }}</div>
-      </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        {% if count.status == 'completed' %}
-        <span class="badge badge-success">Done</span>
-        <a href="{% url 'stock:count_detail' count.pk %}" class="btn btn-outline btn-sm">View</a>
-        {% else %}
-        <span class="badge badge-warning">Draft</span>
-        <a href="{% url 'stock:count_fill' count.pk %}" class="btn btn-primary btn-sm">Continue</a>
-        {% endif %}
-      </div>
-    </div>
-    {% empty %}
-    <p class="text-sm text-muted">No stock counts yet.</p>
-    {% endfor %}
-  </div>
+ <div class="card">
+ <div class="card-header">
+ <span class="card-title">Recent Movements</span>
+ <a href="{% url 'stock:movement_list' %}" class="btn btn-outline btn-sm">View All</a>
+ </div>
+ {% for m in recent_movements %}
+ <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #555555;align-items:flex-start;">
+ <div style="font-size:18px;flex-shrink:0;">
+ {% if m.movement_type == 'delivery' %}
+ {% elif m.movement_type == 'usage' %}
+ {% elif m.movement_type == 'wastage' %}
+ {% else %}{% endif %}
+ </div>
+ <div style="flex:1;min-width:0;">
+ <div class="text-sm fw-bold" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.item.name }}</div>
+ <div class="text-xs text-muted">{{ m.get_movement_type_display }} · {{ m.quantity }} {{ m.item.get_unit_display }}</div>
+ <div class="text-xs text-muted">{{ m.created_at|date:"d M H:i" }} · {{ m.created_by.display_name }}</div>
+ </div>
+ </div>
+ {% empty %}
+ <p class="text-sm text-muted">No movements yet.</p>
+ {% endfor %}
+ </div>
+ <div class="card">
+ <div class="card-header">
+ <span class="card-title">Recent Stock Counts</span>
+ <a href="{% url 'stock:count_list' %}" class="btn btn-outline btn-sm">View All</a>
+ </div>
+ {% for count in recent_counts %}
+ <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #555555;">
+ <div>
+ <div class="text-sm fw-bold">{{ count.location.name }}</div>
+ <div class="text-xs text-muted">{{ count.count_date|date:"d M Y" }} · {{ count.get_shift_display }} · {{ count.conducted_by.display_name }}</div>
+ </div>
+ <div style="display:flex;gap:6px;align-items:center;">
+ {% if count.status == 'completed' %}
+ <span class="badge badge-success">Done</span>
+ <a href="{% url 'stock:count_detail' count.pk %}" class="btn btn-outline btn-sm">View</a>
+ {% else %}
+ <span class="badge badge-warning">Draft</span>
+ <a href="{% url 'stock:count_fill' count.pk %}" class="btn btn-primary btn-sm">Continue</a>
+ {% endif %}
+ </div>
+ </div>
+ {% empty %}
+ <p class="text-sm text-muted">No stock counts yet.</p>
+ {% endfor %}
+ </div>
 </div>
 {% endblock %}

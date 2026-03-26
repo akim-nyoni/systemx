@@ -3,167 +3,163 @@
 {% block page_title %}{{ dept.name }} Reports{% endblock %}
 {% block extra_css %}
 <style>
-  .filter-bar { background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:20px; }
-  .filter-row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
-  .filter-group { display:flex; flex-direction:column; gap:4px; min-width:140px; flex:1; }
-  .filter-group label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); }
-  .flagged-row td { background:#fffafa !important; }
+ .filter-bar { background:#1a1a1a; border:1px solid #555555; border-radius:12px; padding:16px; margin-bottom:20px; }
+ .filter-row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
+ .filter-group { display:flex; flex-direction:column; gap:4px; min-width:140px; flex:1; }
+ .filter-group label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); }
+ .flagged-row td { background:#1a0808 !important; }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Breadcrumb -->
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--muted);flex-wrap:wrap;">
-  <a href="{% url 'dashboard:home' %}" style="color:var(--muted);text-decoration:none;">🏠 Dashboard</a>
-  <span>›</span>
-  <a href="{% url 'dashboard:outlet_detail' outlet.pk %}" style="color:var(--muted);text-decoration:none;">{{ outlet.emoji }} {{ outlet.name }}</a>
-  <span>›</span>
-  <span style="color:#1a1200;font-weight:700;">{{ dept.emoji }} {{ dept.name }}</span>
+ <a href="{% url 'dashboard:home' %}" style="color:#aaaaaa;text-decoration:none;"> Dashboard</a>
+ <span>›</span>
+ <a href="{% url 'dashboard:outlet_detail' outlet.pk %}" style="color:#aaaaaa;text-decoration:none;">{{ outlet.name }}</a>
+ <span>›</span>
+ <span style="color:#f5c800;font-weight:700;">{{ dept.name }}</span>
 </div>
 
 <!-- Stats -->
 <div class="stats-grid" style="margin-bottom:20px;">
-  <div class="stat-card">
-    <div class="stat-icon blue"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg></div>
-    <div><div class="stat-value">{{ total }}</div><div class="stat-label">Total</div></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon green"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-    <div><div class="stat-value">{{ perfect }}</div><div class="stat-label">Perfect</div></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon red"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div>
-    <div><div class="stat-value">{{ flagged }}</div><div class="stat-label">With Issues</div></div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon orange"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-    <div><div class="stat-value">{{ flagged_items|length }}</div><div class="stat-label">Individual Flags</div></div>
-  </div>
+ <div class="stat-card">
+ <div><div class="stat-value">{{ total }}</div><div class="stat-label">Total</div></div>
+ </div>
+ <div class="stat-card">
+ <div><div class="stat-value">{{ perfect }}</div><div class="stat-label">Perfect</div></div>
+ </div>
+ <div class="stat-card">
+ <div><div class="stat-value">{{ flagged }}</div><div class="stat-label">With Issues</div></div>
+ </div>
+ <div class="stat-card">
+ <div><div class="stat-value">{{ flagged_items|length }}</div><div class="stat-label">Individual Flags</div></div>
+ </div>
 </div>
 
 <!-- Filters -->
 <div class="filter-bar">
-  <form method="get">
-    <div class="filter-row">
-      <div class="filter-group">
-        <label>Staff Member</label>
-        <select name="staff" class="form-select">
-          <option value="">All Staff</option>
-          {% for s in staff_list %}
-          <option value="{{ s.pk }}" {% if f_staff == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.display_name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="filter-group">
-        <label>Checklist</label>
-        <select name="form" class="form-select">
-          <option value="">All Checklists</option>
-          {% for f in forms %}
-          <option value="{{ f.pk }}" {% if f_form == f.pk|stringformat:"s" %}selected{% endif %}>{{ f.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="filter-group">
-        <label>From Date</label>
-        <input type="date" name="date_from" class="form-control" value="{{ f_date_from }}">
-      </div>
-      <div class="filter-group">
-        <label>To Date</label>
-        <input type="date" name="date_to" class="form-control" value="{{ f_date_to }}">
-      </div>
-      <div class="filter-group">
-        <label>Result</label>
-        <select name="response" class="form-select">
-          <option value="">All</option>
-          <option value="no" {% if f_response == 'no' %}selected{% endif %}>Has Issues</option>
-          <option value="perfect" {% if f_response == 'perfect' %}selected{% endif %}>Perfect Only</option>
-        </select>
-      </div>
-      <div class="filter-group" style="flex-direction:row;align-items:flex-end;gap:6px;min-width:unset;">
-        <button type="submit" class="btn btn-primary btn-sm" style="flex:1;">Apply</button>
-        <a href="{% url 'dashboard:outlet_dept_reports' outlet.pk dept.pk %}" class="btn btn-outline btn-sm">Clear</a>
-      </div>
-    </div>
-  </form>
+ <form method="get">
+ <div class="filter-row">
+ <div class="filter-group">
+ <label>Staff Member</label>
+ <select name="staff" class="form-select">
+ <option value="">All Staff</option>
+ {% for s in staff_list %}
+ <option value="{{ s.pk }}" {% if f_staff == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.display_name }}</option>
+ {% endfor %}
+ </select>
+ </div>
+ <div class="filter-group">
+ <label>Checklist</label>
+ <select name="form" class="form-select">
+ <option value="">All Checklists</option>
+ {% for f in forms %}
+ <option value="{{ f.pk }}" {% if f_form == f.pk|stringformat:"s" %}selected{% endif %}>{{ f.name }}</option>
+ {% endfor %}
+ </select>
+ </div>
+ <div class="filter-group">
+ <label>From Date</label>
+ <input type="date" name="date_from" class="form-control" value="{{ f_date_from }}">
+ </div>
+ <div class="filter-group">
+ <label>To Date</label>
+ <input type="date" name="date_to" class="form-control" value="{{ f_date_to }}">
+ </div>
+ <div class="filter-group">
+ <label>Result</label>
+ <select name="response" class="form-select">
+ <option value="">All</option>
+ <option value="no" {% if f_response == 'no' %}selected{% endif %}>Has Issues</option>
+ <option value="perfect" {% if f_response == 'perfect' %}selected{% endif %}>Perfect Only</option>
+ </select>
+ </div>
+ <div class="filter-group" style="flex-direction:row;align-items:flex-end;gap:6px;min-width:unset;">
+ <button type="submit" class="btn btn-primary btn-sm" style="flex:1;">Apply</button>
+ <a href="{% url 'dashboard:outlet_dept_reports' outlet.pk dept.pk %}" class="btn btn-outline btn-sm">Clear</a>
+ </div>
+ </div>
+ </form>
 </div>
 
 <!-- Export/Print -->
 <div class="flex-between mb-3">
-  <span class="text-sm text-muted">{{ total }} submission{{ total|pluralize }}</span>
-  <div class="flex gap-2">
-    <a href="{% url 'dashboard:export_excel' %}?{{ request.GET.urlencode }}" class="btn btn-success btn-sm">⬇ Excel</a>
-    <a href="{% url 'dashboard:print_report' %}?{{ request.GET.urlencode }}" target="_blank" class="btn btn-outline btn-sm">🖨️ Print</a>
-  </div>
+ <span class="text-sm text-muted">{{ total }} submission{{ total|pluralize }}</span>
+ <div class="flex gap-2">
+ <a href="{% url 'dashboard:export_excel' %}?{{ request.GET.urlencode }}" class="btn btn-success btn-sm"> Excel</a>
+ <a href="{% url 'dashboard:print_report' %}?{{ request.GET.urlencode }}" target="_blank" class="btn btn-outline btn-sm"> Print</a>
+ </div>
 </div>
 
 <!-- Submissions table -->
 <div class="card" style="margin-bottom:20px;">
-  {% if submissions %}
-  <div class="table-wrap">
-  <table class="table">
-    <thead>
-      <tr><th>Checklist</th><th>Staff Member</th><th>Shift</th><th>Date &amp; Time</th><th>Completion</th><th>Issues</th><th></th></tr>
-    </thead>
-    <tbody>
-    {% for sub in submissions %}
-    <tr class="{% if sub.no_responses > 0 %}flagged-row{% endif %}">
-      <td><strong>{{ sub.form.name }}</strong></td>
-      <td>{{ sub.submitted_by.display_name }}</td>
-      <td>{{ sub.get_shift_display }}</td>
-      <td class="text-sm text-muted" style="white-space:nowrap;">{{ sub.submitted_at|date:"d M Y H:i"|default:"—" }}</td>
-      <td style="min-width:90px;">
-        <div class="progress" style="margin-bottom:3px;"><div class="progress-bar {% if sub.completion_percentage == 100 %}success{% elif sub.completion_percentage < 60 %}danger{% endif %}" style="width:{{ sub.completion_percentage }}%"></div></div>
-        <span class="text-sm">{{ sub.completion_percentage }}%</span>
-      </td>
-      <td>
-        {% if sub.no_responses > 0 %}<span class="badge badge-warning">⚠ {{ sub.no_responses }}</span>
-        {% else %}<span class="badge badge-success">✓</span>{% endif %}
-      </td>
-      <td>
-        <div class="flex gap-1">
-          <a href="{% url 'forms_builder:submission_detail' sub.pk %}" class="btn btn-primary btn-sm">View</a>
-          {% if request.user.can_delete_submissions %}
-          <a href="{% url 'dashboard:delete_submission' sub.pk %}" class="btn btn-danger btn-sm">Del</a>
-          {% endif %}
-        </div>
-      </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </div>
-  {% else %}
-  <div class="empty-state"><p>No submissions match your filters.</p></div>
-  {% endif %}
+ {% if submissions %}
+ <div class="table-wrap">
+ <table class="table">
+ <thead>
+ <tr><th>Checklist</th><th>Staff Member</th><th>Shift</th><th>Date &amp; Time</th><th>Completion</th><th>Issues</th><th></th></tr>
+ </thead>
+ <tbody>
+ {% for sub in submissions %}
+ <tr class="{% if sub.no_responses > 0 %}flagged-row{% endif %}">
+ <td><strong>{{ sub.form.name }}</strong></td>
+ <td>{{ sub.submitted_by.display_name }}</td>
+ <td>{{ sub.get_shift_display }}</td>
+ <td class="text-sm text-muted" style="white-space:nowrap;">{{ sub.submitted_at|date:"d M Y H:i"|default:"—" }}</td>
+ <td style="min-width:90px;">
+ <div class="progress" style="margin-bottom:3px;"><div class="progress-bar {% if sub.completion_percentage == 100 %}success{% elif sub.completion_percentage < 60 %}danger{% endif %}" style="width:{{ sub.completion_percentage }}%"></div></div>
+ <span class="text-sm">{{ sub.completion_percentage }}%</span>
+ </td>
+ <td>
+ {% if sub.no_responses > 0 %}<span class="badge badge-warning"> {{ sub.no_responses }}</span>
+ {% else %}<span class="badge badge-success"></span>{% endif %}
+ </td>
+ <td>
+ <div class="flex gap-1">
+ <a href="{% url 'forms_builder:submission_detail' sub.pk %}" class="btn btn-primary btn-sm">View</a>
+ {% if request.user.can_delete_submissions %}
+ <a href="{% url 'dashboard:delete_submission' sub.pk %}" class="btn btn-danger btn-sm">Del</a>
+ {% endif %}
+ </div>
+ </td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
+ {% else %}
+ <div class="empty-state"><p>No submissions match your filters.</p></div>
+ {% endif %}
 </div>
 
 <!-- Flagged items -->
 {% if flagged_items %}
 <div class="card">
-  <div class="card-header">
-    <span class="card-title" style="color:#991b1b;">⚠️ Flagged Items</span>
-    <span class="text-sm text-muted">{{ flagged_items|length }} item{{ flagged_items|length|pluralize }}</span>
-  </div>
-  <div class="table-wrap">
-  <table class="table">
-    <thead><tr><th>Item</th><th>Section</th><th>Staff</th><th>Date</th><th>Comment</th><th>Photo</th></tr></thead>
-    <tbody>
-    {% for r in flagged_items %}
-    <tr>
-      <td><strong>{{ r.item.label }}</strong></td>
-      <td class="text-sm text-muted">{{ r.item.section.title }}</td>
-      <td>{{ r.submission.submitted_by.display_name }}</td>
-      <td class="text-sm text-muted" style="white-space:nowrap;">{{ r.submission.submitted_at|date:"d M Y"|default:"—" }}</td>
-      <td class="text-sm">{{ r.comment|default:"—" }}</td>
-      <td>
-        {% if r.image and r.image.name %}<a href="{{ r.image.url }}" target="_blank"><img src="{{ r.image.url }}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;"></a>
-        {% else %}—{% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </div>
+ <div class="card-header">
+ <span class="card-title" style="color:#991b1b;"> Flagged Items</span>
+ <span class="text-sm text-muted">{{ flagged_items|length }} item{{ flagged_items|length|pluralize }}</span>
+ </div>
+ <div class="table-wrap">
+ <table class="table">
+ <thead><tr><th>Item</th><th>Section</th><th>Staff</th><th>Date</th><th>Comment</th><th>Photo</th></tr></thead>
+ <tbody>
+ {% for r in flagged_items %}
+ <tr>
+ <td><strong>{{ r.item.label }}</strong></td>
+ <td class="text-sm text-muted">{{ r.item.section.title }}</td>
+ <td>{{ r.submission.submitted_by.display_name }}</td>
+ <td class="text-sm text-muted" style="white-space:nowrap;">{{ r.submission.submitted_at|date:"d M Y"|default:"—" }}</td>
+ <td class="text-sm">{{ r.comment|default:"—" }}</td>
+ <td>
+ {% if r.image and r.image.name %}<a href="{{ r.image.url }}" target="_blank"><img src="{{ r.image.url }}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;"></a>
+ {% else %}—{% endif %}
+ </td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
 </div>
 {% endif %}
 {% endblock %}

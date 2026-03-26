@@ -3,35 +3,35 @@
 {% block page_title %}Form Templates{% endblock %}
 {% block content %}
 <div class="flex-between mb-4">
-  <h2 style="font-size:18px; font-weight:700; color:#1e3a5f;">Form Templates</h2>
-  <a href="{% url 'forms_builder:template_create' %}" class="btn btn-primary">+ New Template</a>
+ <h2 style="font-size:18px; font-weight:700; color:#1e3a5f;">Form Templates</h2>
+ <a href="{% url 'forms_builder:template_create' %}" class="btn btn-primary">+ New Template</a>
 </div>
 <div class="card">
-  {% if templates %}
-  <table class="table">
-    <thead><tr><th>Name</th><th>Category</th><th>Sections</th><th>Status</th><th>Access</th><th>Created</th><th></th></tr></thead>
-    <tbody>
-      {% for t in templates %}
-      <tr>
-        <td><strong>{{ t.name }}</strong></td>
-        <td>{{ t.get_category_display }}</td>
-        <td>{{ t.sections.count }} sections</td>
-        <td>{% if t.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-draft">Inactive</span>{% endif %}</td>
-        <td>{% if t.all_managers_access %}<span class="badge badge-info">All Managers</span>{% else %}<span class="badge badge-warning">Restricted</span>{% endif %}</td>
-        <td class="text-sm text-muted">{{ t.created_at|date:"d M Y" }}</td>
-        <td>
-          <a href="{% url 'forms_builder:template_builder' t.pk %}" class="btn btn-primary btn-sm">Build</a>
-          <a href="{% url 'forms_builder:template_edit' t.pk %}" class="btn btn-outline btn-sm">Edit</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <div class="empty-state">
-    <p>No templates yet.</p>
-    <a href="{% url 'forms_builder:template_create' %}" class="btn btn-primary" style="margin-top:12px;">Create Your First Form</a>
-  </div>
-  {% endif %}
+ {% if templates %}
+ <table class="table">
+ <thead><tr><th>Name</th><th>Category</th><th>Sections</th><th>Status</th><th>Access</th><th>Created</th><th></th></tr></thead>
+ <tbody>
+ {% for t in templates %}
+ <tr>
+ <td><strong>{{ t.name }}</strong></td>
+ <td>{{ t.get_category_display }}</td>
+ <td>{{ t.sections.count }} sections</td>
+ <td>{% if t.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-draft">Inactive</span>{% endif %}</td>
+ <td>{% if t.all_managers_access %}<span class="badge badge-info">All Managers</span>{% else %}<span class="badge badge-warning">Restricted</span>{% endif %}</td>
+ <td class="text-sm text-muted">{{ t.created_at|date:"d M Y" }}</td>
+ <td>
+ <a href="{% url 'forms_builder:template_builder' t.pk %}" class="btn btn-primary btn-sm">Build</a>
+ <a href="{% url 'forms_builder:template_edit' t.pk %}" class="btn btn-outline btn-sm">Edit</a>
+ </td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ {% else %}
+ <div class="empty-state">
+ <p>No templates yet.</p>
+ <a href="{% url 'forms_builder:template_create' %}" class="btn btn-primary" style="margin-top:12px;">Create Your First Form</a>
+ </div>
+ {% endif %}
 </div>
 {% endblock %}

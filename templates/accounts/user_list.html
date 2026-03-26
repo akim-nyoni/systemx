@@ -3,58 +3,58 @@
 {% block page_title %}Users{% endblock %}
 {% block content %}
 <div class="flex-between mb-4">
-  <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">System Users</h2>
-  <div class="flex gap-2">
-    {% if user.is_admin %}<a href="{% url 'accounts:role_list' %}" class="btn btn-outline btn-sm">Manage Roles</a>{% endif %}
-    <a href="{% url 'accounts:user_create' %}" class="btn btn-primary">+ Add User</a>
-  </div>
+ <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">System Users</h2>
+ <div class="flex gap-2">
+ {% if user.is_admin %}<a href="{% url 'accounts:role_list' %}" class="btn btn-outline btn-sm">Manage Roles</a>{% endif %}
+ <a href="{% url 'accounts:user_create' %}" class="btn btn-primary">+ Add User</a>
+ </div>
 </div>
 
 <!-- Desktop table -->
 <div class="card d-none" style="display:block;" id="desktopTable">
-  <div class="table-wrap">
-  <table class="table">
-    <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Department</th><th>Outlet</th><th>Status</th><th></th></tr></thead>
-    <tbody>
-      {% for u in users %}
-      <tr>
-        <td>
-          <strong>{{ u.get_full_name|default:u.username }}</strong>
-          {% if u.email %}<br><span class="text-xs text-muted">{{ u.email }}</span>{% endif %}
-        </td>
-        <td class="text-muted text-sm">{{ u.username }}</td>
-        <td>
-          {% if u.custom_role %}<span class="badge badge-info">{{ u.custom_role.name }}</span>
-          {% else %}<span class="badge badge-draft">No Role</span>{% endif %}
-        </td>
-        <td>
-          {% if u.department %}<span class="badge badge-success">{{ u.department.name }}</span>
-          {% else %}<span class="text-muted text-sm">—</span>{% endif %}
-        </td>
-        <td class="text-sm">{{ u.outlet_name }}</td>
-        <td>
-          {% if u.is_active %}<span class="badge badge-success">Active</span>
-          {% else %}<span class="badge badge-draft">Inactive</span>{% endif %}
-        </td>
-        <td>
-          <div class="flex gap-1">
-            <a href="{% url 'accounts:user_edit' u.pk %}" class="btn btn-outline btn-sm">Edit</a>
-            {% if u != request.user %}
-            <a href="{% url 'accounts:user_toggle' u.pk %}" class="btn btn-outline btn-sm" onclick="return confirm('Toggle status for {{ u.display_name }}?')">
-              {% if u.is_active %}Disable{% else %}Enable{% endif %}
-            </a>
-            {% if request.user.is_admin %}
-            <a href="{% url 'accounts:user_delete' u.pk %}" class="btn btn-danger btn-sm">Del</a>
-            {% endif %}
-            {% endif %}
-          </div>
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="6"><div class="empty-state"><p>No users found.</p></div></td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  </div>
+ <div class="table-wrap">
+ <table class="table">
+ <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Department</th><th>Outlet</th><th>Status</th><th></th></tr></thead>
+ <tbody>
+ {% for u in users %}
+ <tr>
+ <td>
+ <strong>{{ u.get_full_name|default:u.username }}</strong>
+ {% if u.email %}<br><span class="text-xs text-muted">{{ u.email }}</span>{% endif %}
+ </td>
+ <td class="text-muted text-sm">{{ u.username }}</td>
+ <td>
+ {% if u.custom_role %}<span class="badge badge-info">{{ u.custom_role.name }}</span>
+ {% else %}<span class="badge badge-draft">No Role</span>{% endif %}
+ </td>
+ <td>
+ {% if u.department %}<span class="badge badge-success">{{ u.department.name }}</span>
+ {% else %}<span class="text-muted text-sm">—</span>{% endif %}
+ </td>
+ <td class="text-sm">{{ u.outlet_name }}</td>
+ <td>
+ {% if u.is_active %}<span class="badge badge-success">Active</span>
+ {% else %}<span class="badge badge-draft">Inactive</span>{% endif %}
+ </td>
+ <td>
+ <div class="flex gap-1">
+ <a href="{% url 'accounts:user_edit' u.pk %}" class="btn btn-outline btn-sm">Edit</a>
+ {% if u != request.user %}
+ <a href="{% url 'accounts:user_toggle' u.pk %}" class="btn btn-outline btn-sm" onclick="return confirm('Toggle status for {{ u.display_name }}?')">
+ {% if u.is_active %}Disable{% else %}Enable{% endif %}
+ </a>
+ {% if request.user.is_admin %}
+ <a href="{% url 'accounts:user_delete' u.pk %}" class="btn btn-danger btn-sm">Del</a>
+ {% endif %}
+ {% endif %}
+ </div>
+ </td>
+ </tr>
+ {% empty %}
+ <tr><td colspan="6"><div class="empty-state"><p>No users found.</p></div></td></tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
 </div>
 {% endblock %}

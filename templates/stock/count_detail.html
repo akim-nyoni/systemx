@@ -3,42 +3,42 @@
 {% block page_title %}Count Detail{% endblock %}
 {% block content %}
 <div class="card" style="margin-bottom:16px;">
-  <div class="flex-between">
-    <div>
-      <h2 style="font-size:18px;font-weight:800;color:#1a1200;">{{ count.location }} — Stock Count</h2>
-      <p class="text-sm text-muted">{{ count.count_date|date:"d M Y" }} · {{ count.get_shift_display }} · {{ count.conducted_by.display_name }}</p>
-    </div>
-    <div class="flex gap-2">
-      <span class="badge badge-success" style="align-self:center;">✓ Completed</span>
-      <a href="{% url 'stock:count_list' %}" class="btn btn-outline btn-sm">← Counts</a>
-    </div>
-  </div>
+ <div class="flex-between">
+ <div>
+ <h2 style="font-size:18px;font-weight:800;color:#f5c800;">{{ count.location }} — Stock Count</h2>
+ <p class="text-sm text-muted">{{ count.count_date|date:"d M Y" }} · {{ count.get_shift_display }} · {{ count.conducted_by.display_name }}</p>
+ </div>
+ <div class="flex gap-2">
+ <span class="badge badge-success" style="align-self:center;"> Completed</span>
+ <a href="{% url 'stock:count_list' %}" class="btn btn-outline btn-sm">← Counts</a>
+ </div>
+ </div>
 </div>
 {% for cat, lines in grouped.items %}
 <div class="section-header">{{ lines.0.item.category.emoji }} {{ cat }}</div>
 <div class="card" style="margin-bottom:12px;">
-  <div class="table-wrap">
-  <table class="table">
-    <thead><tr><th>Item</th><th>Expected</th><th>Counted</th><th>Variance</th><th>vs PAR</th></tr></thead>
-    <tbody>
-    {% for line in lines %}
-    <tr class="{% if line.variance_status == 'shortage' %}flagged-row{% endif %}">
-      <td><strong>{{ line.item.name }}</strong></td>
-      <td class="text-sm">{{ line.expected_qty|floatformat:1 }} {{ line.item.get_unit_display }}</td>
-      <td style="font-weight:700;">{{ line.counted_qty|floatformat:1|default:"—" }}</td>
-      <td style="font-weight:700;{% if line.variance and line.variance < 0 %}color:var(--danger);{% elif line.variance and line.variance > 0 %}color:var(--success);{% endif %}">
-        {% if line.variance %}{% if line.variance > 0 %}+{% endif %}{{ line.variance|floatformat:1 }}{% else %}—{% endif %}
-      </td>
-      <td>
-        {% if line.below_par %}<span class="badge" style="background:#fffbe6;color:#7a5c00;">🟡 Below PAR</span>
-        {% elif line.counted_qty is not None %}<span class="badge badge-success">OK</span>
-        {% else %}—{% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </div>
+ <div class="table-wrap">
+ <table class="table">
+ <thead><tr><th>Item</th><th>Expected</th><th>Counted</th><th>Variance</th><th>vs PAR</th></tr></thead>
+ <tbody>
+ {% for line in lines %}
+ <tr class="{% if line.variance_status == 'shortage' %}flagged-row{% endif %}">
+ <td><strong>{{ line.item.name }}</strong></td>
+ <td class="text-sm">{{ line.expected_qty|floatformat:1 }} {{ line.item.get_unit_display }}</td>
+ <td style="font-weight:700;">{{ line.counted_qty|floatformat:1|default:"—" }}</td>
+ <td style="font-weight:700;{% if line.variance and line.variance < 0 %}color:var(--danger);{% elif line.variance and line.variance > 0 %}color:var(--success);{% endif %}">
+ {% if line.variance %}{% if line.variance > 0 %}+{% endif %}{{ line.variance|floatformat:1 }}{% else %}—{% endif %}
+ </td>
+ <td>
+ {% if line.below_par %}<span class="badge" style="background:#1e1e00;color:#aaaaaa;"> Below PAR</span>
+ {% elif line.counted_qty is not None %}<span class="badge badge-success">OK</span>
+ {% else %}—{% endif %}
+ </td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
 </div>
 {% endfor %}
 {% endblock %}

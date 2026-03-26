@@ -3,121 +3,121 @@
 {% block page_title %}{{ outlet.name }}{% endblock %}
 {% block extra_css %}
 <style>
-  .dept-card {
-    background: var(--card-bg); border: 1.5px solid var(--border);
-    border-radius: 12px; overflow: hidden; margin-bottom: 12px;
-  }
-  .dept-card-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 18px; background: #fffbe6; border-bottom: 1px solid var(--border);
-  }
-  .dept-card-header.flagged { background: #fff5f5; border-bottom-color: #fecaca; }
-  .dept-card-body { padding: 14px 18px; }
-  .dept-stat-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 12px; }
-  .dept-stat { text-align: center; min-width: 70px; }
-  .dept-stat .num { font-size: 20px; font-weight: 900; color: #1a1200; line-height: 1; }
-  .dept-stat .num.danger { color: var(--danger); }
-  .dept-stat .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .sub-dept-list { display: flex; flex-wrap: wrap; gap: 6px; }
-  .sub-dept-chip {
-    font-size: 12px; font-weight: 600; padding: 4px 10px;
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: 20px; color: #1a1200;
-  }
+ .dept-card {
+ background: var(--card-bg); border: 1.5px solid #555555;
+ border-radius: 12px; overflow: hidden; margin-bottom: 12px;
+ }
+ .dept-card-header {
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 14px 18px; background: #1e1e00; border-bottom: 1px solid var(--border);
+ }
+ .dept-card-header.flagged { background: #1a0000; border-bottom-color: #fecaca; }
+ .dept-card-body { padding: 14px 18px; }
+ .dept-stat-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 12px; }
+ .dept-stat { text-align: center; min-width: 70px; }
+ .dept-stat .num { font-size: 20px; font-weight: 900; color: #f5c800; line-height: 1; }
+ .dept-stat .num.danger { color: var(--danger); }
+ .dept-stat .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+ .sub-dept-list { display: flex; flex-wrap: wrap; gap: 6px; }
+ .sub-dept-chip {
+ font-size: 12px; font-weight: 600; padding: 4px 10px;
+ background: var(--bg); border: 1px solid #555555;
+ border-radius: 20px; color: #f5c800;
+ }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Breadcrumb -->
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--muted);">
-  <a href="{% url 'dashboard:home' %}" style="color:var(--muted);text-decoration:none;">🏠 Dashboard</a>
-  <span>›</span>
-  <span style="color:#1a1200;font-weight:700;">{{ outlet.emoji }} {{ outlet.name }}</span>
+ <a href="{% url 'dashboard:home' %}" style="color:#aaaaaa;text-decoration:none;"> Dashboard</a>
+ <span>›</span>
+ <span style="color:#f5c800;font-weight:700;">{{ outlet.name }}</span>
 </div>
 
 <!-- Outlet header stats -->
 <div class="card" style="margin-bottom:20px;border-left:4px solid var(--brand-accent);">
-  <div class="flex-between" style="flex-wrap:wrap;gap:12px;">
-    <div>
-      <h2 style="font-size:20px;font-weight:900;color:#1a1200;">{{ outlet.emoji }} {{ outlet.name }}</h2>
-      {% if outlet.address %}<p class="text-sm text-muted">{{ outlet.address }}</p>{% endif %}
-    </div>
-    <div class="flex gap-2">
-      <a href="{% url 'dashboard:reports' %}?outlet={{ outlet.pk }}" class="btn btn-primary btn-sm">📊 All Reports</a>
-    </div>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
-    <div style="text-align:center;">
-      <div style="font-size:22px;font-weight:900;color:#1a1200;">{{ outlet_total }}</div>
-      <div class="text-xs text-muted">Total Submissions</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:22px;font-weight:900;color:var(--success);">{{ outlet_today }}</div>
-      <div class="text-xs text-muted">Today</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:22px;font-weight:900;{% if outlet_flagged > 0 %}color:var(--danger);{% else %}color:var(--success);{% endif %}">{{ outlet_flagged }}</div>
-      <div class="text-xs text-muted">Flagged</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:22px;font-weight:900;color:#1a1200;">{{ outlet_staff }}</div>
-      <div class="text-xs text-muted">Active Staff</div>
-    </div>
-  </div>
+ <div class="flex-between" style="flex-wrap:wrap;gap:12px;">
+ <div>
+ <h2 style="font-size:20px;font-weight:900;color:#f5c800;">{{ outlet.name }}</h2>
+ {% if outlet.address %}<p class="text-sm text-muted">{{ outlet.address }}</p>{% endif %}
+ </div>
+ <div class="flex gap-2">
+ <a href="{% url 'dashboard:reports' %}?outlet={{ outlet.pk }}" class="btn btn-primary btn-sm"> All Reports</a>
+ </div>
+ </div>
+ <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid #555555;">
+ <div style="text-align:center;">
+ <div style="font-size:22px;font-weight:900;color:#f5c800;">{{ outlet_total }}</div>
+ <div class="text-xs text-muted">Total Submissions</div>
+ </div>
+ <div style="text-align:center;">
+ <div style="font-size:22px;font-weight:900;color:var(--success);">{{ outlet_today }}</div>
+ <div class="text-xs text-muted">Today</div>
+ </div>
+ <div style="text-align:center;">
+ <div style="font-size:22px;font-weight:900;{% if outlet_flagged > 0 %}color:var(--danger);{% else %}color:var(--success);{% endif %}">{{ outlet_flagged }}</div>
+ <div class="text-xs text-muted">Flagged</div>
+ </div>
+ <div style="text-align:center;">
+ <div style="font-size:22px;font-weight:900;color:#f5c800;">{{ outlet_staff }}</div>
+ <div class="text-xs text-muted">Active Staff</div>
+ </div>
+ </div>
 </div>
 
 <!-- Departments -->
-<h3 style="font-size:15px;font-weight:800;color:#1a1200;margin-bottom:14px;">Departments</h3>
+<h3 style="font-size:15px;font-weight:800;color:#f5c800;margin-bottom:14px;">Departments</h3>
 
 {% for dd in dept_data %}
 <div class="dept-card">
-  <div class="dept-card-header {% if dd.flagged > 0 %}flagged{% endif %}">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span style="font-size:22px;">{{ dd.dept.emoji }}</span>
-      <div>
-        <div style="font-size:15px;font-weight:800;color:#1a1200;">{{ dd.dept.name }}</div>
-        {% if dd.children %}
-        <div class="sub-dept-list" style="margin-top:4px;">
-          {% for child in dd.children %}
-          <span class="sub-dept-chip">{{ child.emoji }} {{ child.name }}</span>
-          {% endfor %}
-        </div>
-        {% endif %}
-      </div>
-    </div>
-    <a href="{% url 'dashboard:outlet_dept_reports' outlet.pk dd.dept.pk %}" class="btn btn-primary btn-sm">
-      View Reports →
-    </a>
-  </div>
-  <div class="dept-card-body">
-    <div class="dept-stat-row">
-      <div class="dept-stat">
-        <div class="num">{{ dd.total }}</div>
-        <div class="lbl">Submissions</div>
-      </div>
-      <div class="dept-stat">
-        <div class="num">{{ dd.today }}</div>
-        <div class="lbl">Today</div>
-      </div>
-      <div class="dept-stat">
-        <div class="num {% if dd.flagged > 0 %}danger{% endif %}">{{ dd.flagged }}</div>
-        <div class="lbl">Flagged</div>
-      </div>
-      <div class="dept-stat">
-        <div class="num">{{ dd.staff }}</div>
-        <div class="lbl">Staff</div>
-      </div>
-    </div>
-    {% if dd.flagged > 0 %}
-    <div style="font-size:12px;color:var(--danger);background:#fff5f5;padding:6px 10px;border-radius:6px;">
-      ⚠️ {{ dd.flagged }} flagged submission{{ dd.flagged|pluralize }} this week — review needed
-    </div>
-    {% endif %}
-  </div>
+ <div class="dept-card-header {% if dd.flagged > 0 %}flagged{% endif %}">
+ <div style="display:flex;align-items:center;gap:10px;">
+ <span style="font-size:22px;">{{ dd.dept.emoji }}</span>
+ <div>
+ <div style="font-size:15px;font-weight:800;color:#f5c800;">{{ dd.dept.name }}</div>
+ {% if dd.children %}
+ <div class="sub-dept-list" style="margin-top:4px;">
+ {% for child in dd.children %}
+ <span class="sub-dept-chip">{{ child.name }}</span>
+ {% endfor %}
+ </div>
+ {% endif %}
+ </div>
+ </div>
+ <a href="{% url 'dashboard:outlet_dept_reports' outlet.pk dd.dept.pk %}" class="btn btn-primary btn-sm">
+ View Reports →
+ </a>
+ </div>
+ <div class="dept-card-body">
+ <div class="dept-stat-row">
+ <div class="dept-stat">
+ <div class="num">{{ dd.total }}</div>
+ <div class="lbl">Submissions</div>
+ </div>
+ <div class="dept-stat">
+ <div class="num">{{ dd.today }}</div>
+ <div class="lbl">Today</div>
+ </div>
+ <div class="dept-stat">
+ <div class="num {% if dd.flagged > 0 %}danger{% endif %}">{{ dd.flagged }}</div>
+ <div class="lbl">Flagged</div>
+ </div>
+ <div class="dept-stat">
+ <div class="num">{{ dd.staff }}</div>
+ <div class="lbl">Staff</div>
+ </div>
+ </div>
+ {% if dd.flagged > 0 %}
+ <div style="font-size:12px;color:var(--danger);background:#1a0000;padding:6px 10px;border-radius:6px;">
+ {{ dd.flagged }} flagged submission{{ dd.flagged|pluralize }} this week — review needed
+ </div>
+ {% endif %}
+ </div>
 </div>
 {% empty %}
 <div class="card empty-state">
-  <p>No departments configured for this outlet yet.</p>
+ <p>No departments configured for this outlet yet.</p>
 </div>
 {% endfor %}
 {% endblock %}

@@ -395,7 +395,7 @@ class Command(BaseCommand):
 
         self._seed_forms()
 
-        self.stdout.write(self.style.SUCCESS('\n✅ The Ambassador seeded successfully!'))
+        self.stdout.write(self.style.SUCCESS('\n The Ambassador seeded successfully!'))
         self.stdout.write(self.style.SUCCESS('   Admin:      admin   / admin123'))
         self.stdout.write(self.style.SUCCESS('   Manager:    akim    / manager123'))
         self.stdout.write(self.style.SUCCESS('   Supervisor: super1  / super123'))
@@ -423,7 +423,7 @@ class Command(BaseCommand):
             )
             outlet_map[code] = outlet
             action = 'Created' if created else 'Updated'
-            self.stdout.write(f'  ✓ {action}: {name}')
+            self.stdout.write(f'   {action}: {name}')
         return outlet_map
 
     def _create_departments(self, outlet_map=None):
@@ -449,7 +449,7 @@ class Command(BaseCommand):
                     )
                 dept_map[code] = dept
                 if created:
-                    self.stdout.write(f'  ✓ Created: {name} ({outlet.name if outlet else "global"})')
+                    self.stdout.write(f'   Created: {name} ({outlet.name if outlet else "global"})')
             # Link parents within this outlet
             for name, code, parent_code, order in DEPARTMENTS:
                 if parent_code and parent_code in dept_map:
@@ -509,7 +509,7 @@ class Command(BaseCommand):
             )
             roles[rd['name']] = role
             action = 'Created' if created else 'Updated'
-            self.stdout.write(f'  ✓ {action}: {role.name}')
+            self.stdout.write(f'   {action}: {role.name}')
 
         return roles
 
@@ -531,7 +531,7 @@ class Command(BaseCommand):
                     custom_role=roles.get(role_name),
                     is_superuser=is_super, is_staff=is_super,
                 )
-                self.stdout.write(f'  ✓ Created: {username} ({role_name})')
+                self.stdout.write(f'   Created: {username} ({role_name})')
 
     def _seed_forms(self):
         self.stdout.write('\nSeeding checklists...')
@@ -547,7 +547,7 @@ class Command(BaseCommand):
             if not created:
                 self.stdout.write(f'  ↳ Skipping "{tmpl.name}" (already exists)')
                 continue
-            self.stdout.write(f'  ✓ Created: {tmpl.name}')
+            self.stdout.write(f'   Created: {tmpl.name}')
             for s_idx, section_data in enumerate(checklist_data['sections']):
                 section = FormSection.objects.create(form=tmpl, title=section_data['title'], order=s_idx)
                 for i_idx, (label, resp_type) in enumerate(section_data['items']):
@@ -582,7 +582,7 @@ def seed_stock():
     ]
     for name, code in categories:
         obj, created = StockCategory.objects.get_or_create(code=code, defaults={'name': name})
-        print(f"  {'✓ Created' if created else '↳ Exists'}: {name}")
+        print(f"  {' Created' if created else '↳ Exists'}: {name}")
 
     print('\nSeeding stock locations per outlet...')
     from accounts.models import Outlet
@@ -611,7 +611,7 @@ def seed_stock():
                 defaults={'department': dept, 'is_active': True}
             )
             if created:
-                print(f"  ✓ Created: {loc_name} ({outlet.short_name})")
+                print(f"   Created: {loc_name} ({outlet.short_name})")
 
 
 # Run stock seeding when called directly

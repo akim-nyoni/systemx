@@ -4,139 +4,139 @@
 
 {% block extra_css %}
 <style>
-  .resp-row {
-    display:flex; align-items:flex-start; gap:12px;
-    padding:11px 0; border-bottom:1px solid var(--border);
-  }
-  .resp-row:last-child { border-bottom:none; }
-  .resp-row.is-no { background:#fff8f8; border-radius:8px; padding:10px 12px; margin-bottom:4px; border-bottom:none; }
-  .resp-label { flex:1; font-size:14px; font-weight:500; line-height:1.4; }
-  .resp-badge { flex-shrink:0; margin-top:2px; }
-  .comment-box { margin-top:7px; padding:8px 10px; border-radius:6px; font-size:13px; background:#fff7ed; border-left:3px solid #f97316; color:#7c2d12; }
-  .thumb { width:52px; height:52px; object-fit:cover; border-radius:8px; border:2px solid var(--border); margin-top:8px; cursor:pointer; }
-  .flag-card { background:#fff8f8; border-radius:10px; padding:14px 16px; margin-bottom:10px; border-left:4px solid var(--danger); }
-  .section-bar { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--brand-accent); padding-bottom:8px; border-bottom:2px solid var(--brand-light); margin-bottom:10px; }
+ .resp-row {
+ display:flex; align-items:flex-start; gap:12px;
+ padding:11px 0; border-bottom:1px solid #555555;
+ }
+ .resp-row:last-child { border-bottom:none; }
+ .resp-row.is-no { background:#fff8f8; border-radius:8px; padding:10px 12px; margin-bottom:4px; border-bottom:none; }
+ .resp-label { flex:1; font-size:14px; font-weight:500; line-height:1.4; }
+ .resp-badge { flex-shrink:0; margin-top:2px; }
+ .comment-box { margin-top:7px; padding:8px 10px; border-radius:6px; font-size:13px; background:#1a1000; border-left:3px solid #f97316; color:#7c2d12; }
+ .thumb { width:52px; height:52px; object-fit:cover; border-radius:8px; border:2px solid #555555; margin-top:8px; cursor:pointer; }
+ .flag-card { background:#fff8f8; border-radius:10px; padding:14px 16px; margin-bottom:10px; border-left:4px solid var(--danger); }
+ .section-bar { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:var(--brand-accent); padding-bottom:8px; border-bottom:2px solid var(--brand-light); margin-bottom:10px; }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- ── Header ─────────────────────────────── -->
+<!-- Header -->
 <div class="card" style="margin-bottom:16px;">
-  <div class="flex-between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-    <div>
-      <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">{{ submission.form.name }}</h2>
-      <p class="text-sm text-muted" style="margin-top:4px;line-height:1.6;">
-        <strong>{{ submission.submitted_by.display_name }}</strong>
-        &nbsp;·&nbsp; {{ submission.outlet.name|default:"—" }}
-        {% if submission.department %}&nbsp;·&nbsp; {{ submission.department.emoji }} {{ submission.department.name }}{% endif %}
-        &nbsp;·&nbsp; {{ submission.get_shift_display }} shift
-        &nbsp;·&nbsp; {{ submission.submitted_at|date:"d M Y, H:i"|default:"Draft" }}
-      </p>
-    </div>
-    <div class="flex gap-2">
-      {% if submission.status == 'submitted' %}
-      <span class="badge badge-success" style="font-size:12px;padding:5px 12px;align-self:center;">✓ Submitted</span>
-      {% else %}
-      <span class="badge badge-draft" style="font-size:12px;padding:5px 12px;align-self:center;">Draft</span>
-      {% endif %}
-      <a href="{% url 'dashboard:reports' %}" class="btn btn-outline btn-sm">← Reports</a>
-    </div>
-  </div>
+ <div class="flex-between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+ <div>
+ <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">{{ submission.form.name }}</h2>
+ <p class="text-sm text-muted" style="margin-top:4px;line-height:1.6;">
+ <strong>{{ submission.submitted_by.display_name }}</strong>
+ &nbsp;·&nbsp; {{ submission.outlet.name|default:"—" }}
+ {% if submission.department %}&nbsp;·&nbsp; {{ submission.department.emoji }} {{ submission.department.name }}{% endif %}
+ &nbsp;·&nbsp; {{ submission.get_shift_display }} shift
+ &nbsp;·&nbsp; {{ submission.submitted_at|date:"d M Y, H:i"|default:"Draft" }}
+ </p>
+ </div>
+ <div class="flex gap-2">
+ {% if submission.status == 'submitted' %}
+ <span class="badge badge-success" style="font-size:12px;padding:5px 12px;align-self:center;"> Submitted</span>
+ {% else %}
+ <span class="badge badge-draft" style="font-size:12px;padding:5px 12px;align-self:center;">Draft</span>
+ {% endif %}
+ <a href="{% url 'dashboard:reports' %}" class="btn btn-outline btn-sm">← Reports</a>
+ </div>
+ </div>
 
-  <!-- Stats -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:14px;border-top:1px solid var(--border);">
-    <div style="text-align:center;">
-      <div style="font-size:20px;font-weight:900;color:var(--brand-blue);">{{ submission.completion_percentage }}%</div>
-      <div class="text-xs text-muted">Completion</div>
-      <div class="progress" style="margin-top:5px;"><div class="progress-bar {% if submission.completion_percentage == 100 %}success{% endif %}" style="width:{{ submission.completion_percentage }}%"></div></div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:20px;font-weight:900;color:var(--success);">{{ submission.completed_items }}</div>
-      <div class="text-xs text-muted">Answered</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:20px;font-weight:900;color:var(--danger);">{{ submission.no_responses }}</div>
-      <div class="text-xs text-muted">Issues</div>
-    </div>
-    <div style="text-align:center;">
-      <div style="font-size:20px;font-weight:900;color:var(--brand-accent);">{{ submission.total_items }}</div>
-      <div class="text-xs text-muted">Total</div>
-    </div>
-  </div>
+ <!-- Stats -->
+ <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:14px;border-top:1px solid #555555;">
+ <div style="text-align:center;">
+ <div style="font-size:20px;font-weight:900;color:var(--brand-blue);">{{ submission.completion_percentage }}%</div>
+ <div class="text-xs text-muted">Completion</div>
+ <div class="progress" style="margin-top:5px;"><div class="progress-bar {% if submission.completion_percentage == 100 %}success{% endif %}" style="width:{{ submission.completion_percentage }}%"></div></div>
+ </div>
+ <div style="text-align:center;">
+ <div style="font-size:20px;font-weight:900;color:var(--success);">{{ submission.completed_items }}</div>
+ <div class="text-xs text-muted">Answered</div>
+ </div>
+ <div style="text-align:center;">
+ <div style="font-size:20px;font-weight:900;color:var(--danger);">{{ submission.no_responses }}</div>
+ <div class="text-xs text-muted">Issues</div>
+ </div>
+ <div style="text-align:center;">
+ <div style="font-size:20px;font-weight:900;color:var(--brand-accent);">{{ submission.total_items }}</div>
+ <div class="text-xs text-muted">Total</div>
+ </div>
+ </div>
 </div>
 
-<!-- ── Flagged issues ──────────────────────── -->
+<!-- Flagged issues -->
 {% if flagged %}
 <div class="card" style="margin-bottom:16px;border-left:4px solid var(--danger);">
-  <div class="card-header">
-    <span class="card-title" style="color:#991b1b;">⚠️ Issues Requiring Attention</span>
-    <span class="badge badge-danger">{{ flagged|length }} item{{ flagged|length|pluralize }}</span>
-  </div>
-  {% for entry in flagged %}
-  <div class="flag-card">
-    <div style="font-weight:700;font-size:14px;">{{ entry.item.label }}</div>
-    <div class="text-xs text-muted" style="margin-top:2px;">{{ entry.item.section.title }}</div>
-    {% if entry.resp.comment %}
-    <div class="comment-box" style="margin-top:8px;"><strong>Comment:</strong> {{ entry.resp.comment }}</div>
-    {% else %}
-    <div class="text-xs text-muted" style="margin-top:6px;font-style:italic;">No comment provided</div>
-    {% endif %}
-    {% if entry.resp.image and entry.resp.image.name %}
-    <a href="{{ entry.resp.image.url }}" target="_blank">
-      <img src="{{ entry.resp.image.url }}" class="thumb">
-    </a>
-    {% endif %}
-  </div>
-  {% endfor %}
+ <div class="card-header">
+ <span class="card-title" style="color:#991b1b;"> Issues Requiring Attention</span>
+ <span class="badge badge-danger">{{ flagged|length }} item{{ flagged|length|pluralize }}</span>
+ </div>
+ {% for entry in flagged %}
+ <div class="flag-card">
+ <div style="font-weight:700;font-size:14px;">{{ entry.item.label }}</div>
+ <div class="text-xs text-muted" style="margin-top:2px;">{{ entry.item.section.title }}</div>
+ {% if entry.resp.comment %}
+ <div class="comment-box" style="margin-top:8px;"><strong>Comment:</strong> {{ entry.resp.comment }}</div>
+ {% else %}
+ <div class="text-xs text-muted" style="margin-top:6px;font-style:italic;">No comment provided</div>
+ {% endif %}
+ {% if entry.resp.image and entry.resp.image.name %}
+ <a href="{{ entry.resp.image.url }}" target="_blank">
+ <img src="{{ entry.resp.image.url }}" class="thumb">
+ </a>
+ {% endif %}
+ </div>
+ {% endfor %}
 </div>
 {% endif %}
 
-<!-- ── All responses by section ───────────── -->
+<!-- All responses by section -->
 <h3 style="font-size:15px;font-weight:800;color:var(--brand-blue);margin-bottom:12px;">
-  All Responses
+ All Responses
 </h3>
 
 {% for section_data in sections_data %}
 <div class="card" style="margin-bottom:12px;">
-  <div class="section-bar">{{ section_data.section.title }}</div>
+ <div class="section-bar">{{ section_data.section.title }}</div>
 
-  {% for entry in section_data.items %}
-  {% with item=entry.item resp=entry.resp %}
+ {% for entry in section_data.items %}
+ {% with item=entry.item resp=entry.resp %}
 
-  <div class="resp-row {% if resp and resp.value == 'No' %}is-no{% endif %}">
-    <div style="flex:1;">
-      <div class="resp-label">{{ item.label }}</div>
-      {% if resp and resp.value == 'No' %}
-        {% if resp.comment %}
-        <div class="comment-box"><strong>Comment:</strong> {{ resp.comment }}</div>
-        {% endif %}
-        {% if resp.image and resp.image.name %}
-        <a href="{{ resp.image.url }}" target="_blank">
-          <img src="{{ resp.image.url }}" class="thumb">
-        </a>
-        {% endif %}
-      {% endif %}
-    </div>
-    <div class="resp-badge">
-      {% if resp %}
-        {% if resp.value == 'Yes' %}
-          <span class="badge badge-success">✓ Yes</span>
-        {% elif resp.value == 'No' %}
-          <span class="badge badge-danger">✗ No</span>
-        {% elif resp.value %}
-          <span class="badge badge-info">{{ resp.value }}</span>
-        {% else %}
-          <span class="badge badge-draft">—</span>
-        {% endif %}
-      {% else %}
-        <span class="badge badge-draft">—</span>
-      {% endif %}
-    </div>
-  </div>
+ <div class="resp-row {% if resp and resp.value == 'No' %}is-no{% endif %}">
+ <div style="flex:1;">
+ <div class="resp-label">{{ item.label }}</div>
+ {% if resp and resp.value == 'No' %}
+ {% if resp.comment %}
+ <div class="comment-box"><strong>Comment:</strong> {{ resp.comment }}</div>
+ {% endif %}
+ {% if resp.image and resp.image.name %}
+ <a href="{{ resp.image.url }}" target="_blank">
+ <img src="{{ resp.image.url }}" class="thumb">
+ </a>
+ {% endif %}
+ {% endif %}
+ </div>
+ <div class="resp-badge">
+ {% if resp %}
+ {% if resp.value == 'Yes' %}
+ <span class="badge badge-success"> Yes</span>
+ {% elif resp.value == 'No' %}
+ <span class="badge badge-danger"> No</span>
+ {% elif resp.value %}
+ <span class="badge badge-info">{{ resp.value }}</span>
+ {% else %}
+ <span class="badge badge-draft">—</span>
+ {% endif %}
+ {% else %}
+ <span class="badge badge-draft">—</span>
+ {% endif %}
+ </div>
+ </div>
 
-  {% endwith %}
-  {% endfor %}
+ {% endwith %}
+ {% endfor %}
 
 </div>
 {% empty %}

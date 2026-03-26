@@ -12,12 +12,6 @@ class Outlet(models.Model):
     is_active   = models.BooleanField(default=True)
     order       = models.PositiveIntegerField(default=0)
 
-    OUTLET_ICONS = {
-        'sibili':      '🏠',
-        'phakalane':   '🌿',
-        'seventy_nine':'🔢',
-    }
-
     class Meta:
         ordering = ['order', 'name']
 
@@ -25,43 +19,11 @@ class Outlet(models.Model):
         return self.name
 
     @property
-    def emoji(self):
-        return self.OUTLET_ICONS.get(self.code, '🏢')
-
-    @property
     def short_name(self):
         return self.name.replace("Rhapsody's ", "").replace("Rhapsodys ", "")
 
 
 class Department(models.Model):
-    DEPT_ICONS = {
-        'director':        '👔',
-        'general_manager': '🏢',
-        'front_of_house':  '🛎️',
-        'bar':             '🍺',
-        'waiters':         '🍽️',
-        'floor_manager':   '📋',
-        'bar_manager':     '🍹',
-        'back_of_house':   '🍳',
-        'kitchen_manager': '👨‍🍳',
-        'stock_controller':'📦',
-        'head_chef':       '🧑‍🍳',
-        'coordinator':     '📌',
-        'red_section':     '🔴',
-        'yellow_section':  '🟡',
-        'green_section':   '🟢',
-        'blue_section':    '🔵',
-        'white_section':   '⚪',
-        'prep_section':    '🔪',
-        'sushi_bar':       '🍣',
-        'maintenance':     '🔧',
-        'scullery':        '🧽',
-        'general_cleaner': '🧹',
-        'cleaning':        '🫧',
-        'marketing':       '📣',
-        'finance':         '💰',
-    }
-
     outlet      = models.ForeignKey(
         Outlet, on_delete=models.CASCADE, null=True, blank=True,
         related_name='departments', verbose_name='Outlet',
@@ -92,10 +54,6 @@ class Department(models.Model):
         if self.parent:
             return f"{self.parent.name} › {self.name}"
         return self.name
-
-    @property
-    def emoji(self):
-        return self.DEPT_ICONS.get(self.code, '🏷️')
 
 
 class Role(models.Model):
@@ -165,7 +123,7 @@ class User(AbstractUser):
 
     @property
     def dept_emoji(self):
-        return self.department.emoji if self.department else '👤'
+        return self.department.emoji if self.department else ''
 
     @property
     def is_admin(self):

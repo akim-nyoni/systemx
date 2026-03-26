@@ -4,103 +4,103 @@
 {% block content %}
 <div style="max-width:760px;margin:0 auto;">
 <div class="card">
-  <div class="card-header">
-    <span class="card-title">{{ title }}</span>
-    <a href="{% url 'stock:item_list' %}" class="btn btn-outline btn-sm">← Back</a>
-  </div>
-  <form method="post">
-    {% csrf_token %}
-    <div class="grid grid-2">
-      <div class="form-group">
-        <label class="form-label">Item Name *</label>
-        {{ form.name }}
-      </div>
-      <div class="form-group">
-        <label class="form-label">SKU / Code</label>
-        {{ form.sku }}
-      </div>
-      <div class="form-group">
-        <label class="form-label">Outlet *</label>
-        {{ form.outlet }}
-        <div class="form-text">Which restaurant this item belongs to</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Department</label>
-        {{ form.department }}
-        <div class="form-text">Which department manages this item</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Category *</label>
-        {{ form.category }}
-      </div>
-      <div class="form-group">
-        <label class="form-label">Location</label>
-        {{ form.location }}
-      </div>
-      <div class="form-group">
-        <label class="form-label">Unit *</label>
-        {{ form.unit }}
-      </div>
-      <div class="form-group">
-        <label class="form-label">Unit Cost ($)</label>
-        {{ form.unit_cost }}
-      </div>
-    </div>
+ <div class="card-header">
+ <span class="card-title">{{ title }}</span>
+ <a href="{% url 'stock:item_list' %}" class="btn btn-outline btn-sm">← Back</a>
+ </div>
+ <form method="post">
+ {% csrf_token %}
+ <div class="grid grid-2">
+ <div class="form-group">
+ <label class="form-label">Item Name *</label>
+ {{ form.name }}
+ </div>
+ <div class="form-group">
+ <label class="form-label">SKU / Code</label>
+ {{ form.sku }}
+ </div>
+ <div class="form-group">
+ <label class="form-label">Outlet *</label>
+ {{ form.outlet }}
+ <div class="form-text">Which restaurant this item belongs to</div>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Department</label>
+ {{ form.department }}
+ <div class="form-text">Which department manages this item</div>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Category *</label>
+ {{ form.category }}
+ </div>
+ <div class="form-group">
+ <label class="form-label">Location</label>
+ {{ form.location }}
+ </div>
+ <div class="form-group">
+ <label class="form-label">Unit *</label>
+ {{ form.unit }}
+ </div>
+ <div class="form-group">
+ <label class="form-label">Unit Cost ($)</label>
+ {{ form.unit_cost }}
+ </div>
+ </div>
 
-    <div class="divider"></div>
-    <p style="font-size:13px;font-weight:700;color:#7a5c00;margin-bottom:12px;">📊 PAR Level Settings</p>
-    <div class="alert alert-info" style="font-size:12px;margin-bottom:14px;">
-      <strong>PAR Formula:</strong> PAR Level = Average Daily Usage × Coverage Days.
-      Set PAR manually or let the system calculate it from stock count history.
-    </div>
-    <div class="grid grid-2">
-      <div class="form-group">
-        <label class="form-label">PAR Level (ideal shelf qty)</label>
-        {{ form.par_level }}
-        <div class="form-text">What should be on shelf at start of each day</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">PAR Coverage Days</label>
-        {{ form.par_coverage_days }}
-        <div class="form-text">How many days of stock PAR should cover (e.g. 3)</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Reorder Point</label>
-        {{ form.reorder_point }}
-        <div class="form-text">Trigger alert when stock falls below this</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Reorder Quantity</label>
-        {{ form.reorder_qty }}
-        <div class="form-text">Standard order qty when reorder triggered</div>
-      </div>
-    </div>
+ <div class="divider"></div>
+ <p style="font-size:13px;font-weight:700;color:#aaaaaa;margin-bottom:12px;"> PAR Level Settings</p>
+ <div class="alert alert-info" style="font-size:12px;margin-bottom:14px;">
+ <strong>PAR Formula:</strong> PAR Level = Average Daily Usage × Coverage Days.
+ Set PAR manually or let the system calculate it from stock count history.
+ </div>
+ <div class="grid grid-2">
+ <div class="form-group">
+ <label class="form-label">PAR Level (ideal shelf qty)</label>
+ {{ form.par_level }}
+ <div class="form-text">What should be on shelf at start of each day</div>
+ </div>
+ <div class="form-group">
+ <label class="form-label">PAR Coverage Days</label>
+ {{ form.par_coverage_days }}
+ <div class="form-text">How many days of stock PAR should cover (e.g. 3)</div>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Reorder Point</label>
+ {{ form.reorder_point }}
+ <div class="form-text">Trigger alert when stock falls below this</div>
+ </div>
+ <div class="form-group">
+ <label class="form-label">Reorder Quantity</label>
+ {{ form.reorder_qty }}
+ <div class="form-text">Standard order qty when reorder triggered</div>
+ </div>
+ </div>
 
-    <div class="divider"></div>
-    <div class="grid grid-2">
-      <div class="form-group">
-        <label class="form-label">Current Stock</label>
-        {{ form.current_stock }}
-      </div>
-      <div class="form-group">
-        <label class="form-label">Notes</label>
-        {{ form.notes }}
-      </div>
-    </div>
-    <div class="form-check" style="margin-bottom:16px;">
-      {{ form.is_active }}
-      <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active</label>
-    </div>
+ <div class="divider"></div>
+ <div class="grid grid-2">
+ <div class="form-group">
+ <label class="form-label">Current Stock</label>
+ {{ form.current_stock }}
+ </div>
+ <div class="form-group">
+ <label class="form-label">Notes</label>
+ {{ form.notes }}
+ </div>
+ </div>
+ <div class="form-check" style="margin-bottom:16px;">
+ {{ form.is_active }}
+ <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active</label>
+ </div>
 
-    {% for field in form %}{% for e in field.errors %}
-    <div class="alert alert-error">{{ field.label }}: {{ e }}</div>
-    {% endfor %}{% endfor %}
+ {% for field in form %}{% for e in field.errors %}
+ <div class="alert alert-error">{{ field.label }}: {{ e }}</div>
+ {% endfor %}{% endfor %}
 
-    <div style="display:flex;gap:10px;">
-      <button type="submit" class="btn btn-primary">Save Item</button>
-      <a href="{% url 'stock:item_list' %}" class="btn btn-outline">Cancel</a>
-    </div>
-  </form>
+ <div style="display:flex;gap:10px;">
+ <button type="submit" class="btn btn-primary">Save Item</button>
+ <a href="{% url 'stock:item_list' %}" class="btn btn-outline">Cancel</a>
+ </div>
+ </form>
 </div>
 </div>
 {% endblock %}

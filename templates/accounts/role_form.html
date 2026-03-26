@@ -4,37 +4,37 @@
 {% block content %}
 <div style="max-width:680px;margin:0 auto;">
 <div class="card">
-  <div class="card-header">
-    <span class="card-title">{{ title }}</span>
-    <a href="{% url 'accounts:role_list' %}" class="btn btn-outline btn-sm">← Back</a>
-  </div>
-  <form method="post">
-    {% csrf_token %}
-    <div class="form-group">
-      <label class="form-label">Role Name *</label>
-      {{ form.name }}
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      {{ form.description }}
-    </div>
-    <div class="divider"></div>
-    <p class="text-sm text-muted" style="margin-bottom:12px;font-weight:600;">Permissions — toggle what this role can do:</p>
-    <div class="perm-grid" style="margin-bottom:20px;">
-      {% for field in form %}
-        {% if field.field.widget.input_type == 'checkbox' %}
-        <label class="perm-item" style="cursor:pointer;" for="{{ field.id_for_label }}">
-          {{ field }} <span class="text-sm fw-bold" style="margin-left:4px;">{{ field.label }}</span>
-          {% if field.help_text %}<span class="text-xs text-muted" style="display:block;margin-top:2px;">{{ field.help_text }}</span>{% endif %}
-        </label>
-        {% endif %}
-      {% endfor %}
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button type="submit" class="btn btn-primary">Save Role</button>
-      <a href="{% url 'accounts:role_list' %}" class="btn btn-outline">Cancel</a>
-    </div>
-  </form>
+ <div class="card-header">
+ <span class="card-title">{{ title }}</span>
+ <a href="{% url 'accounts:role_list' %}" class="btn btn-outline btn-sm">← Back</a>
+ </div>
+ <form method="post">
+ {% csrf_token %}
+ <div class="form-group">
+ <label class="form-label">Role Name *</label>
+ {{ form.name }}
+ </div>
+ <div class="form-group">
+ <label class="form-label">Description</label>
+ {{ form.description }}
+ </div>
+ <div class="divider"></div>
+ <p class="text-sm text-muted" style="margin-bottom:12px;font-weight:600;">Permissions — toggle what this role can do:</p>
+ <div class="perm-grid" style="margin-bottom:20px;">
+ {% for field in form %}
+ {% if field.field.widget.input_type == 'checkbox' %}
+ <label class="perm-item" style="cursor:pointer;" for="{{ field.id_for_label }}">
+ {{ field }} <span class="text-sm fw-bold" style="margin-left:4px;">{{ field.label }}</span>
+ {% if field.help_text %}<span class="text-xs text-muted" style="display:block;margin-top:2px;">{{ field.help_text }}</span>{% endif %}
+ </label>
+ {% endif %}
+ {% endfor %}
+ </div>
+ <div style="display:flex;gap:10px;flex-wrap:wrap;">
+ <button type="submit" class="btn btn-primary">Save Role</button>
+ <a href="{% url 'accounts:role_list' %}" class="btn btn-outline">Cancel</a>
+ </div>
+ </form>
 </div>
 </div>
 {% endblock %}

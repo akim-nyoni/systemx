@@ -1,88 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In | The Ambassador</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: linear-gradient(135deg, #1a1200 0%, #3d2e00 60%, #1a1200 100%);
-      min-height: 100vh; display: flex; align-items: center;
-      justify-content: center; padding: 20px;
-    }
-    .login-card {
-      background: #fff; border-radius: 20px; padding: 44px 40px;
-      width: 100%; max-width: 420px;
-      box-shadow: 0 24px 64px rgba(0,0,0,.45);
-    }
-    .brand { text-align: center; margin-bottom: 36px; }
-    .brand-logo {
-      width: 68px; height: 68px; border-radius: 16px;
-      background: #f5c800; display: flex; align-items: center;
-      justify-content: center; font-size: 30px; font-weight: 900;
-      margin: 0 auto 14px; color: #1a1200;
-      box-shadow: 0 4px 14px rgba(245,200,0,.4);
-    }
-    .brand h1 { font-size: 24px; font-weight: 900; color: #1a1200; letter-spacing: -.3px; }
-    .brand p  { color: #718096; font-size: 13px; margin-top: 4px; }
-    .form-group { margin-bottom: 18px; }
-    label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
-    input {
-      width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0;
-      border-radius: 10px; font-size: 16px; transition: border-color .15s;
-      -webkit-appearance: none;
-    }
-    input:focus { outline: none; border-color: #f5c800; box-shadow: 0 0 0 3px rgba(245,200,0,.2); }
-    .btn-login {
-      width: 100%; padding: 13px; background: #f5c800; color: #1a1200;
-      border: none; border-radius: 10px; font-size: 16px; font-weight: 800;
-      cursor: pointer; transition: background .15s; margin-top: 8px;
-      letter-spacing: .2px;
-    }
-    .btn-login:hover  { background: #d4ac00; }
-    .btn-login:active { background: #b89600; }
-    .error {
-      background: #fee2e2; border-left: 4px solid #dc3545;
-      padding: 10px 14px; border-radius: 8px;
-      font-size: 13px; color: #991b1b; margin-bottom: 18px;
-    }
-    .footer { text-align: center; margin-top: 28px; font-size: 12px; color: #a0aec0; }
-    .gold-bar {
-      height: 4px; background: linear-gradient(90deg, #f5c800, #d4ac00);
-      border-radius: 0 0 4px 4px; margin: -44px -40px 40px;
-      border-radius: 20px 20px 0 0;
-    }
-  </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+ <meta name="theme-color" content="#000000">
+ <title>Sign In — The Ambassador</title>
+ <style>
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ body {
+ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+ background: #000; color: #f0f0f0;
+ min-height: 100vh; display: flex; align-items: center; justify-content: center;
+ padding: 20px; -webkit-font-smoothing: antialiased;
+ }
+
+ .login-wrap {
+ width: 100%; max-width: 400px;
+ }
+
+ /* Brand */
+ .brand {
+ text-align: center; margin-bottom: 40px;
+ }
+ .brand-mark {
+ display: inline-flex; align-items: center; justify-content: center;
+ width: 52px; height: 52px; border-radius: 8px;
+ background: #f5c800; color: #000;
+ font-size: 24px; font-weight: 900;
+ margin-bottom: 14px;
+ }
+ .brand h1 {
+ font-size: 22px; font-weight: 900; color: #f5c800;
+ letter-spacing: -.3px; line-height: 1.1;
+ }
+ .brand p {
+ font-size: 12px; color: #555; margin-top: 5px;
+ text-transform: uppercase; letter-spacing: 1.5px;
+ }
+
+ /* Card */
+ .login-card {
+ background: #0d0d0d; border: 1px solid #1f1f1f;
+ border-radius: 10px; padding: 28px 24px;
+ }
+ .login-card h2 {
+ font-size: 15px; font-weight: 700; color: #f5c800;
+ margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;
+ }
+
+ /* Alerts */
+ .alert {
+ padding: 9px 13px; border-radius: 5px; font-size: 13px;
+ margin-bottom: 16px; border-left: 2px solid;
+ }
+ .alert-error { background: rgba(239,68,68,.1); border-color: #ef4444; color: #ef4444; }
+ .alert-success { background: rgba(34,197,94,.1); border-color: #22c55e; color: #22c55e; }
+ .alert-info { background: rgba(245,200,0,.08); border-color: #f5c800; color: #f5c800; }
+
+ /* Form */
+ .form-group { margin-bottom: 14px; }
+ .form-label {
+ display: block; font-size: 10px; font-weight: 700; margin-bottom: 5px;
+ color: #666; text-transform: uppercase; letter-spacing: .8px;
+ }
+ .form-control {
+ width: 100%; padding: 10px 13px; border: 1px solid #242424;
+ border-radius: 6px; font-size: 15px;
+ background: #161616; color: #f0f0f0;
+ transition: border-color .12s; -webkit-appearance: none;
+ }
+ .form-control::placeholder { color: #444; }
+ .form-control:focus {
+ outline: none; border-color: #f5c800;
+ box-shadow: 0 0 0 2px rgba(245,200,0,.12);
+ }
+
+ /* Submit */
+ .btn-login {
+ width: 100%; padding: 11px;
+ background: #f5c800; color: #000;
+ border: none; border-radius: 6px;
+ font-size: 14px; font-weight: 800;
+ letter-spacing: .3px; cursor: pointer;
+ margin-top: 6px; transition: background .12s;
+ text-transform: uppercase;
+ }
+ .btn-login:hover { background: #c9a200; }
+ .btn-login:active { transform: scale(.99); }
+
+ /* Footer */
+ .login-footer {
+ text-align: center; margin-top: 24px;
+ font-size: 11px; color: #333;
+ text-transform: uppercase; letter-spacing: 1px;
+ }
+ </style>
 </head>
 <body>
-  <div class="login-card">
-    <div class="gold-bar"></div>
-    <div class="brand">
-      <div class="brand-logo">A</div>
-      <h1>The Ambassador</h1>
-      <p>Management Platform</p>
-    </div>
+<div class="login-wrap">
 
-    {% for message in messages %}
-    <div class="error">{{ message }}</div>
-    {% endfor %}
+ <div class="brand">
+ <div class="brand-mark">A</div>
+ <h1>The Ambassador</h1>
+ <p>Management Platform</p>
+ </div>
 
-    <form method="post">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="id_username">Username</label>
-        <input type="text" name="username" id="id_username" placeholder="Enter your username" value="{{ form.username.value|default:'' }}" autofocus>
-      </div>
-      <div class="form-group">
-        <label for="id_password">Password</label>
-        <input type="password" name="password" id="id_password" placeholder="Enter your password">
-      </div>
-      <button type="submit" class="btn-login">Sign In →</button>
-    </form>
+ <div class="login-card">
+ <h2>Sign In</h2>
 
-    <div class="footer">The Ambassador © 2026 · Management Platform</div>
-  </div>
+ {% if form.errors %}
+ <div class="alert alert-error">Invalid username or password. Please try again.</div>
+ {% endif %}
+
+ {% for message in messages %}
+ <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+ {% endfor %}
+
+ <form method="post">
+ {% csrf_token %}
+ <div class="form-group">
+ <label class="form-label" for="id_username">Username</label>
+ <input type="text" name="username" id="id_username" class="form-control"
+ placeholder="Enter your username" autocomplete="username" autofocus required>
+ </div>
+ <div class="form-group">
+ <label class="form-label" for="id_password">Password</label>
+ <input type="password" name="password" id="id_password" class="form-control"
+ placeholder="Enter your password" autocomplete="current-password" required>
+ </div>
+ <input type="hidden" name="next" value="{{ next }}">
+ <button type="submit" class="btn-login">Sign In</button>
+ </form>
+ </div>
+
+ <div class="login-footer">Rhapsody's Restaurant Group &copy; 2025</div>
+</div>
 </body>
 </html>

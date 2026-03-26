@@ -3,70 +3,70 @@
 {% block page_title %}Role Management{% endblock %}
 {% block content %}
 <div class="flex-between mb-4">
-  <div>
-    <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">Roles &amp; Permissions</h2>
-    <p class="text-sm text-muted">Define what each role can do across the system.</p>
-  </div>
-  <a href="{% url 'accounts:role_create' %}" class="btn btn-primary">+ New Role</a>
+ <div>
+ <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">Roles &amp; Permissions</h2>
+ <p class="text-sm text-muted">Define what each role can do across the system.</p>
+ </div>
+ <a href="{% url 'accounts:role_create' %}" class="btn btn-primary">+ New Role</a>
 </div>
 
 <div class="grid" style="grid-template-columns:1fr;">
-  {% for role in roles %}
-  <div class="card">
-    <div class="flex-between" style="margin-bottom:12px;">
-      <div>
-        <span style="font-size:16px;font-weight:800;color:var(--brand-blue);">{{ role.name }}</span>
-        {% if role.is_system_admin %}<span class="badge badge-danger" style="margin-left:8px;">System Admin</span>{% endif %}
-        <span class="badge badge-info" style="margin-left:6px;">{{ role.user_count }} user{{ role.user_count|pluralize }}</span>
-      </div>
-      <div class="flex gap-2">
-        <a href="{% url 'accounts:role_edit' role.pk %}" class="btn btn-outline btn-sm">Edit</a>
-        {% if role.user_count == 0 %}
-        <a href="{% url 'accounts:role_delete' role.pk %}" class="btn btn-danger btn-sm">Delete</a>
-        {% endif %}
-      </div>
-    </div>
-    {% if role.description %}<p class="text-sm text-muted" style="margin-bottom:12px;">{{ role.description }}</p>{% endif %}
-    <div class="perm-grid">
-      <div class="perm-item {% if role.can_fill_forms %}granted{% endif %}">
-        <span class="perm-dot {% if role.can_fill_forms %}on{% else %}off{% endif %}"></span>
-        <span class="text-sm fw-bold">Fill Forms</span>
-      </div>
-      <div class="perm-item {% if role.can_view_reports %}granted{% endif %}">
-        <span class="perm-dot {% if role.can_view_reports %}on{% else %}off{% endif %}"></span>
-        <span class="text-sm fw-bold">View Reports</span>
-      </div>
-      <div class="perm-item {% if role.can_view_all_reports %}granted{% endif %}">
-        <span class="perm-dot {% if role.can_view_all_reports %}on{% else %}off{% endif %}"></span>
-        <span class="text-sm fw-bold">View All Reports</span>
-      </div>
-      <div class="perm-item {% if role.can_manage_forms %}granted{% endif %}">
-        <span class="perm-dot {% if role.can_manage_forms %}on{% else %}off{% endif %}"></span>
-        <span class="text-sm fw-bold">Manage Forms</span>
-      </div>
-      <div class="perm-item {% if role.can_manage_users %}granted{% endif %}">
-        <span class="perm-dot {% if role.can_manage_users %}on{% else %}off{% endif %}"></span>
-        <span class="text-sm fw-bold">Manage Users</span>
-      </div>
-      <div class="perm-item {% if role.can_delete_submissions %}granted{% endif %}">
-        <span class="perm-dot {% if role.can_delete_submissions %}on{% else %}off{% endif %}"></span>
-        <span class="text-sm fw-bold">Delete Submissions</span>
-      </div>
-      <div class="perm-item {% if role.can_access_stock %}granted{% endif %}">
-        <span class="perm-dot {% if role.can_access_stock %}on{% else %}off{% endif %}"></span>
-        <span class="text-sm fw-bold">📦 View Stock</span>
-      </div>
-      <div class="perm-item {% if role.can_manage_stock %}granted{% endif %}">
-        <span class="perm-dot {% if role.can_manage_stock %}on{% else %}off{% endif %}"></span>
-        <span class="text-sm fw-bold">📦 Manage Stock</span>
-      </div>
-    </div>
-  </div>
-  {% empty %}
-  <div class="card empty-state">
-    <p>No roles defined yet.</p>
-    <a href="{% url 'accounts:role_create' %}" class="btn btn-primary" style="margin-top:12px;">Create First Role</a>
-  </div>
-  {% endfor %}
+ {% for role in roles %}
+ <div class="card">
+ <div class="flex-between" style="margin-bottom:12px;">
+ <div>
+ <span style="font-size:16px;font-weight:800;color:var(--brand-blue);">{{ role.name }}</span>
+ {% if role.is_system_admin %}<span class="badge badge-danger" style="margin-left:8px;">System Admin</span>{% endif %}
+ <span class="badge badge-info" style="margin-left:6px;">{{ role.user_count }} user{{ role.user_count|pluralize }}</span>
+ </div>
+ <div class="flex gap-2">
+ <a href="{% url 'accounts:role_edit' role.pk %}" class="btn btn-outline btn-sm">Edit</a>
+ {% if role.user_count == 0 %}
+ <a href="{% url 'accounts:role_delete' role.pk %}" class="btn btn-danger btn-sm">Delete</a>
+ {% endif %}
+ </div>
+ </div>
+ {% if role.description %}<p class="text-sm text-muted" style="margin-bottom:12px;">{{ role.description }}</p>{% endif %}
+ <div class="perm-grid">
+ <div class="perm-item {% if role.can_fill_forms %}granted{% endif %}">
+ <span class="perm-dot {% if role.can_fill_forms %}on{% else %}off{% endif %}"></span>
+ <span class="text-sm fw-bold">Fill Forms</span>
+ </div>
+ <div class="perm-item {% if role.can_view_reports %}granted{% endif %}">
+ <span class="perm-dot {% if role.can_view_reports %}on{% else %}off{% endif %}"></span>
+ <span class="text-sm fw-bold">View Reports</span>
+ </div>
+ <div class="perm-item {% if role.can_view_all_reports %}granted{% endif %}">
+ <span class="perm-dot {% if role.can_view_all_reports %}on{% else %}off{% endif %}"></span>
+ <span class="text-sm fw-bold">View All Reports</span>
+ </div>
+ <div class="perm-item {% if role.can_manage_forms %}granted{% endif %}">
+ <span class="perm-dot {% if role.can_manage_forms %}on{% else %}off{% endif %}"></span>
+ <span class="text-sm fw-bold">Manage Forms</span>
+ </div>
+ <div class="perm-item {% if role.can_manage_users %}granted{% endif %}">
+ <span class="perm-dot {% if role.can_manage_users %}on{% else %}off{% endif %}"></span>
+ <span class="text-sm fw-bold">Manage Users</span>
+ </div>
+ <div class="perm-item {% if role.can_delete_submissions %}granted{% endif %}">
+ <span class="perm-dot {% if role.can_delete_submissions %}on{% else %}off{% endif %}"></span>
+ <span class="text-sm fw-bold">Delete Submissions</span>
+ </div>
+ <div class="perm-item {% if role.can_access_stock %}granted{% endif %}">
+ <span class="perm-dot {% if role.can_access_stock %}on{% else %}off{% endif %}"></span>
+ <span class="text-sm fw-bold"> View Stock</span>
+ </div>
+ <div class="perm-item {% if role.can_manage_stock %}granted{% endif %}">
+ <span class="perm-dot {% if role.can_manage_stock %}on{% else %}off{% endif %}"></span>
+ <span class="text-sm fw-bold"> Manage Stock</span>
+ </div>
+ </div>
+ </div>
+ {% empty %}
+ <div class="card empty-state">
+ <p>No roles defined yet.</p>
+ <a href="{% url 'accounts:role_create' %}" class="btn btn-primary" style="margin-top:12px;">Create First Role</a>
+ </div>
+ {% endfor %}
 </div>
 {% endblock %}

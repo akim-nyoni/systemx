@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="flex-between mb-4">
- <h2 style="font-size:20px; font-weight:700; color:#1e3a5f;">Available Checklists</h2>
+ <h2 style="font-size:20px; font-weight:700; color:#aaaaaa;">Available Checklists</h2>
 </div>
 
 {% if templates %}
@@ -16,7 +16,7 @@
  <span class="badge badge-info">{{ tmpl.get_category_display }}</span>
  {% if not tmpl.is_active %}<span class="badge badge-draft">Inactive</span>{% endif %}
  </div>
- <h3 style="font-size:16px; font-weight:700; color:#1e3a5f; margin-bottom:6px;">{{ tmpl.name }}</h3>
+ <h3 style="font-size:16px; font-weight:700; color:#aaaaaa; margin-bottom:6px;">{{ tmpl.name }}</h3>
  {% if tmpl.description %}<p class="text-sm text-muted">{{ tmpl.description }}</p>{% endif %}
  </div>
  <div style="margin-top:auto; display:flex; gap:8px; flex-wrap:wrap;">

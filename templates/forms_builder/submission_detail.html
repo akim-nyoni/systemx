@@ -25,7 +25,7 @@
 <div class="card" style="margin-bottom:16px;">
  <div class="flex-between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px;">
  <div>
- <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">{{ submission.form.name }}</h2>
+ <h2 style="font-size:18px;font-weight:800;color:#aaaaaa;">{{ submission.form.name }}</h2>
  <p class="text-sm text-muted" style="margin-top:4px;line-height:1.6;">
  <strong>{{ submission.submitted_by.display_name }}</strong>
  &nbsp;·&nbsp; {{ submission.outlet.name|default:"—" }}
@@ -47,7 +47,7 @@
  <!-- Stats -->
  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:14px;border-top:1px solid #555555;">
  <div style="text-align:center;">
- <div style="font-size:20px;font-weight:900;color:var(--brand-blue);">{{ submission.completion_percentage }}%</div>
+ <div style="font-size:20px;font-weight:900;color:#aaaaaa;">{{ submission.completion_percentage }}%</div>
  <div class="text-xs text-muted">Completion</div>
  <div class="progress" style="margin-top:5px;"><div class="progress-bar {% if submission.completion_percentage == 100 %}success{% endif %}" style="width:{{ submission.completion_percentage }}%"></div></div>
  </div>
@@ -93,7 +93,7 @@
 {% endif %}
 
 <!-- All responses by section -->
-<h3 style="font-size:15px;font-weight:800;color:var(--brand-blue);margin-bottom:12px;">
+<h3 style="font-size:15px;font-weight:800;color:#aaaaaa;margin-bottom:12px;">
  All Responses
 </h3>
 

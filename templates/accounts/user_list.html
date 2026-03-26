@@ -3,7 +3,7 @@
 {% block page_title %}Users{% endblock %}
 {% block content %}
 <div class="flex-between mb-4">
- <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">System Users</h2>
+ <h2 style="font-size:18px;font-weight:800;color:#aaaaaa;">System Users</h2>
  <div class="flex gap-2">
  {% if user.is_admin %}<a href="{% url 'accounts:role_list' %}" class="btn btn-outline btn-sm">Manage Roles</a>{% endif %}
  <a href="{% url 'accounts:user_create' %}" class="btn btn-primary">+ Add User</a>

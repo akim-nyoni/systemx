@@ -94,7 +94,7 @@
  <span class="badge badge-success">Submitted</span>
  {% endif %}
  </div>
- <div style="font-size:11px;color:var(--muted);margin-top:4px;">
+ <div style="font-size:11px;color:#aaaaaa;margin-top:4px;">
  {{ tmpl.name }} &nbsp;·&nbsp; {{ submission.outlet.name|default:"—" }} &nbsp;·&nbsp; {{ submission.get_shift_display }} shift
  </div>
 </div>
@@ -292,7 +292,7 @@ function renderPreview(id, src, filename) {
  <div class="photo-preview-wrap" id="preview-wrap-${id}">
  <img src="${src}" class="photo-preview-img" alt="Photo">
  <button class="photo-remove-btn" onclick="removePhoto(${id})" title="Remove photo"></button>
- <div style="font-size:11px;color:var(--muted);margin-top:6px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${filename}</div>
+ <div style="font-size:11px;color:#aaaaaa;margin-top:6px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${filename}</div>
  </div>`;
 }
 

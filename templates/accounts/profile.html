@@ -3,9 +3,9 @@
 {% block page_title %}My Profile{% endblock %}
 {% block content %}
 <div style="max-width:600px;margin:0 auto;">
- <div class="card" style="margin-bottom:16px;background:#aaaaaa;color:#aaaaaa">
+ <div class="card" style="margin-bottom:16px;background:#111111;color:var(--yellow)">
  <div style="display:flex;align-items:center;gap:16px;">
- <div style="width:60px;height:60px;border-radius:50%;background:var(--brand-accent);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;">
+ <div style="width:60px;height:60px;border-radius:50%;background:#aaaaaa;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;flex-shrink:0;">
  {{ user.display_name|first|upper }}
  </div>
  <div>

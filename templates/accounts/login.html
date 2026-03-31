@@ -1,10 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
  <meta name="theme-color" content="#000000">
- <title>Sign In — The Ambassador</title>
+ <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+ <title>Sign In - The Ambassador</title>
  <style>
  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
  body {
@@ -25,7 +27,6 @@
  .brand-mark {
  display: inline-flex; align-items: center; justify-content: center;
  width: 52px; height: 52px; border-radius: 8px;
- background: #f5c800; color: #000;
  font-size: 24px; font-weight: 900;
  margin-bottom: 14px;
  }
@@ -100,7 +101,10 @@
 <div class="login-wrap">
 
  <div class="brand">
- <div class="brand-mark">A</div>
+ <div class="brand-mark">
+    {% load static %}
+    <img class="brand-mark" src="{% static 'img/logo.png' %}" alt="B">
+ </div>
  <h1>The Ambassador</h1>
  <p>Management Platform</p>
  </div>
@@ -133,7 +137,7 @@
  </form>
  </div>
 
- <div class="login-footer">Rhapsody's Restaurant Group &copy; 2025</div>
+ <div class="login-footer">The Ambassador &copy; 2026</div>
 </div>
 </body>
 </html>

@@ -121,9 +121,9 @@ class User(AbstractUser):
     def dept_name(self):
         return self.department.name if self.department else '—'
 
-    @property
-    def dept_emoji(self):
-        return self.department.emoji if self.department else ''
+    #@property
+    #def dept_emoji(self):
+        #return self.department.emoji if self.department else ''
 
     @property
     def is_admin(self):

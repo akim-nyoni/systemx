@@ -6,7 +6,7 @@
  .dept-group { margin-bottom:20px; }
  .dept-group-header {
  font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px;
- color:#aaaaaa; padding:8px 0 6px; border-bottom:2px solid var(--border);
+ color:var(--muted); padding:8px 0 6px; border-bottom:2px solid var(--border);
  margin-bottom:10px;
  }
  .dept-card {
@@ -19,7 +19,7 @@
  .dept-card.is-child { margin-left:28px; border-left:3px solid var(--brand-accent); }
 .dept-info { flex:1; min-width:0; }
  .dept-name { font-size:14px; font-weight:700; color:#f5c800; }
- .dept-meta { font-size:11px; color:#aaaaaa; margin-top:1px; }
+ .dept-meta { font-size:11px; color:var(--muted); margin-top:1px; }
  .dept-actions { display:flex; gap:6px; flex-shrink:0; }
 </style>
 {% endblock %}
@@ -28,7 +28,7 @@
 <div class="flex-between mb-4">
  <div>
  <h2 style="font-size:18px;font-weight:800;color:#f5c800;">Departments</h2>
- <p class="text-sm text-muted">Org chart structure — staff only see their department's data.</p>
+ <p class="text-sm text-muted">Org chart structure - staff only see their department's data.</p>
  </div>
  <a href="{% url 'accounts:dept_create' %}" class="btn btn-primary">+ New Department</a>
 </div>

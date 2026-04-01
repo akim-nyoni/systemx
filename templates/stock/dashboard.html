@@ -18,13 +18,13 @@
 
 {% block content %}
 {% if outlet %}
-<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:#aaaaaa;">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--muted);">
  <a href="{% url 'stock:dashboard' %}" style="color:#aaaaaa;text-decoration:none;"> Stock</a>
  <span>›</span>
  <span style="color:#f5c800;font-weight:700;">{{ outlet.name }}</span>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
- <h2 style="font-size:18px;font-weight:800;color:#f5c800;">{{ outlet.name }} — Stock Dashboard</h2>
+ <h2 style="font-size:18px;font-weight:800;color:#f5c800;">{{ outlet.name }} - Stock Dashboard</h2>
  <div class="flex gap-2">
  <a href="{% url 'stock:par_report' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm"> PAR Report</a>
  <a href="{% url 'stock:count_list' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm"> Counts</a>
@@ -44,7 +44,7 @@
  <div><div class="stat-value">{{ critical|length }}</div><div class="stat-label">Critical</div></div>
  </div>
  <div class="stat-card">
- <div><div class="stat-value" style="font-size:18px;">${{ total_value|floatformat:2 }}</div><div class="stat-label">Stock Value</div></div>
+ <div><div class="stat-value" style="font-size:18px;">P{{ total_value|floatformat:2 }}</div><div class="stat-label">Stock Value</div></div>
  </div>
 </div>
 

@@ -16,7 +16,7 @@
 .osc-body { padding: 16px 22px; }
  .osc-stat { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); }
  .osc-stat:last-child { border-bottom: none; }
- .osc-stat-label { font-size: 13px; color: #aaaaaa; }
+ .osc-stat-label { font-size: 13px; color: var(--muted); }
  .osc-stat-value { font-size: 15px; font-weight: 800; color: #f5c800; }
  .osc-stat-value.danger { color: var(--danger); }
  .osc-stat-value.warning { color: #f97316; }
@@ -27,7 +27,7 @@
 {% block content %}
 <div class="flex-between mb-4">
  <div>
- <h2 style="font-size:18px;font-weight:800;color:#f5c800;">Stock — All Outlets</h2>
+ <h2 style="font-size:18px;font-weight:800;color:#f5c800;">Stock - All Outlets</h2>
  <p class="text-sm text-muted">Select an outlet to view its stock dashboard, PAR report and counts.</p>
  </div>
  <div class="flex gap-2">
@@ -64,7 +64,7 @@
  </div>
  <div class="osc-stat">
  <span class="osc-stat-label"> Stock Value</span>
- <span class="osc-stat-value">${{ od.total_value|floatformat:2 }}</span>
+ <span class="osc-stat-value">P{{ od.total_value|floatformat:2 }}</span>
  </div>
  </div>
  <div class="osc-footer">View Stock Dashboard →</div>

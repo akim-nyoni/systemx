@@ -15,7 +15,7 @@
  }
  .sticky-inner { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
  .sticky-progress { display:flex; align-items:center; gap:8px; flex:1; min-width:140px; }
- .completion-pct { font-size:15px; font-weight:800; color:#aaaaaa; white-space:nowrap; }
+ .completion-pct { font-size:15px; font-weight:800; color:var(--brand-blue); white-space:nowrap; }
  .comment-area {
  margin-top:10px; padding:12px; background:#1a1000;
  border-radius:8px; border:1px solid #fed7aa;
@@ -54,7 +54,7 @@
  .photo-remove-btn {
  position:absolute; top:-8px; right:-8px;
  width:26px; height:26px; border-radius:50%;
- background:rgba(239,68,68,.15); color:#aaaaaa border:2px solid #aaaaaa
+ background:rgba(239,68,68,.15); color:#fff; border:2px solid #fff;
  font-size:14px; line-height:1; cursor:pointer;
  display:flex; align-items:center; justify-content:center;
  font-weight:900; box-shadow:0 2px 4px rgba(0,0,0,.2);
@@ -94,7 +94,7 @@
  <span class="badge badge-success">Submitted</span>
  {% endif %}
  </div>
- <div style="font-size:11px;color:#aaaaaa;margin-top:4px;">
+ <div style="font-size:11px;color:var(--muted);margin-top:4px;">
  {{ tmpl.name }} &nbsp;·&nbsp; {{ submission.outlet.name|default:"—" }} &nbsp;·&nbsp; {{ submission.get_shift_display }} shift
  </div>
 </div>
@@ -218,7 +218,7 @@ window.addEventListener('DOMContentLoaded', () => {
  wrap.innerHTML = `
  <div class="photo-preview-wrap">
  <img src="${r.image}" class="photo-preview-img" alt="Saved photo">
- <a href="${r.image}" target="_blank" style="position:absolute;bottom:-8px;right:-8px;background:#2a7fba;color:#aaaaaaborder-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;text-decoration:none;border:2px solid #aaaaaa" title="View full image"></a>
+ <a href="${r.image}" target="_blank" style="position:absolute;bottom:-8px;right:-8px;background:#2a7fba;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;text-decoration:none;border:2px solid #fff;" title="View full image"></a>
  <div style="font-size:11px;color:var(--success);margin-top:6px;font-weight:600;"> Photo saved</div>
  </div>`;
  }
@@ -292,7 +292,7 @@ function renderPreview(id, src, filename) {
  <div class="photo-preview-wrap" id="preview-wrap-${id}">
  <img src="${src}" class="photo-preview-img" alt="Photo">
  <button class="photo-remove-btn" onclick="removePhoto(${id})" title="Remove photo"></button>
- <div style="font-size:11px;color:#aaaaaa;margin-top:6px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${filename}</div>
+ <div style="font-size:11px;color:var(--muted);margin-top:6px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${filename}</div>
  </div>`;
 }
 

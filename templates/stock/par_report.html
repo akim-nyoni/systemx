@@ -38,7 +38,7 @@
 <div class="card" style="margin-bottom:16px;border-left:4px solid var(--danger);">
  <div class="card-header">
  <span class="card-title" style="color:#991b1b;"> Order Required — {{ order_list|length }} items</span>
- <span style="font-weight:800;color:#991b1b;">${{ total_order_value|floatformat:2 }} estimated</span>
+ <span style="font-weight:800;color:#991b1b;">P{{ total_order_value|floatformat:2 }} estimated</span>
  </div>
  <div class="table-wrap">
  <table class="table">
@@ -60,7 +60,7 @@
  <td style="font-weight:800;color:var(--danger);">{{ entry.order_qty|floatformat:1 }} {{ item.get_unit_display }}</td>
  <td class="text-sm">
  {% if entry.unit_cost > 0 %}
- ${{ entry.unit_cost|floatformat:2 }} × {{ entry.order_qty|floatformat:1 }} = <strong style="color:#f5c800;">${{ entry.est_cost }}</strong>
+ P{{ entry.unit_cost|floatformat:2 }} × {{ entry.order_qty|floatformat:1 }} = <strong style="color:#f5c800;">P{{ entry.est_cost }}</strong>
  {% else %}<span class="text-muted">No cost set</span>{% endif %}
  </td>
  <td class="no-print"><a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">Receive</a></td>
@@ -116,7 +116,7 @@
 
 <!-- Full PAR Table -->
 <div class="card">
- <div class="card-header"><span class="card-title">All Items — PAR Status</span></div>
+ <div class="card-header"><span class="card-title">All Items - PAR Status</span></div>
  <div class="table-wrap">
  <table class="table">
  <thead>

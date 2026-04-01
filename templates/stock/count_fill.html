@@ -17,7 +17,7 @@
  .count-item:last-child { border-bottom:none; }
  .count-item-info { flex:1; min-width:0; }
  .count-item-name { font-size:14px; font-weight:600; color:#f5c800; }
- .count-item-meta { font-size:12px; color:#aaaaaa; margin-top:3px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+ .count-item-meta { font-size:12px; color:var(--muted); margin-top:3px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
  .count-input {
  width:100px; padding:10px 12px; border:2px solid #555555;
  border-radius:10px; font-size:18px; font-weight:800; text-align:center;
@@ -30,7 +30,7 @@
  .count-input.entered { border-color:var(--brand-accent); }
  .variance-col { font-size:13px; font-weight:700; min-width:60px; text-align:right; flex-shrink:0; }
  .below-par-flag { font-size:11px; color:#aaaaaa; background:#1e1e00; padding:2px 8px; border-radius:20px; font-weight:600; }
- .col-header { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:#aaaaaa; padding:6px 0; display:flex; gap:12px; border-bottom:2px solid var(--border); margin-bottom:4px; }
+ .col-header { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); padding:6px 0; display:flex; gap:12px; border-bottom:2px solid var(--border); margin-bottom:4px; }
  .col-header .ch-name { flex:1; }
  .col-header .ch-input { width:100px; text-align:center; flex-shrink:0; }
  .col-header .ch-var { min-width:60px; text-align:right; flex-shrink:0; }
@@ -175,7 +175,7 @@ function saveLine(lineId, value) {
  document.getElementById('countedNum').textContent = counted;
  }
  setSaveStatus(' Saved', '#28a745');
- setTimeout(() => setSaveStatus('—', '#aaaaaa'), 2000);
+ setTimeout(() => setSaveStatus('—', 'var(--muted)'), 2000);
  // Mark input as entered
  const inp = document.getElementById('input-' + lineId);
  if (inp && value !== '') inp.classList.add('entered');
@@ -197,7 +197,7 @@ function updateVariance(lineId, variance, status, belowPar) {
  return;
  }
  const sign = variance > 0 ? '+' : '';
- const colour = variance < 0 ? 'var(--danger)' : variance > 0 ? 'var(--success)' : '#aaaaaa';
+ const colour = variance < 0 ? 'var(--danger)' : variance > 0 ? 'var(--success)' : 'var(--muted)';
  el.innerHTML = `<span style="color:${colour};">${sign}${parseFloat(variance).toFixed(1)}</span>`;
  if (inp) {
  inp.className = 'count-input entered ' +

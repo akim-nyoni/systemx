@@ -4,7 +4,7 @@
 {% block content %}
 <div class="flex-between mb-4">
  <div>
- <h2 style="font-size:18px;font-weight:800;color:#aaaaaa;">Roles &amp; Permissions</h2>
+ <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">Roles &amp; Permissions</h2>
  <p class="text-sm text-muted">Define what each role can do across the system.</p>
  </div>
  <a href="{% url 'accounts:role_create' %}" class="btn btn-primary">+ New Role</a>
@@ -15,7 +15,7 @@
  <div class="card">
  <div class="flex-between" style="margin-bottom:12px;">
  <div>
- <span style="font-size:16px;font-weight:800;color:#aaaaaa;">{{ role.name }}</span>
+ <span style="font-size:16px;font-weight:800;color:var(--brand-blue);">{{ role.name }}</span>
  {% if role.is_system_admin %}<span class="badge badge-danger" style="margin-left:8px;">System Admin</span>{% endif %}
  <span class="badge badge-info" style="margin-left:6px;">{{ role.user_count }} user{{ role.user_count|pluralize }}</span>
  </div>

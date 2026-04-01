@@ -6,95 +6,10 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
  <meta name="theme-color" content="#000000">
  <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+ <link rel="stylesheet" href="{% static 'css/style.css' %}">
  <title>Sign In - The Ambassador</title>
  <style>
- *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- body {
- font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
- background: #000; color: #f0f0f0;
- min-height: 100vh; display: flex; align-items: center; justify-content: center;
- padding: 20px; -webkit-font-smoothing: antialiased;
- }
-
- .login-wrap {
- width: 100%; max-width: 400px;
- }
-
- /* Brand */
- .brand {
- text-align: center; margin-bottom: 40px;
- }
- .brand-mark {
- display: inline-flex; align-items: center; justify-content: center;
- width: 52px; height: 52px; border-radius: 8px;
- font-size: 24px; font-weight: 900;
- margin-bottom: 14px;
- }
- .brand h1 {
- font-size: 22px; font-weight: 900; color: #f5c800;
- letter-spacing: -.3px; line-height: 1.1;
- }
- .brand p {
- font-size: 12px; color: #555; margin-top: 5px;
- text-transform: uppercase; letter-spacing: 1.5px;
- }
-
- /* Card */
- .login-card {
- background: #0d0d0d; border: 1px solid #1f1f1f;
- border-radius: 10px; padding: 28px 24px;
- }
- .login-card h2 {
- font-size: 15px; font-weight: 700; color: #f5c800;
- margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;
- }
-
- /* Alerts */
- .alert {
- padding: 9px 13px; border-radius: 5px; font-size: 13px;
- margin-bottom: 16px; border-left: 2px solid;
- }
- .alert-error { background: rgba(239,68,68,.1); border-color: #ef4444; color: #ef4444; }
- .alert-success { background: rgba(34,197,94,.1); border-color: #22c55e; color: #22c55e; }
- .alert-info { background: rgba(245,200,0,.08); border-color: #f5c800; color: #f5c800; }
-
- /* Form */
- .form-group { margin-bottom: 14px; }
- .form-label {
- display: block; font-size: 10px; font-weight: 700; margin-bottom: 5px;
- color: #666; text-transform: uppercase; letter-spacing: .8px;
- }
- .form-control {
- width: 100%; padding: 10px 13px; border: 1px solid #242424;
- border-radius: 6px; font-size: 15px;
- background: #161616; color: #f0f0f0;
- transition: border-color .12s; -webkit-appearance: none;
- }
- .form-control::placeholder { color: #444; }
- .form-control:focus {
- outline: none; border-color: #f5c800;
- box-shadow: 0 0 0 2px rgba(245,200,0,.12);
- }
-
- /* Submit */
- .btn-login {
- width: 100%; padding: 11px;
- background: #f5c800; color: #000;
- border: none; border-radius: 6px;
- font-size: 14px; font-weight: 800;
- letter-spacing: .3px; cursor: pointer;
- margin-top: 6px; transition: background .12s;
- text-transform: uppercase;
- }
- .btn-login:hover { background: #c9a200; }
- .btn-login:active { transform: scale(.99); }
-
- /* Footer */
- .login-footer {
- text-align: center; margin-top: 24px;
- font-size: 11px; color: #333;
- text-transform: uppercase; letter-spacing: 1px;
- }
+ 
  </style>
 </head>
 <body>
@@ -102,7 +17,6 @@
 
  <div class="brand">
  <div class="brand-mark">
-    {% load static %}
     <img class="brand-mark" src="{% static 'img/logo.png' %}" alt="B">
  </div>
  <h1>The Ambassador</h1>
@@ -137,7 +51,7 @@
  </form>
  </div>
 
- <div class="login-footer">The Ambassador &copy; 2026</div>
+ <div class="login-footer">Rhapsody's Restaurant Group &copy; 2025</div>
 </div>
 </body>
 </html>

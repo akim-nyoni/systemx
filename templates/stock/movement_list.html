@@ -58,7 +58,7 @@
  <td class="text-sm">{% if m.item.outlet %}{{ m.item.outlet.emoji }} {{ m.item.outlet.short_name }}{% else %}—{% endif %}</td>
  <td class="text-sm">{% if m.item.department %}{{ m.item.department.emoji }} {{ m.item.department.name }}{% else %}—{% endif %}</td>
  <td style="font-weight:700;">{% if not m.is_inbound %}-{% endif %}{{ m.quantity|floatformat:1 }} {{ m.item.get_unit_display }}</td>
- <td class="text-sm">${{ m.total_value|floatformat:2 }}</td>
+ <td class="text-sm">P{{ m.total_value|floatformat:2 }}</td>
  <td class="text-sm">{{ m.reference|default:"—" }}</td>
  <td class="text-sm">{{ m.created_by.display_name }}</td>
  <td class="text-sm text-muted" style="white-space:nowrap;">{{ m.created_at|date:"d M Y H:i" }}</td>

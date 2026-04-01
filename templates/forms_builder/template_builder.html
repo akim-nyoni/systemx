@@ -6,11 +6,11 @@
 <style>
  .builder-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
  .section-card { background:#1a1a1a; border:1.5px solid #e2e8f0; border-radius:10px; margin-bottom:14px; overflow:hidden; }
- .section-title-bar { background:#aaaaaa; color:#aaaaaa padding:12px 18px; display:flex; align-items:center; justify-content:space-between; }
+ .section-title-bar { background:#1e3a5f; color:#fff; padding:12px 18px; display:flex; align-items:center; justify-content:space-between; }
  .section-title-bar h3 { font-size:14px; font-weight:700; }
  .item-row { display:flex; align-items:center; gap:12px; padding:10px 18px; border-bottom:1px solid #f1f5f9; font-size:13px; }
  .item-row:last-child { border-bottom:none; }
- .item-type-pill { font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; background:#e8f4fd; color:#aaaaaa; text-transform:uppercase; flex-shrink:0; }
+ .item-type-pill { font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; background:#e8f4fd; color:#1e3a5f; text-transform:uppercase; flex-shrink:0; }
  .add-item-form { padding:12px 18px; background:#f8fafc; display:none; border-top:1px solid #e2e8f0; }
  .add-item-form.open { display:block; }
  .panel-section { margin-bottom:20px; }
@@ -21,7 +21,7 @@
 {% block content %}
 <div class="flex-between mb-4">
  <div>
- <h2 style="font-size:18px; font-weight:800; color:#aaaaaa;">{{ tmpl.name }}</h2>
+ <h2 class="myform-categories">{{ tmpl.name }}</h2>
  <p class="text-sm text-muted">{{ tmpl.get_category_display }} · Drag sections to reorder</p>
  </div>
  <div style="display:flex; gap:8px;">
@@ -39,8 +39,8 @@
  <div class="section-title-bar">
  <h3>{{ section.title }}</h3>
  <div style="display:flex;gap:8px;">
- <button onclick="toggleAddItem({{ section.pk }})" style="background:rgba(255,255,255,.2);border:none;color:#aaaaaaborder-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:700;">+ Item</button>
- <button onclick="deleteSection({{ section.pk }}, this)" style="background:rgba(220,53,69,.6);border:none;color:#aaaaaaborder-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;"></button>
+ <button onclick="toggleAddItem({{ section.pk }})" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:700;">+ Item</button>
+ <button onclick="deleteSection({{ section.pk }}, this)" style="background:rgba(220,53,69,.6);border:none;color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;"></button>
  </div>
  </div>
  <div id="items-{{ section.pk }}">
@@ -171,8 +171,8 @@ async function addSection() {
  <div class="section-title-bar">
  <h3>${data.title}</h3>
  <div style="display:flex;gap:8px;">
- <button onclick="toggleAddItem(${data.id})" style="background:rgba(255,255,255,.2);border:none;color:#aaaaaaborder-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:700;">+ Item</button>
- <button onclick="deleteSection(${data.id}, this)" style="background:rgba(220,53,69,.6);border:none;color:#aaaaaaborder-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;"></button>
+ <button onclick="toggleAddItem(${data.id})" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:700;">+ Item</button>
+ <button onclick="deleteSection(${data.id}, this)" style="background:rgba(220,53,69,.6);border:none;color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;"></button>
  </div>
  </div>
  <div id="items-${data.id}">

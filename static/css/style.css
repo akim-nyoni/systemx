@@ -444,7 +444,8 @@ login.html
  width: 100%; padding: 10px 13px; border: 1px solid #242424;
  border-radius: 6px; font-size: 15px;
  background: #161616; color: #f0f0f0;
- transition: border-color .12s; -webkit-appearance: none;
+ transition: border-color .12s; 
+ appearance: none;
  }
  .form-control::placeholder { color: #444; }
  .form-control:focus {

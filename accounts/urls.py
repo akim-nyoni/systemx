@@ -28,4 +28,6 @@ urlpatterns = [
     path('outlets/',                views.outlet_list_view,   name='outlet_list'),
     path('outlets/create/',         views.outlet_create_view, name='outlet_create'),
     path('outlets/<int:pk>/edit/',  views.outlet_edit_view,   name='outlet_edit'),
+    # Admin password reset for any user
+    path('users/<int:pk>/reset-password/', views.reset_user_password_view, name='user_reset_password'),
 ]

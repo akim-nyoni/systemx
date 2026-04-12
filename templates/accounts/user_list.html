@@ -40,6 +40,7 @@
  <div class="flex gap-1">
  <a href="{% url 'accounts:user_edit' u.pk %}" class="btn btn-outline btn-sm">Edit</a>
  {% if u != request.user %}
+ <a href="{% url 'accounts:user_reset_password' u.pk %}" class="btn btn-outline btn-sm">Reset Password</a>
  <a href="{% url 'accounts:user_toggle' u.pk %}" class="btn btn-outline btn-sm" onclick="return confirm('Toggle status for {{ u.display_name }}?')">
  {% if u.is_active %}Disable{% else %}Enable{% endif %}
  </a>

@@ -311,3 +311,43 @@ def outlet_edit_view(request, pk):
     else:
         form = OutletForm(instance=outlet)
     return render(request, 'accounts/outlet_form.html', {'form': form, 'title': f'Edit: {outlet.name}', 'outlet': outlet})
+
+
+# ── Admin: Reset any user's password ─────────────────────────────
+
+@login_required
+def reset_user_password_view(request, pk):
+    """Admin resets another user's password. No old password required."""
+    if not request.user.can_manage_users:
+        messages.error(request, 'You do not have permission to reset passwords.')
+        return redirect('accounts:user_list')
+
+    target_user = get_object_or_404(User, pk=pk)
+
+    # Prevent non-admins from resetting admin passwords
+    if target_user.is_admin and not request.user.is_admin:
+        messages.error(request, 'You cannot reset an administrator\'s password.')
+        return redirect('accounts:user_list')
+
+    if request.method == 'POST':
+        new_password  = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+
+        if not new_password:
+            messages.error(request, 'Password cannot be empty.')
+        elif len(new_password) < 6:
+            messages.error(request, 'Password must be at least 6 characters.')
+        elif new_password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+        else:
+            target_user.set_password(new_password)
+            target_user.save()
+            messages.success(
+                request,
+                f'Password for {target_user.display_name} has been reset successfully.'
+            )
+            return redirect('accounts:user_list')
+
+    return render(request, 'accounts/reset_password.html', {
+        'target_user': target_user,
+    })

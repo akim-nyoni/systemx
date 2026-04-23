@@ -325,3 +325,41 @@ def my_forms(request):
     })
 
 my_forms = login_required(my_forms)
+
+
+# ─── Delete Template ─────────────────────────────────────────────
+
+@login_required
+@require_admin
+def template_delete(request, pk):
+    tmpl = get_object_or_404(FormTemplate, pk=pk)
+    submission_count = tmpl.submissions.count()
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'delete_all':
+            name = tmpl.name
+            # Must delete submissions first because FormSubmission.form uses PROTECT
+            # Delete item responses first, then submissions, then the template
+            with transaction.atomic():
+                for submission in tmpl.submissions.all():
+                    submission.responses.all().delete()
+                tmpl.submissions.all().delete()
+                tmpl.delete()
+            messages.success(request, f'Form "{name}" and all {submission_count} submission(s) permanently deleted.')
+            return redirect('forms_builder:template_list')
+
+        elif action == 'delete_template_only' and submission_count == 0:
+            name = tmpl.name
+            tmpl.delete()
+            messages.success(request, f'Form "{name}" deleted.')
+            return redirect('forms_builder:template_list')
+
+        else:
+            messages.error(request, 'Invalid action.')
+
+    return render(request, 'forms_builder/template_delete.html', {
+        'tmpl': tmpl,
+        'submission_count': submission_count,
+    })

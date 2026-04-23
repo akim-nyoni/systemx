@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Delete Form — {{ tmpl.name }}{% endblock %}
+{% block page_title %}Delete Form Template{% endblock %}
+{% block content %}
+<div style="max-width:520px;margin:0 auto;">
+
+  <!-- Template info card -->
+  <div class="card" style="margin-bottom:16px;border-left:3px solid var(--danger);">
+    <div style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;">Form to be deleted</div>
+    <div style="font-size:18px;font-weight:800;color:var(--yellow);">{{ tmpl.name }}</div>
+    <div style="font-size:13px;color:#aaa;margin-top:4px;">
+      {{ tmpl.get_category_display }}
+      &nbsp;·&nbsp; {{ tmpl.sections.count }} section{{ tmpl.sections.count|pluralize }}
+      &nbsp;·&nbsp; Created {{ tmpl.created_at|date:"d M Y" }}
+    </div>
+  </div>
+
+  {% if submission_count == 0 %}
+  <!-- Safe to delete — no submissions -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title" style="color:var(--danger);">Confirm Delete</span>
+    </div>
+    <div class="alert alert-success" style="margin-bottom:18px;">
+      This form has no submissions. It can be safely deleted.
+    </div>
+    <p class="text-sm" style="margin-bottom:18px;color:#aaa;">
+      Deleting this form will permanently remove the template, all its sections and checklist items.
+      This cannot be undone.
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="delete_template_only">
+      <div style="display:flex;gap:10px;">
+        <button type="submit" class="btn btn-danger">Delete Form</button>
+        <a href="{% url 'forms_builder:template_list' %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  {% else %}
+  <!-- Has submissions — warn and offer options -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title" style="color:var(--danger);">Warning — Submissions Exist</span>
+    </div>
+
+    <div class="alert alert-error" style="margin-bottom:16px;">
+      This form has <strong>{{ submission_count }} submission{{ submission_count|pluralize }}</strong>.
+      Deleting it will also permanently delete all submission records and responses.
+    </div>
+
+    <div style="background:#1e1e1e;border:1px solid #555;border-radius:7px;padding:14px;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">What will be deleted</div>
+      <div style="font-size:13px;color:#f0f0f0;display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:6px;height:6px;background:var(--danger);border-radius:50%;flex-shrink:0;"></span>
+          The form template: <strong>{{ tmpl.name }}</strong>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:6px;height:6px;background:var(--danger);border-radius:50%;flex-shrink:0;"></span>
+          All {{ tmpl.sections.count }} section{{ tmpl.sections.count|pluralize }} and checklist items
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:6px;height:6px;background:var(--danger);border-radius:50%;flex-shrink:0;"></span>
+          All {{ submission_count }} submission{{ submission_count|pluralize }} and their responses
+        </div>
+      </div>
+    </div>
+
+    <p class="text-sm" style="color:#aaa;margin-bottom:20px;">
+      Type <strong style="color:var(--yellow);">DELETE</strong> below to confirm you understand this action is permanent and irreversible.
+    </p>
+
+    <form method="post" id="deleteForm">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="delete_all">
+      <div class="form-group">
+        <label class="form-label">Type DELETE to confirm</label>
+        <input type="text" id="confirmInput" class="form-control" placeholder="Type DELETE here" autocomplete="off">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <button type="submit" class="btn btn-danger" id="deleteBtn" disabled>
+          Delete Form &amp; All {{ submission_count }} Submission{{ submission_count|pluralize }}
+        </button>
+        <a href="{% url 'forms_builder:template_list' %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if submission_count > 0 %}
+<script>
+const input = document.getElementById('confirmInput');
+const btn   = document.getElementById('deleteBtn');
+input.addEventListener('input', () => {
+  btn.disabled = input.value.trim().toUpperCase() !== 'DELETE';
+});
+</script>
+{% endif %}
+{% endblock %}

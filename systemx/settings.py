@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'systemx-change-this-in-production-use-env-variable'
 
-DEBUG = True  # Set to False in production
+DEBUG = False  # Set to False in production
 
 ALLOWED_HOSTS = ['*']
 

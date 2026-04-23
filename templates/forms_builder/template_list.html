@@ -3,7 +3,7 @@
 {% block page_title %}Form Templates{% endblock %}
 {% block content %}
 <div class="flex-between mb-4">
- <h2 class="myform-categories">Form Templates</h2>
+ <h2 style="font-size:18px; font-weight:700; color:#aaaaaa;">Form Templates</h2>
  <a href="{% url 'forms_builder:template_create' %}" class="btn btn-primary">+ New Template</a>
 </div>
 <div class="card">
@@ -20,8 +20,11 @@
  <td>{% if t.all_managers_access %}<span class="badge badge-info">All Managers</span>{% else %}<span class="badge badge-warning">Restricted</span>{% endif %}</td>
  <td class="text-sm text-muted">{{ t.created_at|date:"d M Y" }}</td>
  <td>
+ <div class="flex gap-1">
  <a href="{% url 'forms_builder:template_builder' t.pk %}" class="btn btn-primary btn-sm">Build</a>
  <a href="{% url 'forms_builder:template_edit' t.pk %}" class="btn btn-outline btn-sm">Edit</a>
+ <a href="{% url 'forms_builder:template_delete' t.pk %}" class="btn btn-danger btn-sm">Delete</a>
+ </div>
  </td>
  </tr>
  {% endfor %}

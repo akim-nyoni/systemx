@@ -15,6 +15,7 @@ urlpatterns = [
     path('templates/create/', views.template_create, name='template_create'),
     path('templates/<int:pk>/edit/', views.template_edit, name='template_edit'),
     path('templates/<int:pk>/builder/', views.template_builder, name='template_builder'),
+    path('templates/<int:pk>/delete/', views.template_delete, name='template_delete'),
     # AJAX
     path('templates/<int:form_pk>/sections/', views.section_create, name='section_create'),
     path('sections/<int:pk>/delete/', views.section_delete, name='section_delete'),

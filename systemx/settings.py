@@ -1,5 +1,5 @@
 """
-The Ambassador - Rhapsody's Management Checklist Platform
+Rhapsody's - Rhapsody's Management Checklist Platform
 Django Settings
 """
 

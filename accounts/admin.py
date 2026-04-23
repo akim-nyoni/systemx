@@ -27,5 +27,5 @@ class CustomUserAdmin(UserAdmin):
     list_display  = ['username', 'get_full_name', 'email', 'custom_role', 'outlet', 'department', 'is_active']
     list_filter   = ['custom_role', 'outlet', 'department', 'is_active']
     fieldsets     = UserAdmin.fieldsets + (
-        ('The Ambassador Profile', {'fields': ('custom_role', 'outlet', 'department', 'phone', 'avatar')}),
+        ("Rhapsody's Profile", {'fields': ('custom_role', 'outlet', 'department', 'phone', 'avatar')}),
     )

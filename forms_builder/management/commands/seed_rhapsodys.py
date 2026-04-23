@@ -1,6 +1,6 @@
 """
 Management command: python manage.py seed_rhapsodys
-Seeds the database with The Ambassador checklist data, roles, and users.
+Seeds the database with Rhapsody's checklist data, roles, and users.
 """
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
@@ -375,7 +375,7 @@ CHECKLISTS = [
 
 
 class Command(BaseCommand):
-    help = "Seed The Ambassador with roles, users, and checklist data."
+    help = "Seed Rhapsody's with roles, users, and checklist data."
 
     def add_arguments(self, parser):
         parser.add_argument('--no-user', action='store_true', help='Skip creating default users')
@@ -395,7 +395,7 @@ class Command(BaseCommand):
 
         self._seed_forms()
 
-        self.stdout.write(self.style.SUCCESS('\n The Ambassador seeded successfully!'))
+        self.stdout.write(self.style.SUCCESS('\n Rhapsody's seeded successfully!'))
         self.stdout.write(self.style.SUCCESS('   Admin:      admin   / admin123'))
         self.stdout.write(self.style.SUCCESS('   Manager:    akim    / manager123'))
         self.stdout.write(self.style.SUCCESS('   Supervisor: super1  / super123'))

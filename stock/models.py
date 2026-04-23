@@ -1,5 +1,5 @@
 """
-Stock Management Models for The Ambassador
+Stock Management Models for Rhapsody's
 -------------------------------------------
 StockCategory      — Beer, Spirits, Wine, Food, Cleaning, etc.
 StockItem          — Each product with unit, PAR level, reorder point

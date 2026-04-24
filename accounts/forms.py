@@ -166,5 +166,5 @@ class OutletForm(forms.ModelForm):
                 field.widget.attrs.update({'class': 'form-control', 'rows': 2})
             else:
                 field.widget.attrs['class'] = 'form-control'
-        self.fields['code'].help_text = 'Short unique code, e.g. sibili, phakalane, seventy_nine'
+        self.fields['code'].help_text = 'Short unique code, e.g. sebele, phakalane, seventy_nine'
         self.fields['order'].help_text = 'Display order (1 = first)'

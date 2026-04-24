@@ -610,9 +610,9 @@ def par_report(request):
 
 @login_required
 @stock_manage_required
-def category_list(request):
+def st_category_list(request):
     cats = StockCategory.objects.annotate(item_count=Count('items')).order_by('name')
-    return render(request, 'stock/category_list.html', {'cats': cats})
+    return render(request, 'stock/st_category_list.html', {'cats': cats})
 
 
 @login_required
@@ -624,7 +624,7 @@ def category_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Category created.')
-            return redirect('stock:category_list')
+            return redirect('stock:st_category_list')
     else:
         form = StockCategoryForm()
     return render(request, 'stock/category_form.html', {'form': form, 'title': 'Add Category'})
@@ -640,7 +640,7 @@ def category_edit(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, f'Category "{cat.name}" updated.')
-            return redirect('stock:category_list')
+            return redirect('stock:st_category_list')
     else:
         form = StockCategoryForm(instance=cat)
     return render(request, 'stock/category_form.html', {'form': form, 'title': f'Edit: {cat.name}', 'cat': cat})
@@ -653,14 +653,14 @@ def category_delete(request, pk):
     if request.method == 'POST':
         if cat.items.exists():
             messages.error(request, f'Cannot delete "{cat.name}" — {cat.items.count()} item(s) use this category. Reassign them first.')
-            return redirect('stock:category_list')
+            return redirect('stock:st_category_list')
         cat.delete()
         messages.success(request, f'Category "{cat.name}" deleted.')
-        return redirect('stock:category_list')
+        return redirect('stock:st_category_list')
     return render(request, 'stock/confirm_delete.html', {
         'title': f'Delete Category: {cat.name}',
         'message': f'This will permanently delete the "{cat.name}" category. Make sure no items are using it.',
-        'back_url': 'stock:category_list',
+        'back_url': 'stock:st_category_list',
     })
 
 

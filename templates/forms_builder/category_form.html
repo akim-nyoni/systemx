@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+<div style="max-width:520px;margin:0 auto;">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">{{ title }}</span>
+      <a href="{% url 'forms_builder:fb_category_list' %}" class="btn btn-outline btn-sm">Back</a>
+    </div>
+
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'error' }}" style="margin-bottom:14px;">{{ message }}</div>
+    {% endfor %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label">Category Name *</label>
+        <input type="text" name="name" class="form-control"
+               value="{{ cat.name|default:'' }}"
+               placeholder="e.g. Opening Duties, Bar Checklist"
+               required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Code *</label>
+        <input type="text" name="code" class="form-control"
+               value="{{ cat.code|default:'' }}"
+               placeholder="e.g. opening, bar, kitchen"
+               pattern="[a-z0-9_\-]+" title="Lowercase letters, numbers, hyphens and underscores only"
+               required id="codeInput">
+        <div class="form-text">Lowercase letters, numbers, hyphens and underscores only. Must be unique.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-control" rows="2"
+                  placeholder="Optional description">{{ cat.description|default:'' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Display Order</label>
+        <input type="number" name="order" class="form-control"
+               value="{{ cat.order|default:'0' }}" min="0" style="max-width:120px;">
+        <div class="form-text">Lower number = appears first in lists.</div>
+      </div>
+
+      {% if action == 'edit' %}
+      <div class="form-check" style="margin-bottom:16px;">
+        <input type="checkbox" name="is_active" class="form-check-input" id="id_is_active"
+               {% if cat.is_active %}checked{% endif %}>
+        <label class="form-check-label" for="id_is_active">Active</label>
+      </div>
+      {% endif %}
+
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <button type="submit" class="btn btn-primary">Save Category</button>
+        <a href="{% url 'forms_builder:fb_category_list' %}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-generate code from name
+const nameInput = document.querySelector('[name="name"]');
+const codeInput = document.getElementById('codeInput');
+let userEditedCode = Boolean(codeInput.value);
+
+nameInput.addEventListener('input', () => {
+  if (!userEditedCode) {
+    codeInput.value = nameInput.value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_|_$/g, '');
+  }
+});
+codeInput.addEventListener('input', () => { userEditedCode = true; });
+</script>
+{% endblock %}

@@ -219,7 +219,7 @@ base.html
 
  /* Badges */
  .badge {
- display:inline-block; padding:2px 8px; border-radius:4px;
+ display:inline-block; padding:8px; border-radius:4px;
  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;
  }
  .badge-success { background:var(--success-bg); color:var(--success); }

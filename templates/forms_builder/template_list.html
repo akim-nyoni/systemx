@@ -14,7 +14,7 @@
  {% for t in templates %}
  <tr>
  <td><strong>{{ t.name }}</strong></td>
- <td>{{ t.get_category_display }}</td>
+ <td>{{ t.category_name }}</td>
  <td>{{ t.sections.count }} sections</td>
  <td>{% if t.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-draft">Inactive</span>{% endif %}</td>
  <td>{% if t.all_managers_access %}<span class="badge badge-info">All Managers</span>{% else %}<span class="badge badge-warning">Restricted</span>{% endif %}</td>

@@ -1,149 +1,129 @@
-# System X — Rhapsody's Phakalane Management Platform
+# System X — Rhapsody’s Management Platform
 
-A professional Django web application for digital management checklists, form submissions, reporting, and access control.
-
----
-
-## 🚀 Quick Start
-
-```bash
-# 1. Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate        # Linux / macOS
-venv\Scripts\activate           # Windows
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Run migrations + seed data
-python manage.py makemigrations
-python manage.py migrate
-python manage.py seed_rhapsodys
-
-# 4. Start the server
-python manage.py runserver
-
-# 5. Open http://127.0.0.1:8000
-```
-
-**Default login credentials:**
-
-| Role      | Username | Password    |
-|-----------|----------|-------------|
-| Admin     | admin    | admin123    |
-| Manager   | akim     | manager123  |
-| Viewer    | viewer   | viewer123   |
-
-> ⚠️ Change all passwords immediately in production!
+A professional web application built with Django for managing checklists, form submissions, reporting, and user access control.
 
 ---
 
-## 📁 Project Structure
+## Getting Started
 
-```
-systemx/
-├── systemx/            # Django project config (settings, urls, wsgi)
-├── accounts/           # Custom user model, roles, auth
-├── forms_builder/      # Forms, sections, items, submissions, responses
-│   └── management/
-│       └── commands/
-│           └── seed_rhapsodys.py   # Seeds all Rhapsody's checklists
-├── dashboard/          # Home dashboard + reports
-├── templates/          # All HTML templates
-│   ├── base.html       # Master layout with sidebar
-│   ├── accounts/       # Login, profile, user management
-│   ├── forms_builder/  # Fill forms, builder, submission detail
-│   └── dashboard/      # Dashboard, reports
-├── media/              # Uploaded images (created at runtime)
-├── static/             # Static assets
-├── requirements.txt
-└── setup.sh
-```
+To run the project locally:
+
+1. Set up a virtual environment and activate it
+2. Install the required dependencies
+3. Run database migrations and seed initial data
+4. Start the development server
+5. Open the app in your browser at the local server address
+
+Default login accounts are provided for testing (Admin, Manager, Viewer), but these should be changed immediately before deploying to production.
 
 ---
 
-## 🗝️ User Roles
+## Project Overview
 
-| Role          | Permissions                                              |
-|---------------|----------------------------------------------------------|
-| **Admin**     | Full access — manage users, build forms, view all reports|
-| **Manager**   | Fill forms, view own reports, see flagged items          |
-| **Viewer**    | Read-only access to reports and submissions              |
+The system is organized into several core components:
 
----
-
-## 📋 Pre-loaded Checklists (from PDF)
-
-1. **Management Opening Checklist** — Opening duties, FOH day setup, administration
-2. **Management Closing Checklist** — Night FOH, full closing procedure (33 items)
-3. **Cleaning & Maintenance Checklist** — Outside, smoking area, non-smoking, waiter stations, private room
-4. **Bar Daily Checklist** — Setup, equipment, cleaning, glassware counts
-5. **Kitchen Daily Checklist** — Coordinator checks, grill, flat-top, salad, sushi bar (50+ items)
-6. **30-Minute Schedule Check** — Regular interval checks
+* Core configuration — handles project settings and routing
+* Accounts module — manages users, authentication, and roles
+* Forms builder — allows creation of checklists, sections, and submissions
+* Dashboard — provides reports and system overview
+* Templates — contains all frontend pages
+* Static and media files — stores assets and uploaded images
 
 ---
 
-## 🔑 Key Features
+## User Roles
+
+The platform supports three main roles:
+
+* Admin
+  Full system control, including managing users, building forms, and viewing all reports
+
+* Manager
+  Completes assigned checklists, submits forms, and views relevant reports
+
+* Viewer
+  Read-only access to submissions and reports
+
+---
+
+## Preloaded Checklists
+
+The system comes with ready-to-use checklists based on operational needs:
+
+* Management Opening Checklist
+* Management Closing Checklist
+* Cleaning and Maintenance Checklist
+* Bar Daily Checklist
+* Kitchen Daily Checklist
+* 30-Minute Schedule Check
+
+These cover daily operations across front-of-house, kitchen, and maintenance activities.
+
+---
+
+## Key Features
 
 ### For Managers
-- See only forms assigned to them
-- Autosave on every Yes/No click (AJAX)
-- **No response = required comment/explanation**
-- Optional photo upload on failed items
-- Progress indicator with real-time percentage
-- Draft → submit workflow
+
+* Access only assigned forms
+* Automatic saving while filling forms
+* Required comments for incomplete or failed items
+* Optional photo uploads for issues
+* Real-time progress tracking
+* Ability to save drafts and submit later
 
 ### For Administrators
-- **Form Builder** — create sections and items visually with instant AJAX updates
-- **Bulk add** items by pasting a list
-- Assign forms to all managers or specific users
-- Manage all users and their roles
 
-### Reports Dashboard
-- Filter by: **manager, form, date range, response type, branch**
-- Summary stats: total, perfect, flagged submissions
-- **Flagged items table** showing all "No" responses with comments and photos
-- Colour-coded completion indicators
+* Visual form builder with live updates
+* Bulk item creation for faster setup
+* Flexible assignment of forms to users
+* Full user and role management
 
----
+### Reporting Dashboard
 
-## 🖼️ Image Storage
-
-Photos uploaded on failed checklist items are saved to:
-```
-media/responses/YYYY/MM/filename.jpg
-```
-
-The `MEDIA_ROOT` setting points to the `media/` folder in the project root. For production, configure a proper file storage backend (S3, etc.).
+* Filter reports by manager, form, date, and response type
+* Overview statistics including total, completed, and flagged submissions
+* Highlighted problem areas with comments and images
+* Visual indicators for completion status
 
 ---
 
-## 🔒 Production Checklist
+## Image Handling
 
-Before going live:
+Images uploaded during form submissions are stored in a structured media directory.
 
-1. Set `DEBUG = False` in `settings.py`
-2. Set a strong `SECRET_KEY` (use environment variable)
-3. Set `ALLOWED_HOSTS` to your domain
-4. Configure a production database (PostgreSQL recommended)
-5. Set up a proper WSGI server (Gunicorn + Nginx)
-6. Configure file storage for media files
-7. Run `python manage.py collectstatic`
-8. Change all default passwords
+For production environments, it is recommended to use a scalable storage solution such as cloud storage.
 
 ---
 
-## 🔮 Planned: Inventory Module
+## Production Readiness
 
-The codebase is structured to easily add an `inventory` app. When ready:
-- Add `inventory` to `INSTALLED_APPS`
-- Link inventory items to form submissions for real-time stock tracking
+Before deploying:
+
+* Disable debug mode
+* Use a secure secret key
+* Configure allowed hosts
+* Switch to a production database such as PostgreSQL
+* Set up a production server such as Gunicorn with Nginx
+* Configure static and media file handling
+* Update all default credentials
 
 ---
 
-## 📞 Tech Stack
+## Future Expansion
 
-- **Backend:** Django 4.2, SQLite (dev) / PostgreSQL (prod)
-- **Frontend:** Vanilla HTML/CSS/JS (no framework dependencies)
-- **Images:** Pillow
-- **Deployment:** Any WSGI-compatible host
+An inventory module is planned, which will allow:
+
+* Tracking of stock items
+* Integration with form submissions
+* Real-time inventory updates
+
+---
+
+## Technology Stack
+
+* Backend: Django
+* Database: SQLite for development, PostgreSQL for production
+* Frontend: HTML, CSS, and JavaScript
+* Image Processing: Pillow
+* Deployment: Compatible with standard web servers

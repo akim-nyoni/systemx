@@ -21,4 +21,9 @@ urlpatterns = [
     path('sections/<int:pk>/delete/', views.section_delete, name='section_delete'),
     path('sections/<int:section_pk>/items/', views.item_create, name='item_create'),
     path('items/<int:pk>/delete/', views.item_delete, name='item_delete'),
+    # Form Categories CRUD
+    path('categories/',                  views.fb_category_list,   name='fb_category_list'),
+    path('categories/create/',           views.category_create, name='category_create'),
+    path('categories/<int:pk>/edit/',    views.category_edit,   name='category_edit'),
+    path('categories/<int:pk>/delete/',  views.category_delete, name='category_delete'),
 ]

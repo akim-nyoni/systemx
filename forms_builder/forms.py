@@ -9,7 +9,6 @@ class FormTemplateForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'category': forms.Select(attrs={'class': 'form-select'}),
             'assigned_users': forms.CheckboxSelectMultiple(),
         }
 
@@ -17,6 +16,9 @@ class FormTemplateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['is_active'].widget.attrs['class'] = 'form-check-input'
         self.fields['all_managers_access'].widget.attrs['class'] = 'form-check-input'
+        self.fields['category'].widget.attrs['class'] = 'form-select'
+        self.fields['category'].required = False
+        self.fields['category'].empty_label = '— No Category —'
         self.fields['outlet'].widget.attrs['class'] = 'form-select'
         self.fields['outlet'].required = False
         self.fields['outlet'].label = 'Outlet (blank = all restaurants)'

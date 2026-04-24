@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Count
 from django.http import JsonResponse
 from django.utils import timezone
 from django.db import transaction
@@ -362,4 +363,94 @@ def template_delete(request, pk):
     return render(request, 'forms_builder/template_delete.html', {
         'tmpl': tmpl,
         'submission_count': submission_count,
+    })
+
+
+# ─── Form Categories CRUD ─────────────────────────────────────────
+
+from .models import FormCategory
+
+@login_required
+@require_admin
+def fb_category_list(request):
+    categories = FormCategory.objects.annotate(
+        tpl_count=Count('templates')
+    ).order_by('order', 'name')
+    return render(request, 'forms_builder/fb_category_list.html', {'categories': categories})
+
+
+@login_required
+@require_admin
+def category_create(request):
+    if request.method == 'POST':
+        name  = request.POST.get('name', '').strip()
+        code  = request.POST.get('code', '').strip()
+        desc  = request.POST.get('description', '').strip()
+        order = request.POST.get('order', 0)
+        errors = []
+        if not name:
+            errors.append('Name is required.')
+        if not code:
+            errors.append('Code is required.')
+        elif FormCategory.objects.filter(code=code).exists():
+            errors.append(f'Code "{code}" is already in use.')
+        if not errors:
+            FormCategory.objects.create(name=name, code=code, description=desc, order=order)
+            messages.success(request, f'Category "{name}" created.')
+            return redirect('forms_builder:fb_category_list')
+        for e in errors:
+            messages.error(request, e)
+    return render(request, 'forms_builder/category_form.html', {'title': 'Add Category', 'action': 'create'})
+
+
+@login_required
+@require_admin
+def category_edit(request, pk):
+    cat = get_object_or_404(FormCategory, pk=pk)
+    if request.method == 'POST':
+        name  = request.POST.get('name', '').strip()
+        code  = request.POST.get('code', '').strip()
+        desc  = request.POST.get('description', '').strip()
+        order = request.POST.get('order', 0)
+        errors = []
+        if not name:
+            errors.append('Name is required.')
+        if not code:
+            errors.append('Code is required.')
+        elif FormCategory.objects.filter(code=code).exclude(pk=pk).exists():
+            errors.append(f'Code "{code}" is already in use by another category.')
+        if not errors:
+            cat.name = name
+            cat.code = code
+            cat.description = desc
+            cat.order = order
+            cat.is_active = 'is_active' in request.POST
+            cat.save()
+            messages.success(request, f'Category "{name}" updated.')
+            return redirect('forms_builder:fb_category_list')
+        for e in errors:
+            messages.error(request, e)
+    return render(request, 'forms_builder/category_form.html', {
+        'title': f'Edit Category: {cat.name}',
+        'action': 'edit',
+        'cat': cat,
+    })
+
+
+@login_required
+@require_admin
+def category_delete(request, pk):
+    cat = get_object_or_404(FormCategory, pk=pk)
+    form_count = cat.templates.count()
+    if request.method == 'POST':
+        if form_count > 0:
+            # Unlink templates from this category before deleting
+            cat.templates.all().update(category=None)
+        name = cat.name
+        cat.delete()
+        messages.success(request, f'Category "{name}" deleted.')
+        return redirect('forms_builder:fb_category_list')
+    return render(request, 'forms_builder/category_delete.html', {
+        'cat': cat,
+        'form_count': form_count,
     })

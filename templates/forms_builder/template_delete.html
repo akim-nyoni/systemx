@@ -9,7 +9,7 @@
     <div style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;">Form to be deleted</div>
     <div style="font-size:18px;font-weight:800;color:var(--yellow);">{{ tmpl.name }}</div>
     <div style="font-size:13px;color:#aaa;margin-top:4px;">
-      {{ tmpl.get_category_display }}
+      {{ tmpl.category_name }}
       &nbsp;·&nbsp; {{ tmpl.sections.count }} section{{ tmpl.sections.count|pluralize }}
       &nbsp;·&nbsp; Created {{ tmpl.created_at|date:"d M Y" }}
     </div>

@@ -3,22 +3,38 @@ from django.conf import settings
 from django.utils import timezone
 
 
+class FormCategory(models.Model):
+    """User-manageable categories for form templates."""
+    name       = models.CharField(max_length=100, unique=True)
+    code       = models.SlugField(max_length=50, unique=True, help_text='Short unique key, e.g. opening, bar, kitchen')
+    description= models.TextField(blank=True)
+    order      = models.PositiveIntegerField(default=0)
+    is_active  = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = 'Form Category'
+        verbose_name_plural = 'Form Categories'
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def form_count(self):
+        return self.templates.count()
+
+
 class FormTemplate(models.Model):
     """A checklist form template (e.g. Management Checklist, Bar Checklist)"""
-    CATEGORY_CHOICES = [
-        ('opening', 'Opening Duties'),
-        ('foh', 'Front of House'),
-        ('bar', 'Bar'),
-        ('kitchen', 'Kitchen'),
-        ('closing', 'Closing Procedure'),
-        ('cleaning', 'Cleaning & Maintenance'),
-        ('meetings', 'Meetings'),
-        ('other', 'Other'),
-    ]
 
     name        = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    category    = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default='other')
+    category    = models.ForeignKey(
+        FormCategory, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='templates', verbose_name='Category',
+        help_text='Select a category — manage categories from Form Categories in the sidebar'
+    )
     outlet      = models.ForeignKey(
         'accounts.Outlet', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='form_templates', verbose_name='Outlet',
@@ -37,11 +53,15 @@ class FormTemplate(models.Model):
     all_managers_access = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['category', 'name']
+        ordering = ['category__name', 'name']
         verbose_name = 'Form Template'
 
     def __str__(self):
         return self.name
+
+    @property
+    def category_name(self):
+        return self.category.name if self.category else 'Uncategorised'
 
     def can_user_access(self, user):
         if user.is_admin:

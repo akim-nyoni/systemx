@@ -412,7 +412,7 @@ class Command(BaseCommand):
         from accounts.models import Outlet
         self.stdout.write('\nCreating outlets...')
         outlets_data = [
-            ("Rhapsody's Sibili",       'sibili',       1),
+            ("Rhapsody's Sebele",       'sebele',       1),
             ("Rhapsody's Phakalane",    'phakalane',    2),
             ("Rhapsody's Seventy Nine", 'seventy_nine', 3),
         ]

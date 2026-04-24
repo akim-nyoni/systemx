@@ -52,7 +52,7 @@
  <a href="{% url 'stock:count_list' %}" class="nav-link {% if request.resolver_match.url_name in 'count_list,count_create,count_fill,count_detail' %}active{% endif %}" onclick="closeSidebar()">Stock Counts</a>
  <a href="{% url 'stock:movement_list' %}" class="nav-link {% if request.resolver_match.url_name in 'movement_list,movement_create' %}active{% endif %}" onclick="closeSidebar()">Movements</a>
  {% if user.can_manage_stock %}
- <a href="{% url 'stock:category_list' %}" class="nav-link {% if request.resolver_match.url_name in 'category_list,category_create,category_edit' %}active{% endif %}" onclick="closeSidebar()">Categories</a>
+ <a href="{% url 'stock:st_category_list' %}" class="nav-link {% if request.resolver_match.url_name in 'st_category_list,category_create,category_edit' %}active{% endif %}" onclick="closeSidebar()">Categories</a>
  <a href="{% url 'stock:location_list' %}" class="nav-link {% if request.resolver_match.url_name in 'location_list,location_create,location_edit' %}active{% endif %}" onclick="closeSidebar()">Locations</a>
  {% endif %}
  {% endif %}
@@ -60,7 +60,8 @@
  {% if user.can_manage_forms or user.can_manage_users or user.is_admin %}
  <div class="nav-section-label">Administration</div>
  {% if user.can_manage_forms %}
- <a href="{% url 'forms_builder:template_list' %}" class="nav-link {% if request.resolver_match.url_name in 'template_list,template_create,template_builder,template_edit' %}active{% endif %}" onclick="closeSidebar()">Form Builder</a>
+  <a href="{% url 'forms_builder:template_list' %}" class="nav-link {% if request.resolver_match.url_name in 'template_list,template_create,template_builder,template_edit' %}active{% endif %}" onclick="closeSidebar()">Form Builder</a>
+  <a href="{% url 'forms_builder:fb_category_list' %}" class="nav-link {% if request.resolver_match.url_name in 'fb_category_list,category_create,category_edit,category_delete' %}active{% endif %}" onclick="closeSidebar()">Form Categories</a>
  {% endif %}
  {% if user.can_manage_users %}
  <a href="{% url 'accounts:user_list' %}" class="nav-link {% if request.resolver_match.url_name in 'user_list,user_create,user_edit' %}active{% endif %}" onclick="closeSidebar()">Users</a>

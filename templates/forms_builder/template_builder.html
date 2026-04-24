@@ -22,7 +22,7 @@
 <div class="flex-between mb-4">
  <div>
  <h2 class="myform-categories">{{ tmpl.name }}</h2>
- <p class="text-sm text-muted">{{ tmpl.get_category_display }} · Drag sections to reorder</p>
+ <p class="text-sm text-muted">{{ tmpl.category_name }} · Drag sections to reorder</p>
  </div>
  <div style="display:flex; gap:8px;">
  <a href="{% url 'forms_builder:template_edit' tmpl.pk %}" class="btn btn-outline btn-sm">Edit Info</a>
@@ -110,7 +110,7 @@
  <div class="panel-section">
  <h4>Form Details</h4>
  <div style="font-size:13px; display:flex; flex-direction:column; gap:6px;">
- <div class="flex-between"><span class="text-muted">Category</span><strong>{{ tmpl.get_category_display }}</strong></div>
+ <div class="flex-between"><span class="text-muted">Category</span><strong>{{ tmpl.category_name }}</strong></div>
  <div class="flex-between"><span class="text-muted">Sections</span><strong>{{ sections|length }}</strong></div>
  <div class="flex-between"><span class="text-muted">Status</span>{% if tmpl.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-draft">Inactive</span>{% endif %}</div>
  <div class="flex-between"><span class="text-muted">Access</span>{% if tmpl.all_managers_access %}<span class="badge badge-info">All Managers</span>{% else %}<span class="badge badge-warning">Restricted</span>{% endif %}</div>

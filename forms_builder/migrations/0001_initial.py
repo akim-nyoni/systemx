@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField(blank=True)),
-                ('category', models.CharField(choices=[('opening', 'Opening Duties'), ('foh', 'Front of House'), ('bar', 'Bar'), ('kitchen', 'Kitchen'), ('closing', 'Closing Procedure'), ('cleaning', 'Cleaning & Maintenance'), ('meetings', 'Meetings'), ('other', 'Other')], default='other', max_length=30)),
+                ('category', models.CharField(default='other', max_length=30, null=True, blank=True)),
                 ('is_active', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),

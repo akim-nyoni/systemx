@@ -26,7 +26,7 @@ urlpatterns = [
     path('movements/add/',                  views.movement_create,        name='movement_create'),
     path('movements/add/<int:item_pk>/',    views.movement_create,        name='movement_create_item'),
     # Categories
-    path('categories/',                     views.category_list,          name='category_list'),
+    path('categories/',                     views.st_category_list,          name='st_category_list'),
     path('categories/add/',                 views.category_create,        name='category_create'),
     path('categories/<int:pk>/edit/',       views.category_edit,          name='category_edit'),
     path('categories/<int:pk>/delete/',     views.category_delete,        name='category_delete'),

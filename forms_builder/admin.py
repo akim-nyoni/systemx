@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FormTemplate, FormSection, ChecklistItem, FormSubmission, ItemResponse
+from .models import FormTemplate, FormSection, ChecklistItem, FormSubmission, ItemResponse, FormCategory
 
 
 class FormSectionInline(admin.TabularInline):
@@ -15,7 +15,7 @@ class ChecklistItemInline(admin.TabularInline):
 @admin.register(FormTemplate)
 class FormTemplateAdmin(admin.ModelAdmin):
     list_display = ['name', 'outlet', 'department', 'category', 'is_active', 'created_at']
-    list_filter  = ['outlet', 'department', 'category', 'is_active']
+    list_filter  = ['outlet', 'department', 'category__name', 'is_active']
     inlines = [FormSectionInline]
 
 
@@ -36,3 +36,9 @@ class FormSubmissionAdmin(admin.ModelAdmin):
 class ItemResponseAdmin(admin.ModelAdmin):
     list_display = ['submission', 'item', 'value', 'answered_at']
     list_filter = ['value']
+
+
+@admin.register(FormCategory)
+class FormCategoryAdmin(admin.ModelAdmin):
+    list_display  = ['name', 'code', 'form_count', 'order', 'is_active']
+    ordering      = ['order', 'name']

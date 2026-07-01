@@ -3,7 +3,7 @@
 {% block page_title %}Users{% endblock %}
 {% block content %}
 <div class="flex-between mb-4">
- <h2 style="font-size:18px;font-weight:800;color:var(--brand-blue);">System Users</h2>
+ <h2 style="font-size:18px;font-weight:800;color:var(--yellow);">System Users</h2>
  <div class="flex gap-2">
  {% if user.is_admin %}<a href="{% url 'accounts:role_list' %}" class="btn btn-outline btn-sm">Manage Roles</a>{% endif %}
  <a href="{% url 'accounts:user_create' %}" class="btn btn-primary">+ Add User</a>
@@ -31,7 +31,7 @@
  {% if u.department %}<span class="badge badge-success">{{ u.department.name }}</span>
  {% else %}<span class="text-muted text-sm">—</span>{% endif %}
  </td>
- <td class="text-sm">{{ u.outlet_name }}</td>
+ <td class="text-muted text-sm">{{ u.outlet_name }}</td>
  <td>
  {% if u.is_active %}<span class="badge badge-success">Active</span>
  {% else %}<span class="badge badge-draft">Inactive</span>{% endif %}

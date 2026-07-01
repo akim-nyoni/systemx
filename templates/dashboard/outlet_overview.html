@@ -11,11 +11,11 @@
  }
  .outlet-card:hover {
  border-color: var(--brand-accent);
- box-shadow: 0 8px 24px rgba(245,200,0,.2);
+ box-shadow: 0 8px 24px var(--primary);
  color: inherit;
  }
  .outlet-card-header {
- background: #111111; color: #f5c800;
+ background: #ffffff; color: var(--yellow);
  padding: 20px 24px; display: flex; align-items: center; gap: 14px;
  }
 .outlet-card-header h3 { font-size: 18px; font-weight: 900; margin: 0; }
@@ -24,14 +24,14 @@
  .outlet-stat { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
  .outlet-stat:last-child { border-bottom: none; }
  .outlet-stat-label { font-size: 13px; color: var(--muted); }
- .outlet-stat-value { font-size: 16px; font-weight: 800; color: #f5c800; }
+ .outlet-stat-value { font-size: 16px; font-weight: 800; color: var(--yellow); }
  .outlet-stat-value.danger { color: var(--danger); }
  .outlet-stat-value.success { color: var(--success); }
- .outlet-footer { padding: 14px 24px; background: #1e1e00; border-top: 1px solid var(--border); font-size: 13px; font-weight: 700; color: #aaaaaa; display: flex; align-items: center; justify-content: space-between; }
- .summary-bar { background: #111111; border: 1px solid #888888; border-radius: 12px; padding: 0; color: #fff; margin-bottom: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0; }
+ .outlet-footer { padding: 14px 24px; background: #ffffff; border-top: 1px solid var(--border); font-size: 13px; font-weight: 700; color: var(--yellow); display: flex; align-items: center; justify-content: space-between; }
+ .summary-bar { background: #ffffff; border: 1px solid #888888; border-radius: 12px; padding: 0; var(--text); margin-bottom: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0; }
  .summary-stat { text-align: center; padding: 20px 16px; border-right: 1px solid #555555; }
  .summary-stat:last-child { border-right: none; }
- .summary-stat .num { font-size: 28px; font-weight: 900; color: #f5c800; line-height: 1; }
+ .summary-stat .num { font-size: 28px; font-weight: 900; color: var(--yellow); line-height: 1; }
  .summary-stat .lbl { font-size: 12px; opacity: .6; margin-top: 4px; }
 </style>
 {% endblock %}
@@ -48,7 +48,7 @@
  <div class="lbl">Submitted Today</div>
  </div>
  <div class="summary-stat">
- <div class="num" style="color:{% if overall_flagged > 0 %}#ff6b6b{% else %}#f5c800{% endif %}">{{ overall_flagged }}</div>
+ <div class="num" style="color:{% if overall_flagged > 0 %}#ff6b6b{% else %}var(--yellow){% endif %}">{{ overall_flagged }}</div>
  <div class="lbl">Flagged This Week</div>
  </div>
  <div class="summary-stat">
@@ -58,7 +58,7 @@
 </div>
 
 <!-- Outlet cards -->
-<h2 style="font-size:16px;font-weight:800;color:#f5c800;margin-bottom:16px;">Select an Outlet to View Details</h2>
+<h2 style="font-size:16px;font-weight:800;color:var(--yellow);margin-bottom:16px;">Select an Outlet to View Details</h2>
 <div class="grid grid-3" style="margin-bottom:28px;">
  {% for od in outlet_data %}
  <a href="{% url 'dashboard:outlet_detail' od.outlet.pk %}" class="outlet-card">

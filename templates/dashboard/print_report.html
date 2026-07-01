@@ -9,20 +9,20 @@
  body {
  font-family: 'Segoe UI', Arial, sans-serif;
  font-size: 11pt; color: #1a1a1a;
- background: #1a1a1a; padding: 20px;
+ background: #ffffff; padding: 20px;
  }
 
  /* Report Header */
  .report-header {
  display: flex; justify-content: space-between; align-items: flex-start;
- border-bottom: 3px solid #f5c800; padding-bottom: 14px; margin-bottom: 20px;
+ border-bottom: 3px solid var(--yellow); padding-bottom: 14px; margin-bottom: 20px;
  }
- .brand-name { font-size: 20pt; font-weight: 900; color: #f5c800; }
+ .brand-name { font-size: 20pt; font-weight: 900; color: var(--yellow); }
  .brand-sub { font-size: 10pt; color: #666; margin-top: 2px; }
  .report-meta { text-align: right; font-size: 9pt; color: #666; line-height: 1.7; }
  .report-meta strong { color: #1a1a1a; }
  .report-title {
- font-size: 14pt; font-weight: 800; color: #f5c800;
+ font-size: 14pt; font-weight: 800; color: var(--yellow);
  margin-bottom: 16px;
  }
 
@@ -35,7 +35,7 @@
  border: 1.5px solid #e2e8f0; border-radius: 8px;
  padding: 10px 12px; text-align: center;
  }
- .summary-box .num { font-size: 22pt; font-weight: 900; color: #f5c800; line-height: 1; }
+ .summary-box .num { font-size: 22pt; font-weight: 900; color: var(--yellow); line-height: 1; }
  .summary-box .lbl { font-size: 8pt; color: #718096; margin-top: 3px; text-transform: uppercase; letter-spacing: .5px; }
  .summary-box.green { border-color: #28a745; background: #f0fdf4; }
  .summary-box.green .num { color: #166534; }
@@ -44,7 +44,7 @@
 
  /* Tables */
  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 24px; }
- thead tr { background: #111111; color: #f5c800; }
+ thead tr { background: #ffffff; color: var(--yellow); }
  thead th {
  padding: 7px 10px; text-align: left;
  font-size: 8.5pt; font-weight: 700;
@@ -62,14 +62,14 @@
 
  /* Section heading */
  .section-title {
- font-size: 11pt; font-weight: 800; color: #f5c800;
+ font-size: 11pt; font-weight: 800; color: var(--yellow);
  margin: 20px 0 8px; padding-bottom: 4px;
- border-bottom: 2px solid #f5c800;
+ border-bottom: 2px solid var(--yellow);
  }
 
  /* Progress bar (print) */
- .pbar-wrap { background: #2a2a2a; border-radius: 99px; height: 7px; min-width: 60px; display: inline-block; overflow: hidden; }
- .pbar { height: 7px; border-radius: 99px; background: #f5c800; }
+ .pbar-wrap { background: #ffffff; border-radius: 99px; height: 7px; min-width: 60px; display: inline-block; overflow: hidden; }
+ .pbar { height: 7px; border-radius: 99px; background: var(--yellow); }
  .pbar.ok { background: #28a745; }
  .pbar.bad { background: #dc3545; }
 
@@ -85,7 +85,7 @@
  display: flex; gap: 8px; z-index: 999;
  }
  .btn-print {
- background: #111111; color: #f5c800; border: none;
+ background: #ffffff; color: var(--yellow); border: none;
  padding: 9px 18px; border-radius: 8px; font-size: 13px;
  font-weight: 700; cursor: pointer;
  }

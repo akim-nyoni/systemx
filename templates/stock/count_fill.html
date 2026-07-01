@@ -5,7 +5,7 @@
 <style>
  .count-sticky {
  position:sticky; top:56px; z-index:40;
- background:#1a1a1a; border-bottom:1px solid #555555;
+ background: #ffffff; border-bottom:1px solid #555555;
  padding:10px 16px; margin:-16px -16px 16px;
  box-shadow:0 2px 8px rgba(0,0,0,.06);
  }
@@ -16,12 +16,12 @@
  }
  .count-item:last-child { border-bottom:none; }
  .count-item-info { flex:1; min-width:0; }
- .count-item-name { font-size:14px; font-weight:600; color:#f5c800; }
+ .count-item-name { font-size:14px; font-weight:600; color:var(--yellow); }
  .count-item-meta { font-size:12px; color:var(--muted); margin-top:3px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
  .count-input {
  width:100px; padding:10px 12px; border:2px solid #555555;
  border-radius:10px; font-size:18px; font-weight:800; text-align:center;
- -webkit-appearance:none; background:#1a1a1a; touch-action:manipulation;
+ -webkit-appearance:none; background: #ffffff; touch-action:manipulation;
  flex-shrink:0;
  }
  .count-input:focus { outline:none; border-color:var(--brand-accent); box-shadow:0 0 0 3px rgba(245,200,0,.25); }
@@ -29,7 +29,7 @@
  .count-input.surplus { border-color:var(--success); background:#f0fdf4; color:var(--success); }
  .count-input.entered { border-color:var(--brand-accent); }
  .variance-col { font-size:13px; font-weight:700; min-width:60px; text-align:right; flex-shrink:0; }
- .below-par-flag { font-size:11px; color:#aaaaaa; background:#1e1e00; padding:2px 8px; border-radius:20px; font-weight:600; }
+ .below-par-flag { font-size:11px; color:var(--yellow); background:#ffffff; padding:2px 8px; border-radius:20px; font-weight:600; }
  .col-header { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); padding:6px 0; display:flex; gap:12px; border-bottom:2px solid var(--border); margin-bottom:4px; }
  .col-header .ch-name { flex:1; }
  .col-header .ch-input { width:100px; text-align:center; flex-shrink:0; }
@@ -73,7 +73,7 @@
 <!-- No items loaded -->
 <div class="card" style="text-align:center;padding:40px;">
  <div style="font-size:48px;margin-bottom:12px;"></div>
- <h3 style="font-size:16px;font-weight:800;color:#f5c800;margin-bottom:8px;">No Items Found for This Count</h3>
+ <h3 style="font-size:16px;font-weight:800;color:var(--yellow);margin-bottom:8px;">No Items Found for This Count</h3>
  <p class="text-sm text-muted" style="margin-bottom:16px;">
  No stock items are linked to location <strong>{{ count.location }}</strong>.
  Make sure items have this location assigned before starting a count.
@@ -131,10 +131,10 @@
  {% elif line.variance > 0 %}
  <span style="color:var(--success);">+{{ line.variance|floatformat:1 }}</span>
  {% else %}
- <span style="color:#aaaaaa;">±0</span>
+ <span style="color:var(--yellow);">±0</span>
  {% endif %}
  {% else %}
- <span style="color:#aaaaaa;">—</span>
+ <span style="color:var(--yellow);">—</span>
  {% endif %}
  </div>
  </div>
@@ -192,7 +192,7 @@ function updateVariance(lineId, variance, status, belowPar) {
  const inp = document.getElementById('input-' + lineId);
  if (!el) return;
  if (variance === null) {
- el.innerHTML = '<span style="color:#aaaaaa;">—</span>';
+ el.innerHTML = '<span style="color:var(--yellow);">—</span>';
  if (inp) inp.className = 'count-input';
  return;
  }

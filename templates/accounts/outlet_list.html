@@ -4,7 +4,7 @@
 {% block content %}
 <div class="flex-between mb-4">
  <div>
- <h2 style="font-size:18px;font-weight:800;color:#f5c800;">Restaurant Outlets</h2>
+ <h2 style="font-size:18px;font-weight:800;color:var(--yellow);">Restaurant Outlets</h2>
  <p class="text-sm text-muted">The three Rhapsody's locations.</p>
  </div>
  <a href="{% url 'accounts:outlet_create' %}" class="btn btn-primary">+ Add Outlet</a>
@@ -16,7 +16,7 @@
  <div style="display:flex;align-items:center;gap:14px;">
  <div style="font-size:36px;"></div>
  <div>
- <div style="font-size:16px;font-weight:800;color:#f5c800;">{{ outlet.name }}</div>
+ <div style="font-size:16px;font-weight:800;color:var(--yellow);">{{ outlet.name }}</div>
  <div class="text-xs text-muted">Code: {{ outlet.code }} &nbsp;·&nbsp; {{ outlet.user_count }} staff</div>
  {% if outlet.address %}<div class="text-sm text-muted">{{ outlet.address }}</div>{% endif %}
  </div>

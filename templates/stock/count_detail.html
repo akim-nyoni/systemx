@@ -5,7 +5,7 @@
 <div class="card" style="margin-bottom:16px;">
  <div class="flex-between">
  <div>
- <h2 style="font-size:18px;font-weight:800;color:#f5c800;">{{ count.location }} — Stock Count</h2>
+ <h2 style="font-size:18px;font-weight:800;color:var(--yellow);">{{ count.location }} — Stock Count</h2>
  <p class="text-sm text-muted">{{ count.count_date|date:"d M Y" }} · {{ count.get_shift_display }} · {{ count.conducted_by.display_name }}</p>
  </div>
  <div class="flex gap-2">
@@ -30,7 +30,7 @@
  {% if line.variance %}{% if line.variance > 0 %}+{% endif %}{{ line.variance|floatformat:1 }}{% else %}—{% endif %}
  </td>
  <td>
- {% if line.below_par %}<span class="badge" style="background:#1e1e00;color:#aaaaaa;"> Below PAR</span>
+ {% if line.below_par %}<span class="badge" style="background:#ffffff;color:var(--yellow);"> Below PAR</span>
  {% elif line.counted_qty is not None %}<span class="badge badge-success">OK</span>
  {% else %}—{% endif %}
  </td>

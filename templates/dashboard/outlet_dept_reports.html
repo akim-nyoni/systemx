@@ -3,7 +3,7 @@
 {% block page_title %}{{ dept.name }} Reports{% endblock %}
 {% block extra_css %}
 <style>
- .filter-bar { background:#1a1a1a; border:1px solid #555555; border-radius:12px; padding:16px; margin-bottom:20px; }
+ .filter-bar { background: #ffffff; border:1px solid #555555; border-radius:12px; padding:16px; margin-bottom:20px; }
  .filter-row { display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
  .filter-group { display:flex; flex-direction:column; gap:4px; min-width:140px; flex:1; }
  .filter-group label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:var(--muted); }
@@ -14,11 +14,11 @@
 {% block content %}
 <!-- Breadcrumb -->
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--muted);flex-wrap:wrap;">
- <a href="{% url 'dashboard:home' %}" style="color:#aaaaaa;text-decoration:none;"> Dashboard</a>
+ <a href="{% url 'dashboard:home' %}" style="color:var(--yellow);text-decoration:none;"> Dashboard</a>
  <span>›</span>
- <a href="{% url 'dashboard:outlet_detail' outlet.pk %}" style="color:#aaaaaa;text-decoration:none;">{{ outlet.name }}</a>
+ <a href="{% url 'dashboard:outlet_detail' outlet.pk %}" style="color:var(--yellow);text-decoration:none;">{{ outlet.name }}</a>
  <span>›</span>
- <span style="color:#f5c800;font-weight:700;">{{ dept.name }}</span>
+ <span style="color:var(--yellow);font-weight:700;">{{ dept.name }}</span>
 </div>
 
 <!-- Stats -->

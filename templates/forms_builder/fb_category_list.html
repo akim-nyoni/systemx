@@ -29,7 +29,7 @@
         {% for cat in categories %}
         <tr>
           <td><strong>{{ cat.name }}</strong></td>
-          <td class="text-sm text-muted"><code style="background:#2a2a2a;padding:2px 7px;border-radius:4px;font-size:11px;">{{ cat.code }}</code></td>
+          <td class="text-sm text-muted"><code style="background:#ffffff;padding:2px 7px;border-radius:4px;font-size:11px;">{{ cat.code }}</code></td>
           <td class="text-sm text-muted">{{ cat.description|default:"—" }}</td>
           <td class="text-sm">{{ cat.tpl_count }} form{{ cat.tpl_count|pluralize }}</td>
           <td class="text-sm">{{ cat.order }}</td>

@@ -3,7 +3,7 @@
 {% block page_title %}Stock Movements{% endblock %}
 {% block content %}
 <div class="flex-between mb-4">
- <h2 style="font-size:18px;font-weight:800;color:#f5c800;">Stock Movements</h2>
+ <h2 style="font-size:18px;font-weight:800;color:var(--yellow);">Stock Movements</h2>
  <a href="{% url 'stock:movement_create' %}" class="btn btn-primary">+ Record Movement</a>
 </div>
 
@@ -54,7 +54,7 @@
  {{ m.get_movement_type_display }}
  </span>
  </td>
- <td><a href="{% url 'stock:item_detail' m.item.pk %}" style="font-weight:600;color:#f0f0f0;">{{ m.item.name }}</a></td>
+ <td><a href="{% url 'stock:item_detail' m.item.pk %}" style="font-weight:600;color:var(--text);">{{ m.item.name }}</a></td>
  <td class="text-sm">{% if m.item.outlet %}{{ m.item.outlet.emoji }} {{ m.item.outlet.short_name }}{% else %}—{% endif %}</td>
  <td class="text-sm">{% if m.item.department %}{{ m.item.department.emoji }} {{ m.item.department.name }}{% else %}—{% endif %}</td>
  <td style="font-weight:700;">{% if not m.is_inbound %}-{% endif %}{{ m.quantity|floatformat:1 }} {{ m.item.get_unit_display }}</td>

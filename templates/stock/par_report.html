@@ -3,10 +3,10 @@
 {% block page_title %}PAR Level Report{% endblock %}
 {% block extra_css %}
 <style>
- .par-bar { height:12px; background:#2a2a2a; border-radius:99px; overflow:hidden; min-width:80px; }
+ .par-bar { height:12px; background:#ffffff; border-radius:99px; overflow:hidden; min-width:80px; }
  .par-fill { height:12px; border-radius:99px; }
  .par-ok { background:rgba(34,197,94,.12); }
- .par-low { background:#f5c800; }
+ .par-low { background:var(--yellow); }
  .par-critical { background:rgba(249,115,22,.12); }
  .par-out { background:rgba(239,68,68,.15); }
  @media print {
@@ -21,7 +21,7 @@
 {% block content %}
 <div class="flex-between mb-4">
  <div>
- <h2 style="font-size:18px;font-weight:800;color:#f5c800;">PAR Level Report</h2>
+ <h2 style="font-size:18px;font-weight:800;color:var(--yellow);">PAR Level Report</h2>
  <p class="text-sm text-muted">
  PAR = Average Daily Usage × Coverage Days.
  {% if current_outlet %}Showing: {{ current_outlet.name }}{% endif %}
@@ -60,7 +60,7 @@
  <td style="font-weight:800;color:var(--danger);">{{ entry.order_qty|floatformat:1 }} {{ item.get_unit_display }}</td>
  <td class="text-sm">
  {% if entry.unit_cost > 0 %}
- P{{ entry.unit_cost|floatformat:2 }} × {{ entry.order_qty|floatformat:1 }} = <strong style="color:#f5c800;">P{{ entry.est_cost }}</strong>
+ P{{ entry.unit_cost|floatformat:2 }} × {{ entry.order_qty|floatformat:1 }} = <strong style="color:var(--yellow);">P{{ entry.est_cost }}</strong>
  {% else %}<span class="text-muted">No cost set</span>{% endif %}
  </td>
  <td class="no-print"><a href="{% url 'stock:movement_create_item' item.pk %}" class="btn btn-primary btn-sm">Receive</a></td>
@@ -130,14 +130,14 @@
  {% regroup items by category as cat_groups %}
  {% for group in cat_groups %}
  <tr>
- <td colspan="11" style="background:#1e1e00;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#aaaaaa;padding:6px 14px;">
+ <td colspan="11" style="background:#ffffff;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--yellow);padding:6px 14px;">
  {{ group.grouper.emoji }} {{ group.grouper.name }}
  </td>
  </tr>
  {% for item in group.list %}
  <tr>
  <td>
- <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:600;color:#f0f0f0;">{{ item.name }}</a>
+ <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:600;color:var(--text);">{{ item.name }}</a>
  {% if item.sku %}<span class="text-xs text-muted"> · {{ item.sku }}</span>{% endif %}
  </td>
  <td class="text-sm">{% if item.outlet %}{{ item.outlet.emoji }} {{ item.outlet.short_name }}{% else %}—{% endif %}</td>
@@ -163,7 +163,7 @@
  <td>
  {% if item.stock_status == 'out' %}<span class="badge" style="background:rgba(239,68,68,.12);color:#991b1b;"> Out</span>
  {% elif item.stock_status == 'critical' %}<span class="badge" style="background:#1a1000;color:#9a3412;"> Critical</span>
- {% elif item.stock_status == 'low' %}<span class="badge" style="background:#1e1e00;color:#aaaaaa;"> Low</span>
+ {% elif item.stock_status == 'low' %}<span class="badge" style="background:#ffffff;color:var(--yellow);"> Low</span>
  {% else %}<span class="badge badge-success"> OK</span>{% endif %}
  </td>
  </tr>

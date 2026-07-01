@@ -5,26 +5,26 @@
 <style>
  .status-out { background:rgba(239,68,68,.12); color:#991b1b; }
  .status-critical { background:#1a1000; color:#9a3412; }
- .status-low { background:#1e1e00; color:#aaaaaa; }
+ .status-low { background:#ffffff; color:var(--yellow); }
  .status-ok { background:rgba(34,197,94,.12); color:#166534; }
  .stock-bar { height:10px; background:var(--border); border-radius:99px; overflow:hidden; margin-top:4px; }
  .stock-bar-fill { height:10px; border-radius:99px; transition:width .4s; }
  .mvt-delivery { color:#166534; }
  .mvt-usage { color:#991b1b; }
  .mvt-wastage { color:#9a3412; }
- .mvt-adjustment { color:#f5c800; }
+ .mvt-adjustment { color:var(--yellow); }
 </style>
 {% endblock %}
 
 {% block content %}
 {% if outlet %}
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px;color:var(--muted);">
- <a href="{% url 'stock:dashboard' %}" style="color:#aaaaaa;text-decoration:none;"> Stock</a>
+ <a href="{% url 'stock:dashboard' %}" style="color:var(--yellow);text-decoration:none;"> Stock</a>
  <span>›</span>
- <span style="color:#f5c800;font-weight:700;">{{ outlet.name }}</span>
+ <span style="color:var(--yellow);font-weight:700;">{{ outlet.name }}</span>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
- <h2 style="font-size:18px;font-weight:800;color:#f5c800;">{{ outlet.name }} - Stock Dashboard</h2>
+ <h2 style="font-size:18px;font-weight:800;color:var(--yellow);">{{ outlet.name }} - Stock Dashboard</h2>
  <div class="flex gap-2">
  <a href="{% url 'stock:par_report' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm"> PAR Report</a>
  <a href="{% url 'stock:count_list' %}?outlet_pk={{ outlet.pk }}" class="btn btn-outline btn-sm"> Counts</a>
@@ -67,7 +67,7 @@
  </div>
  {% for item in needs_order|slice:":6" %}
  <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #555555;font-size:13px;">
- <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:600;color:#f0f0f0;">{{ item.name }}</a>
+ <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:600;color:var(--text);">{{ item.name }}</a>
  <span style="color:var(--danger);font-weight:700;">Order {{ item.order_qty_needed|floatformat:1 }} {{ item.get_unit_display }}</span>
  </div>
  {% empty %}

@@ -7,7 +7,7 @@
 <div class="card" style="margin-bottom:16px;">
  <div class="flex-between" style="flex-wrap:wrap;gap:12px;">
  <div>
- <h2 style="font-size:20px;font-weight:900;color:#f5c800;">{{ item.name }}</h2>
+ <h2 style="font-size:20px;font-weight:900;color:var(--yellow);">{{ item.name }}</h2>
  <p class="text-sm text-muted">{{ item.category.emoji }} {{ item.category.name }} &nbsp;·&nbsp; {{ item.location.name|default:"No location" }} &nbsp;·&nbsp; SKU: {{ item.sku|default:"—" }}</p>
  </div>
  <div class="flex gap-2">
@@ -19,21 +19,21 @@
  <!-- Stats -->
  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;">
  <div style="text-align:center;">
- <div style="font-size:28px;font-weight:900;{% if item.stock_status == 'out' %}color:var(--danger);{% elif item.stock_status == 'critical' %}color:#f97316;{% elif item.stock_status == 'low' %}color:#aaaaaa;{% else %}color:var(--success);{% endif %}">
+ <div style="font-size:28px;font-weight:900;{% if item.stock_status == 'out' %}color:var(--danger);{% elif item.stock_status == 'critical' %}color:#f97316;{% elif item.stock_status == 'low' %}color:var(--yellow);{% else %}color:var(--success);{% endif %}">
  {{ item.current_stock|floatformat:1 }}
  </div>
  <div class="text-xs text-muted">Current Stock ({{ item.get_unit_display }})</div>
  </div>
  <div style="text-align:center;">
- <div style="font-size:28px;font-weight:900;color:#f5c800;">{{ item.par_level|floatformat:1 }}</div>
+ <div style="font-size:28px;font-weight:900;color:var(--yellow);">{{ item.par_level|floatformat:1 }}</div>
  <div class="text-xs text-muted">PAR Level</div>
  </div>
  <div style="text-align:center;">
- <div style="font-size:28px;font-weight:900;color:#f5c800;">{{ item.calculated_par|floatformat:1 }}</div>
+ <div style="font-size:28px;font-weight:900;color:var(--yellow);">{{ item.calculated_par|floatformat:1 }}</div>
  <div class="text-xs text-muted">Calculated PAR</div>
  </div>
  <div style="text-align:center;">
- <div style="font-size:28px;font-weight:900;color:#f5c800;">{{ item.avg_daily_usage|floatformat:2 }}</div>
+ <div style="font-size:28px;font-weight:900;color:var(--yellow);">{{ item.avg_daily_usage|floatformat:2 }}</div>
  <div class="text-xs text-muted">Avg Daily Usage</div>
  </div>
  <div style="text-align:center;">
@@ -43,7 +43,7 @@
  <div class="text-xs text-muted">Order Needed</div>
  </div>
  <div style="text-align:center;">
- <div style="font-size:22px;font-weight:900;color:#f5c800;">P{{ item.unit_cost|floatformat:2 }}</div>
+ <div style="font-size:22px;font-weight:900;color:var(--yellow);">P{{ item.unit_cost|floatformat:2 }}</div>
  <div class="text-xs text-muted">Unit Cost</div>
  </div>
  </div>

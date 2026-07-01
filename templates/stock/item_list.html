@@ -5,7 +5,7 @@
 <style>
  .status-badge-out { background:rgba(239,68,68,.12);color:#991b1b; }
  .status-badge-critical { background:#1a1000;color:#9a3412; }
- .status-badge-low { background:#1e1e00;color:#aaaaaa; }
+ .status-badge-low { background:#ffffff;color:var(--yellow); }
  .status-badge-ok { background:rgba(34,197,94,.12);color:#166534; }
  .stock-mini { height:6px;background:var(--border);border-radius:99px;overflow:hidden;width:80px;display:inline-block;vertical-align:middle;margin-left:6px; }
  .stock-mini-fill { height:6px;border-radius:99px; }
@@ -14,7 +14,7 @@
 
 {% block content %}
 <div class="flex-between mb-4">
- <h2 style="font-size:18px;font-weight:800;color:#f5c800;">Stock Items</h2>
+ <h2 style="font-size:18px;font-weight:800;color:var(--yellow);">Stock Items</h2>
  <div class="flex gap-2">
  <a href="{% url 'stock:par_report' %}" class="btn btn-outline btn-sm"> PAR Report</a>
  <a href="{% url 'stock:item_create' %}" class="btn btn-primary">+ Add Item</a>
@@ -100,7 +100,7 @@
  {% with pct=item.current_stock|default:0 par=item.par_level|default:1 %}
  <tr>
  <td>
- <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:700;color:#f0f0f0;">{{ item.name }}</a>
+ <a href="{% url 'stock:item_detail' item.pk %}" style="font-weight:700;color:var(--text);">{{ item.name }}</a>
  {% if item.sku %}<br><span class="text-xs text-muted">{{ item.sku }}</span>{% endif %}
  </td>
  <td class="text-sm">{% if item.outlet %}{{ item.outlet.emoji }} {{ item.outlet.short_name }}{% else %}—{% endif %}</td>
